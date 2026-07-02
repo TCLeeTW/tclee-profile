@@ -6,69 +6,58 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 4);
 
-const pillars = [
+const areas = [
   {
-    icon: '◈',
-    label: 'IPC hardware BD',
-    body: 'Business development for Axiomtek in European transportation and retail markets. Rail, vehicle onboard, kiosk — the compute inside infrastructure.',
+    label: 'Industrial hardware',
+    body: 'BD for Axiomtek in European transportation and retail markets — the embedded compute inside rail carriages, fleet vehicles, and transit kiosks.',
   },
   {
-    icon: '◉',
     label: 'Civil defense',
-    body: 'Co-founder of 港湖民防團, a community civil defense team in Taipei. EMT certified. Researching how people assess and act on civil risk.',
+    body: 'Co-founder of 港湖民防團, a community civil defense team in Taipei. EMT certified. Researching what moves people from awareness to action.',
   },
   {
-    icon: '◎',
-    label: 'Building with AI',
-    body: 'Leading AI implementation POC at Axiomtek. Interested in how small teams use LLMs to punch above their weight — in business, in civic work.',
+    label: 'AI in practice',
+    body: 'Building AI workflows inside a traditional hardware company. Not the theory — the messy, useful middle ground between a chatbot and a full pipeline.',
   },
   {
-    icon: '◇',
-    label: 'Tech background',
-    body: 'Self-taught iOS developer, Shopify builder, entrepreneur. I still write about software when it\'s worth writing about.',
+    label: 'Writing software',
+    body: 'iOS developer, Shopify builder, occasional entrepreneur. I still write about software when there\'s something worth saying.',
   },
 ];
 ---
 
 <Base>
   <section class="mb-20">
-    <div class="mb-8">
-      <h1 class="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 mb-4">
-        TC Lee
-      </h1>
-      <p class="text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
-        I work in European industrial hardware BD, run a civil defense organization in Taiwan,
-        and build things with AI. I write about all three.
-      </p>
-      <div class="flex items-center gap-4 mt-6">
-        <a
-          href="/about"
-          class="inline-flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"
-        >
-          More about me →
-        </a>
-        <a
-          href="https://linkedin.com/in/t-c-lee"
-          target="_blank"
-          rel="noopener"
-          class="inline-flex items-center text-sm text-zinc-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-        >
-          LinkedIn ↗
-        </a>
-      </div>
+    <h1 class="text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 mb-5">
+      TC Lee
+    </h1>
+    <p class="text-xl text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl mb-3">
+      I came out of startups and went back into a hardware company — without leaving the builder mindset.
+      Now I do BD in Europe, run a civil defense organization in Taipei, and implement AI from inside the corporation.
+    </p>
+    <p class="text-base text-zinc-500 dark:text-zinc-500 leading-relaxed max-w-2xl mb-6">
+      I write about what I actually do: the friction, the tools, the thinking.
+    </p>
+    <div class="flex items-center gap-5">
+      <a href="/about" class="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+        More about me →
+      </a>
+      <a href="https://linkedin.com/in/t-c-lee" target="_blank" rel="noopener"
+         class="text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
+        LinkedIn ↗
+      </a>
     </div>
   </section>
 
   <section class="mb-20">
-    <h2 class="text-xs font-semibold tracking-widest text-zinc-400 dark:text-zinc-600 uppercase mb-6">
+    <h2 class="text-xs font-semibold tracking-widest text-zinc-400 dark:text-zinc-600 uppercase mb-5">
       What I work on
     </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {pillars.map(p => (
-        <div class="p-5 border border-zinc-100 dark:border-zinc-800 rounded-xl hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors">
-          <div class="text-blue-500 dark:text-blue-400 text-lg mb-2 font-mono">{p.icon}</div>
-          <div class="font-medium text-zinc-900 dark:text-zinc-100 mb-1 text-sm">{p.label}</div>
-          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">{p.body}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {areas.map(a => (
+        <div class="p-4 border border-zinc-100 dark:border-zinc-800 rounded-xl">
+          <div class="font-medium text-zinc-800 dark:text-zinc-200 text-sm mb-1.5">{a.label}</div>
+          <p class="text-sm text-zinc-500 dark:text-zinc-500 leading-relaxed">{a.body}</p>
         </div>
       ))}
     </div>
@@ -76,39 +65,29 @@ const pillars = [
 
   {articles.length > 0 && (
     <section>
-      <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center justify-between mb-5">
         <h2 class="text-xs font-semibold tracking-widest text-zinc-400 dark:text-zinc-600 uppercase">
           Recent writing
         </h2>
-        <a href="/writing" class="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">
-          All posts →
+        <a href="/writing" class="text-sm text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition-colors">
+          All →
         </a>
       </div>
-      <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
+      <div class="divide-y divide-zinc-100 dark:divide-zinc-800/60">
         {articles.map(article => (
           <article class="py-5 group">
             <a href={`/writing/${article.slug}`} class="block">
-              <div class="flex items-start justify-between gap-4">
-                <div class="flex-1">
-                  <h3 class="font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-1">
-                    {article.data.title}
-                  </h3>
-                  <p class="text-sm text-zinc-500 dark:text-zinc-500 line-clamp-2">
-                    {article.data.description}
-                  </p>
-                </div>
-                <time
-                  datetime={article.data.date.toISOString()}
-                  class="text-xs text-zinc-400 dark:text-zinc-600 shrink-0 mt-0.5"
-                >
+              <div class="flex items-start justify-between gap-4 mb-1">
+                <h3 class="font-medium text-zinc-900 dark:text-zinc-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors text-sm leading-snug">
+                  {article.data.title}
+                  {article.data.lang === 'zh' && <span class="ml-1.5 font-normal text-zinc-400 text-xs">中文</span>}
+                </h3>
+                <time datetime={article.data.date.toISOString()}
+                      class="text-xs text-zinc-400 dark:text-zinc-600 shrink-0 mt-0.5">
                   {article.data.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
                 </time>
               </div>
-              {article.data.tags.length > 0 && (
-                <div class="flex gap-1.5 mt-2.5">
-                  {article.data.tags.map(tag => <span class="tag">{tag}</span>)}
-                </div>
-              )}
+              <p class="text-sm text-zinc-500 dark:text-zinc-500 line-clamp-1">{article.data.description}</p>
             </a>
           </article>
         ))}
