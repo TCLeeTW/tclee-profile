@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100;
+  }
+
+  ::selection {
+    @apply bg-blue-100 dark:bg-blue-900;
+  }
+
+  .prose h1, .prose h2, .prose h3, .prose h4 {
+    @apply font-semibold tracking-tight;
+  }
+
+  .prose a {
+    @apply text-blue-600 dark:text-blue-400 no-underline hover:underline;
+  }
+
+  .prose code {
+    @apply font-mono text-sm bg-zinc-100 dark:bg-zinc-800 px-1 py-0.5 rounded;
+  }
+
+  .prose pre {
+    @apply bg-zinc-900 dark:bg-zinc-800 rounded-lg overflow-x-auto;
+  }
+
+  .prose pre code {
+    @apply bg-transparent p-0;
+  }
+
+  .prose blockquote {
+    @apply border-l-2 border-blue-500 pl-4 text-zinc-600 dark:text-zinc-400 italic;
+  }
+}
+
+@layer components {
+  .tag {
+    @apply inline-block text-xs font-medium px-2.5 py-0.5 rounded-full
+           bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400
+           hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors;
+  }
+
+  .tag-active {
+    @apply bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300
+           hover:bg-blue-100 dark:hover:bg-blue-900;
+  }
+}

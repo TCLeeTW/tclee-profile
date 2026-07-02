@@ -1,0 +1,48 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const projects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order);
+---
+
+<Base title="Projects" description="What TC Lee is working on.">
+  <div class="mb-10">
+    <h1 class="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 mb-3">Projects</h1>
+    <p class="text-zinc-600 dark:text-zinc-400">Things I'm building, organizing, or researching.</p>
+  </div>
+
+  <div class="grid gap-4">
+    {projects.map(async (project) => {
+      const { Content } = await project.render();
+      return (
+        <div class="p-6 border border-zinc-100 dark:border-zinc-800 rounded-xl hover:border-zinc-200 dark:hover:border-zinc-700 transition-colors">
+          <div class="flex items-start justify-between gap-4 mb-2">
+            <h2 class="font-medium text-zinc-900 dark:text-zinc-100">{project.data.title}</h2>
+            <span class={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${
+              project.data.status === 'active' ? 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-400' :
+              project.data.status === 'ongoing' ? 'bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-400' :
+              'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400'
+            }`}>
+              {project.data.status}
+            </span>
+          </div>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-3">{project.data.description}</p>
+          <div class="prose prose-sm prose-zinc dark:prose-invert max-w-none
+                      prose-p:text-zinc-600 dark:prose-p:text-zinc-400 prose-p:mt-0 prose-p:mb-1">
+            <Content />
+          </div>
+          <div class="flex items-center gap-3 mt-4">
+            {project.data.tags.map(tag => <span class="tag">{tag}</span>)}
+            {project.data.url && (
+              <a href={project.data.url} target="_blank" rel="noopener"
+                 class="ml-auto text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                Visit ↗
+              </a>
+            )}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+</Base>
