@@ -35,7 +35,7 @@ const catKey = (cat: string) => cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         return (
           <div class="tl-item" data-c={catKey(p.data.category)}>
             <span class="tl-dot"></span>
-            {p.data.ready ? (
+            {p.data.is_published ? (
               <a class="proj" href={withLocale(`/projects/${p.slug}`)}>
                 <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
                 <h3>{title}</h3>

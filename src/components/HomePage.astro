@@ -11,7 +11,7 @@ const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 const [latestProject] = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order);
 
-const articles = (await getCollection('articles', ({ data }) => !data.draft))
+const articles = (await getCollection('articles', ({ data }) => data.is_published))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 ---
@@ -67,7 +67,7 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
       const title = locale === 'zh' ? (p.data.zh?.title ?? p.data.title) : p.data.title;
       const summary = locale === 'zh' ? (p.data.zh?.summary ?? p.data.summary) : p.data.summary;
       const catLabel = t.categories[p.data.category];
-      return p.data.ready ? (
+      return p.data.is_published ? (
         <a class="proj" style="max-width:460px" href={withLocale(`/projects/${p.slug}`)}>
           <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
           <h3>{title}</h3>

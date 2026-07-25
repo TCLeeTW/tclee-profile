@@ -1,15 +1,23 @@
 import { defineCollection, z } from 'astro:content';
 
+export const ARTICLE_CATEGORIES = [
+  'Hardware',
+  'Civil Defense',
+  'AI',
+  'Market Development',
+  'Social Commentary',
+] as const;
+
 const articles = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
-    category: z.enum(['Hardware', 'Civil Defense', 'AI', 'Market Development']),
+    category: z.enum(ARTICLE_CATEGORIES),
     tags: z.array(z.string()).default([]),
     lang: z.enum(['en', 'zh']).default('en'),
-    draft: z.boolean().default(false),
+    is_published: z.boolean().default(false),
   }),
 });
 
@@ -30,7 +38,7 @@ const projects = defineCollection({
     year: z.string(),
     status: z.enum(['ongoing', 'completed']).default('ongoing'),
     order: z.number().default(99),
-    ready: z.boolean().default(false),
+    is_published: z.boolean().default(false),
     links: z
       .array(z.object({ label: z.string(), url: z.string(), source: z.string() }))
       .default([]),
