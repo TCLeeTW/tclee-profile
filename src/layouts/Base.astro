@@ -1,91 +1,91 @@
 ---
+import '../styles/global.css';
+import { strings, type Locale } from '../i18n/strings';
+
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  activeNav?: 'projects' | 'thoughts';
+  locale?: Locale;
 }
 
 const {
   title,
-  description = 'TC Lee — IPC hardware BD, civil defense organizer, builder.',
-  ogImage = '/og-default.png',
+  description,
+  ogImage = '/portrait.webp',
+  activeNav,
+  locale = 'en',
 } = Astro.props;
 
+const t = strings[locale];
+const finalDescription = description ?? t.home.sub;
 const siteTitle = title ? `${title} — TC Lee` : 'TC Lee';
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+
+const otherLocale: Locale = locale === 'en' ? 'zh' : 'en';
+const path = Astro.url.pathname;
+const otherLocalePath =
+  locale === 'en'
+    ? `/zh${path === '/' ? '' : path}`
+    : path.replace(/^\/zh(\/|$)/, '/') || '/';
+
+const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 ---
 
 <!doctype html>
-<html lang="en" class="h-full">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="canonical" href={canonicalURL} />
-    <title>{siteTitle}</title>
-    <meta name="description" content={description} />
+<html lang={locale}>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="canonical" href={canonicalURL} />
+<title>{siteTitle}</title>
+<meta name="description" content={finalDescription} />
+<link rel="alternate" hreflang="en" href={new URL(locale === 'en' ? path : otherLocalePath, Astro.site)} />
+<link rel="alternate" hreflang="zh" href={new URL(locale === 'zh' ? path : otherLocalePath, Astro.site)} />
 
-    <meta property="og:title" content={siteTitle} />
-    <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonicalURL} />
-    <meta property="og:image" content={ogImage} />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={siteTitle} />
-    <meta name="twitter:description" content={description} />
+<meta property="og:title" content={siteTitle} />
+<meta property="og:description" content={finalDescription} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:image" content={new URL(ogImage, Astro.site)} />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={siteTitle} />
+<meta name="twitter:description" content={finalDescription} />
 
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Spectral:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
 
-    <script is:inline>
-      const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-      document.documentElement.classList.toggle('dark', theme === 'dark');
-    </script>
-  </head>
-  <body class="h-full flex flex-col min-h-screen">
-    <header class="border-b border-zinc-100 dark:border-zinc-800">
-      <nav class="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
-        <a href="/" class="font-semibold text-zinc-900 dark:text-zinc-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-          TC Lee
-        </a>
-        <div class="flex items-center gap-6 text-sm">
-          <a href="/writing" class="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Writing</a>
-          <a href="/projects" class="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">Projects</a>
-          <a href="/about" class="text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors">About</a>
-          <button
-            id="theme-toggle"
-            aria-label="Toggle dark mode"
-            class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
-          >
-            <span class="dark:hidden">☀</span>
-            <span class="hidden dark:inline">☾</span>
-          </button>
-        </div>
-      </nav>
-    </header>
+<header>
+  <nav>
+    <a class="brand" href={withLocale('/')}>TC Lee<span>李澤中</span></a>
+    <div class="navlinks">
+      <a class="nm" href={withLocale('/#pillars')}>{t.nav.whatIdo}</a>
+      <a class={activeNav === 'projects' ? 'active' : ''} href={withLocale('/projects')}>{t.nav.projects}</a>
+      <a class={activeNav === 'thoughts' ? 'active' : ''} href={withLocale('/thoughts')}>{t.nav.thoughts}</a>
+      <a class="nm" href={withLocale('/about')}>{t.nav.about}</a>
+      <a class="lang" href={otherLocalePath}>{t.langSwitch.label}</a>
+      <a class="cta" href={withLocale('/#contact')}>{t.nav.contact}</a>
+    </div>
+  </nav>
+</header>
 
-    <main class="flex-1 max-w-3xl mx-auto px-6 py-12 w-full">
-      <slot />
-    </main>
+<main>
+  <slot />
+</main>
 
-    <footer class="border-t border-zinc-100 dark:border-zinc-800 mt-auto">
-      <div class="max-w-3xl mx-auto px-6 py-8 flex items-center justify-between text-sm text-zinc-500 dark:text-zinc-500">
-        <span>© {new Date().getFullYear()} TC Lee</span>
-        <div class="flex gap-5">
-          <a href="https://linkedin.com/in/t-c-lee" target="_blank" rel="noopener" class="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors">LinkedIn</a>
-          <a href="https://tc-lee.medium.com" target="_blank" rel="noopener" class="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors">Medium</a>
-          <a href="https://github.com/TCLeeTW" target="_blank" rel="noopener" class="hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors">GitHub</a>
-        </div>
-      </div>
-    </footer>
+<footer><div class="wrap foot">
+  <span>© {new Date().getFullYear()} TC Lee · 李澤中</span>
+  <span>
+    <a href="https://linkedin.com/in/t-c-lee" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://github.com/TCLeeTW" target="_blank" rel="noopener">GitHub</a>
+    <a href="mailto:t.c.lee.taiwan@gmail.com">Email</a>
+  </span>
+</div></footer>
 
-    <script>
-      document.getElementById('theme-toggle')?.addEventListener('click', () => {
-        const isDark = document.documentElement.classList.toggle('dark');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      });
-    </script>
-  </body>
+</body>
 </html>
-
-<style is:global>
-  @import '../styles/global.css';
-</style>

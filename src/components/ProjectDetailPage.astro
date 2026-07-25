@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import type { CollectionEntry } from 'astro:content';
+import { strings, type Locale } from '../i18n/strings';
+
+interface Props { locale: Locale; project: CollectionEntry<'projects'> }
+const { locale, project } = Astro.props;
+const t = strings[locale];
+const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
+
+const d = project.data;
+const zh = d.zh;
+const title = locale === 'zh' ? (zh?.title ?? d.title) : d.title;
+const summary = locale === 'zh' ? (zh?.summary ?? d.summary) : d.summary;
+const why = locale === 'zh' ? (zh?.why ?? d.why) : d.why;
+const how = locale === 'zh' ? (zh?.how ?? d.how) : d.how;
+const what = locale === 'zh' ? (zh?.what ?? d.what) : d.what;
+---
+
+<Base title={title} description={summary} activeNav="projects" locale={locale}>
+<div class="detail">
+
+  <a class="back" href={withLocale('/projects')}>{t.projectsPage.backAllProjects}</a>
+
+  <div class="dhead">
+    <div class="dmeta"><span>{d.tags.join(' · ')}</span><span>·</span><span>{d.year}</span><span>·</span><span>{d.status}</span></div>
+    <h1>{title}</h1>
+    <p class="sum">{summary}</p>
+    {d.links.length > 0 && (
+      <div class="dlinks">
+        {d.links.map(l => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
+      </div>
+    )}
+  </div>
+
+  {why && (
+    <div class="qblock">
+      <div class="qlabel">Why</div>
+      <h2>{why.heading}</h2>
+      {why.paragraphs.map(p => <p>{p}</p>)}
+    </div>
+  )}
+
+  {how && (
+    <div class="qblock">
+      <div class="qlabel">How</div>
+      <h2>{how.heading}</h2>
+      <ul>{how.items.map(i => <li>{i}</li>)}</ul>
+    </div>
+  )}
+
+  {what && (
+    <div class="qblock">
+      <div class="qlabel">What</div>
+      <h2>{what.heading}</h2>
+      <ul>{what.items.map(i => <li>{i}</li>)}</ul>
+      {what.note && <p>{what.note}</p>}
+    </div>
+  )}
+
+  {d.links.length > 0 && (
+    <div class="coverage">
+      <h3>Links &amp; references</h3>
+      {d.links.map(l => <a href={l.url} target="_blank" rel="noopener"><span>{l.label}</span><span class="src">{l.source}</span></a>)}
+    </div>
+  )}
+
+  <a class="back" href={withLocale('/projects')}>{t.projectsPage.backAllProjects}</a>
+</div>
+</Base>

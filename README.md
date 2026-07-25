@@ -1,6 +1,14 @@
 # tclee.dev
 
-Personal site for TC Lee. Built with Astro, deployed to Firebase Hosting.
+Personal site for TC Lee. Built with Astro, deployed to Firebase Hosting
+(project `personal-profile-c4e82`, site `tclee-dev`).
+
+This repo is the deploy target — push to `master` and GitHub Actions builds
+and deploys automatically (see `.github/workflows/deploy.yml`).
+
+Content is authored in TC's Obsidian vault (`OV-Personal` repo,
+`Projects/tclee.dev/`) and synced here when ready to publish. The vault also
+holds design references (`_mockup/v3/`) and unreviewed drafts (`drafts/`).
 
 ## Setup
 
@@ -10,41 +18,17 @@ npm run dev        # localhost:4321
 npm run build      # outputs to dist/
 ```
 
-## Deploy (Firebase)
-
-CI/CD is wired via GitHub Actions (`.github/workflows/deploy.yml`).
-Every push to `master` that touches `Projects/tclee.dev/site/**` triggers a rebuild and deploy.
-
-### First-time setup
-1. Create a Firebase project at console.firebase.google.com
-2. Enable Hosting
-3. Add three secrets to the GitHub repo:
-   - `FIREBASE_SERVICE_ACCOUNT` — JSON key from Firebase console → Project Settings → Service accounts
-   - `FIREBASE_PROJECT_ID` — your Firebase project ID
-   - `GITHUB_TOKEN` — auto-provided by GitHub Actions
-
-### Custom domain
-Firebase Hosting → Add custom domain → follow DNS instructions for `tclee.dev`
-
 ## Content
 
-Articles live at `src/content/articles/*.md`.
-Frontmatter:
-```yaml
----
-title: string
-description: string
-date: YYYY-MM-DD
-tags: [tag1, tag2]
-lang: en | zh
-draft: true | false   # set false when ready to publish
----
-```
+- `src/content/articles/*.md` — Thoughts. Each keeps its own original
+  language (`lang: en | zh`); the site does not force-translate articles.
+- `src/content/projects/*.md` — Projects. `ready: true` gives it a live
+  detail page; otherwise it shows as a card with "Write-up coming". Optional
+  `zh` block holds the Chinese translation.
+- `src/content/startups/*.md` — same pattern as projects, shown in the
+  Startups section.
 
-Draft articles (`draft: true`) are built but not shown in any listing. Set `draft: false` to publish.
+## i18n
 
-## Adding content from vault
-
-Staging area: `../articles/` (vault layer, not built by Astro)
-When ready to publish: copy file → `src/content/articles/` → set draft: false → commit
-Log it in `../publishing-log.md`
+English is the default at `/`, Chinese lives under `/zh/`. UI strings live
+in `src/i18n/strings.ts`, About-page copy in `src/i18n/about.ts`.

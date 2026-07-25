@@ -1,0 +1,66 @@
+---
+title: "Taiwan drone no-fly zone dataset"
+summary: "All 22 counties' restricted-airspace notices normalised into one open GeoJSON dataset — ~5,000 sites, with the time dimension no official source publishes."
+tags: ["Open Data", "GIS"]
+year: "2026"
+status: ongoing
+order: 1
+ready: true
+links:
+  - label: "CD-TWN_Drone_Restrict_Area — source and data"
+    url: "https://github.com/TCLeeTW/CD-TWN_Drone_Restrict_Area"
+    source: "GitHub"
+  - label: "Regulations governing remotely piloted aircraft"
+    url: "https://law.moj.gov.tw"
+    source: "Law source"
+  - label: "CAA UAV airspace information system"
+    url: "https://drone.caa.gov.tw"
+    source: "drone.caa.gov.tw"
+why:
+  heading: "The data existed, but nobody could use it."
+  paragraphs:
+    - "Taiwan's 22 county governments each publish their own drone restriction notices under the national drone regulations. Every one of them does it differently — ODS here, XLSX there, scanned PDFs elsewhere, coordinates in degrees-minutes-seconds, numbering schemes that collide between counties."
+    - "The Civil Aviation Administration runs a national map, but it's a single live snapshot: it shows you where you can't fly today, and nothing about how that changed. For anyone trying to understand how restricted airspace is actually expanding — researchers, civil defense planners, drone operators, journalists — there was no answer, because no one was keeping the history."
+how:
+  heading: "Normalise everything, and keep every version."
+  items:
+    - "Collected the original government notices for all 22 counties, preserving each source file exactly as published so results stay auditable."
+    - "Built a pipeline converting ODS, XLSX and OCR'd PDFs into standard WGS84 GeoJSON, including automatic correction of sources that stored coordinates latitude-first."
+    - "Designed an ID scheme mapping a global UID to each government's original notice number, so records stay traceable and don't collide across counties."
+    - "Merged snapshots into a temporal format where each site carries its own history[] — first seen, last seen, and every status change."
+    - "Built an interactive Leaflet map that pages through published versions, showing both the change (newly restricted / lifted) and the full picture at that version."
+    - "Documented the limits honestly: only Taipei has a true continuous series, so cross-source differences are flagged as completeness gaps rather than miscounted as policy changes."
+what:
+  heading: "An open dataset that didn't exist before."
+  items:
+    - "All 22 counties covered — roughly 5,000 restricted facilities plus 24 corridors, in one consistent schema."
+    - "Taipei reconstructed across 9 published versions from 2022 to 2026, giving a real four-year view of how restrictions grew."
+    - "Released openly: data under CC BY 4.0, code under MIT, fully rebuildable from source with one command."
+    - "Usable straight in QGIS, web maps, or any analysis script — no scraping, no cleanup."
+  note: "The dataset is maintained and open to contributions; the biggest remaining gap is historical versions from counties that haven't digitised their archives."
+zh:
+  title: "台灣無人機禁航區資料集"
+  summary: "把全台 22 縣市的禁航區公告，整併成一份開放的 GeoJSON 資料集——約 5,000 個地點，並且保留了官方資料沒有的時間維度。"
+  why:
+    heading: "資料本來就存在，但沒人能用。"
+    paragraphs:
+      - "台灣 22 個縣市政府依據國家無人機法規，各自發布自己的禁航區公告。每個縣市的格式都不一樣——有的是 ODS，有的是 XLSX，有的是掃描 PDF，座標系統用度分秒表示，編號規則在縣市之間還會互相衝突。"
+      - "民航局有一套全國地圖，但那只是單一即時快照：只能告訴你今天不能在哪裡飛，看不出隨時間的變化。對於想了解禁航區實際上如何擴張的人——研究者、民防規劃者、無人機操作者、記者——一直找不到答案，因為沒有人在保存歷史紀錄。"
+  how:
+    heading: "把所有資料標準化，並保留每一個版本。"
+    items:
+      - "蒐集全台 22 縣市的原始政府公告，完整保留每份來源檔案的原始樣貌，確保結果可追溯查核。"
+      - "建立一套轉換流程，把 ODS、XLSX 和 OCR 辨識的 PDF 統一轉成標準 WGS84 GeoJSON 格式，並自動修正部分來源把座標寫成緯度優先的錯誤。"
+      - "設計一套 ID 系統，把全域唯一識別碼對應到各縣市政府原始的公告編號，確保記錄可追溯、不會在縣市之間互相衝突。"
+      - "把各版本快照合併成時間序列格式，每個地點都有自己的 history[]——首次出現、最後出現，以及每一次狀態變化。"
+      - "做了一個互動式 Leaflet 地圖，可以逐版本瀏覽，同時顯示變化（新增禁航／解除）與該版本的完整樣貌。"
+      - "誠實記錄資料的限制：只有台北市有真正連續的版本序列，因此跨來源的差異會被標記為資料完整度落差，而不是被誤算成政策變動。"
+  what:
+    heading: "一份先前不存在的開放資料集。"
+    items:
+      - "涵蓋全台 22 縣市——約 5,000 個禁航設施，加上 24 條航道走廊，統一在同一套資料結構裡。"
+      - "台北市從 2022 到 2026 年重建了 9 個歷史版本，是唯一能看到完整四年演變的縣市。"
+      - "完全開放釋出：資料採 CC BY 4.0 授權，程式碼採 MIT 授權，一行指令就能從原始資料重建整個資料集。"
+      - "可直接用於 QGIS、網頁地圖或任何分析腳本——不需要另外爬蟲或清理資料。"
+    note: "這份資料集會持續維護，也歡迎外部貢獻；目前最大的缺口是那些縣市還沒有數位化的歷史檔案。"
+---

@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+import { strings, type Locale } from '../i18n/strings';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = strings[locale];
+const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
+
+const articles = (await getCollection('articles', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const categories = ['Hardware', 'Civil Defense', 'AI', 'Market Development'];
+const catKey = (c: string) => c.toLowerCase().replace(/[^a-z]+/g, '-');
+---
+
+<Base title={t.thoughtsPage.title} description={t.thoughtsPage.body} activeNav="thoughts" locale={locale}>
+<div class="wrap">
+  <div class="pagehead">
+    <h1>{t.thoughtsPage.title}</h1>
+    <p>{t.thoughtsPage.body}</p>
+  </div>
+
+  <section style="border-top:none;padding-top:34px">
+    {articles.length > 0 && (
+      <div class="filters">
+        <button class="on" data-f="all">{t.projectsPage.filterAll}</button>
+        {categories.map(c => <button data-f={catKey(c)}>{c}</button>)}
+      </div>
+    )}
+
+    <div id="list">
+      {articles.length === 0 ? (
+        <p class="empty">{t.thoughtsPage.empty}</p>
+      ) : articles.map(a => (
+        <a class="thought" data-c={catKey(a.data.category)} href={withLocale(`/thoughts/${a.slug}`)}>
+          <div class="trow"><h3>{a.data.title}</h3><span class="tmeta">{a.data.lang === 'zh' ? '中文' : 'EN'} · {a.data.category} · {a.data.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></div>
+          <p>{a.data.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</div>
+</Base>
+
+<script>
+document.querySelectorAll<HTMLButtonElement>('.filters button').forEach((b) => {
+  b.onclick = () => {
+    document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
+    b.classList.add('on');
+    const f = b.dataset.f;
+    document.querySelectorAll<HTMLElement>('#list .thought').forEach((p) => {
+      p.style.display = (f === 'all' || p.dataset.c === f) ? '' : 'none';
+    });
+  };
+});
+</script>

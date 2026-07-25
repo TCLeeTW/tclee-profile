@@ -1,12 +1,12 @@
 ---
-title: "Civil Defense Advancement Taiwan (CDAT) & 港湖民防團"
-description: "Founded and chair Taiwan's first civilian-organized civil defense advancement organization. 40+ active participants in 10 months."
-period: "Aug 2025 – present"
+title: "CDAT & 港湖民防團"
+summary: "Founding and chairing a civil defense organization — from zero to 40+ active participants in ten months, with a real training curriculum."
+tags: ["Civil Defense", "Organisation"]
+year: "2025—"
 status: ongoing
-tags: ["civil defense", "Taiwan", "community", "TECC", "operations"]
-order: 1
+order: 4
+ready: false
+zh:
+  title: "CDAT 與港湖民防團"
+  summary: "創辦並主持一個民防組織——十個月內從零成長到 40 位以上活躍成員，並建立完整訓練課程。"
 ---
-
-Built from zero. CDAT (Civil Defense Advancement Taiwan) is the parent organization; 港湖民防團 is the community training unit in Neihu/Ganghu, Taipei.
-
-Training curriculum covers BLS, TECC (Tactical Emergency Casualty Care), drone operations, radio communications (conventional, mesh networks, TAK/ATAK), and whole-society readiness scenario exercises.
