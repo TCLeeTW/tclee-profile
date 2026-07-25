@@ -1,10 +1,10 @@
 ---
 title: "Information freedom hackathon"
 summary: "A workshop-and-build programme against foreign information manipulation, pairing Taiwanese teams with Ukrainian and Belarusian frontline practitioners."
-tags: ["Information Resilience", "Hackathon"]
+category: "Information Resilience"
 year: "2026"
 status: ongoing
-order: 5
+order: 3
 ready: false
 zh:
   title: "資訊自由黑客松"

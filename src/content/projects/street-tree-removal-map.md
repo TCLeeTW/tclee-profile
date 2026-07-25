@@ -1,7 +1,7 @@
 ---
 title: "Taipei street tree removal map"
 summary: "Comparing city tree inventories across snapshots to surface trees quietly removed, plus a crowdsourced photo-reporting platform."
-tags: ["Civic Tech", "Open Data"]
+category: "Information Resilience"
 year: "2026"
 status: ongoing
 order: 2

@@ -1,10 +1,10 @@
 ---
 title: "CDAT & 港湖民防團"
 summary: "Founding and chairing a civil defense organization — from zero to 40+ active participants in ten months, with a real training curriculum."
-tags: ["Civil Defense", "Organisation"]
+category: "Civil Defense"
 year: "2025—"
 status: ongoing
-order: 4
+order: 5
 ready: false
 zh:
   title: "CDAT 與港湖民防團"

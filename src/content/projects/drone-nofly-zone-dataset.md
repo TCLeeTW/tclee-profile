@@ -1,7 +1,7 @@
 ---
 title: "Taiwan drone no-fly zone dataset"
 summary: "All 22 counties' restricted-airspace notices normalised into one open GeoJSON dataset — ~5,000 sites, with the time dimension no official source publishes."
-tags: ["Open Data", "GIS"]
+category: "Information Resilience"
 year: "2026"
 status: ongoing
 order: 1

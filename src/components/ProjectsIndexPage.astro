@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { strings, type Locale } from '../i18n/strings';
+import { PROJECT_CATEGORIES } from '../content/config';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -9,10 +10,8 @@ const t = strings[locale];
 const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
-const startups = (await getCollection('startups')).sort((a, b) => a.data.order - b.data.order);
 
-const allTags = [...new Set(projects.flatMap(p => p.data.tags))].sort();
-const tagKey = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+const catKey = (cat: string) => cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 ---
 
 <Base title={t.projectsPage.title} description={t.projectsPage.body} activeNav="projects" locale={locale}>
@@ -25,60 +24,37 @@ const tagKey = (tag: string) => tag.toLowerCase().replace(/[^a-z0-9]+/g, '-');
   <section style="border-top:none;padding-top:34px">
     <div class="filters">
       <button class="on" data-f="all">{t.projectsPage.filterAll}</button>
-      {allTags.map(tag => <button data-f={tagKey(tag)}>{tag}</button>)}
+      {PROJECT_CATEGORIES.map(cat => <button data-f={catKey(cat)}>{t.categories[cat]}</button>)}
     </div>
 
-    <div class="projects" id="grid">
+    <div class="timeline" id="grid">
       {projects.map(p => {
-        const tagKeys = p.data.tags.map(tagKey).join(' ');
         const title = locale === 'zh' ? (p.data.zh?.title ?? p.data.title) : p.data.title;
         const summary = locale === 'zh' ? (p.data.zh?.summary ?? p.data.summary) : p.data.summary;
-        return p.data.ready ? (
-          <a class="proj" data-c={tagKeys} href={withLocale(`/projects/${p.slug}`)}>
-            <div class="ptop"><span class="ptag">{p.data.tags.join(' · ')}</span><span class="pyear">{p.data.year}</span></div>
-            <h3>{title}</h3>
-            <p>{summary}</p>
-            <span class="more">{t.projectsPage.readCase}</span>
-          </a>
-        ) : (
-          <div class="proj disabled" data-c={tagKeys}>
-            <div class="ptop"><span class="ptag">{p.data.tags.join(' · ')}</span><span class="pyear">{p.data.year}</span></div>
-            <h3>{title}</h3>
-            <p>{summary}</p>
-            <span class="more soon">{t.projectsPage.writeUpComing}</span>
+        const catLabel = t.categories[p.data.category];
+        return (
+          <div class="tl-item" data-c={catKey(p.data.category)}>
+            <span class="tl-dot"></span>
+            {p.data.ready ? (
+              <a class="proj" href={withLocale(`/projects/${p.slug}`)}>
+                <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
+                <h3>{title}</h3>
+                <p>{summary}</p>
+                <span class="more">{t.projectsPage.readCase}</span>
+              </a>
+            ) : (
+              <div class="proj disabled">
+                <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
+                <h3>{title}</h3>
+                <p>{summary}</p>
+                <span class="more soon">{t.projectsPage.writeUpComing}</span>
+              </div>
+            )}
           </div>
         );
       })}
     </div>
   </section>
-
-  {startups.length > 0 && (
-    <section style="padding-top:8px">
-      <div class="shead"><div><div class="kicker">{t.projectsPage.startupsKicker}</div><h2>{t.projectsPage.startupsHeading}</h2></div></div>
-      <div class="projects">
-        {startups.map(s => {
-          const title = locale === 'zh' ? (s.data.zh?.title ?? s.data.title) : s.data.title;
-          const summary = locale === 'zh' ? (s.data.zh?.summary ?? s.data.summary) : s.data.summary;
-          const statusLabel = s.data.status === 'active' ? t.projectsPage.active : t.projectsPage.closed;
-          return s.data.ready ? (
-            <a class="proj" href={withLocale(`/startups/${s.slug}`)}>
-              <div class="ptop"><span class="ptag">{statusLabel}</span><span class="pyear">{s.data.period}</span></div>
-              <h3>{title}</h3>
-              <p>{summary}</p>
-              <span class="more">{t.projectsPage.readCase}</span>
-            </a>
-          ) : (
-            <div class="proj disabled">
-              <div class="ptop"><span class="ptag">{statusLabel}</span><span class="pyear">{s.data.period}</span></div>
-              <h3>{title}</h3>
-              <p>{summary}</p>
-              <span class="more soon">{t.projectsPage.writeUpComing}</span>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  )}
 </div>
 </Base>
 
@@ -88,9 +64,8 @@ document.querySelectorAll<HTMLButtonElement>('.filters button').forEach((b) => {
     document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
     b.classList.add('on');
     const f = b.dataset.f;
-    document.querySelectorAll<HTMLElement>('#grid .proj').forEach((p) => {
-      const tags = (p.dataset.c || '').split(' ');
-      p.style.display = (f === 'all' || tags.includes(f!)) ? '' : 'none';
+    document.querySelectorAll<HTMLElement>('#grid .tl-item').forEach((item) => {
+      item.style.display = (f === 'all' || item.dataset.c === f) ? '' : 'none';
     });
   };
 });

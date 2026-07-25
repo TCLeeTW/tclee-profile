@@ -94,6 +94,14 @@ a.proj:hover { border-color: var(--accent); transform: translateY(-2px); }
 .more { font-size: 13px; font-weight: 600; color: var(--accent); margin-top: 14px; display: inline-block; }
 .more.soon { color: var(--faint); }
 
+/* milestone timeline */
+.timeline { position: relative; max-width: 760px; padding-left: 34px; }
+.timeline::before { content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px; background: var(--line2); }
+.tl-item { position: relative; margin-bottom: 22px; }
+.tl-item:last-child { margin-bottom: 0; }
+.tl-dot { position: absolute; left: -34px; top: 26px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--line2); }
+.tl-item .proj { padding: 22px 24px; }
+
 /* thoughts */
 .thought { display: block; text-decoration: none; padding: 20px 0; border-bottom: 1px solid var(--line); }
 .thought:first-of-type { border-top: 1px solid var(--line); }
@@ -162,4 +170,7 @@ footer { border-top: 1px solid var(--line); padding: 26px 0 46px; }
   .contact { grid-template-columns: 1fr; }
   .navlinks { gap: 15px; font-size: 13px; }
   .navlinks .nm { display: none; }
+  .timeline { padding-left: 24px; }
+  .tl-dot { left: -24px; }
+  .tl-item .proj { padding: 18px; }
 }

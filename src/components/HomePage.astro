@@ -8,9 +8,8 @@ const { locale } = Astro.props;
 const t = strings[locale];
 const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 
-const projects = (await getCollection('projects'))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 4);
+const [latestProject] = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order);
 
 const articles = (await getCollection('articles', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -63,27 +62,27 @@ const articles = (await getCollection('articles', ({ data }) => !data.draft))
       <div><div class="kicker">{t.home.projectsKicker}</div><h2>{t.home.projectsHeading}</h2></div>
       <a href={withLocale('/projects')}>{t.home.allProjects}</a>
     </div>
-    <div class="projects">
-      {projects.map(p => {
-        const title = locale === 'zh' ? (p.data.zh?.title ?? p.data.title) : p.data.title;
-        const summary = locale === 'zh' ? (p.data.zh?.summary ?? p.data.summary) : p.data.summary;
-        return p.data.ready ? (
-          <a class="proj" href={withLocale(`/projects/${p.slug}`)}>
-            <div class="ptop"><span class="ptag">{p.data.tags.join(' · ')}</span><span class="pyear">{p.data.year}</span></div>
-            <h3>{title}</h3>
-            <p>{summary}</p>
-            <span class="more">{t.projectsPage.readCase}</span>
-          </a>
-        ) : (
-          <div class="proj disabled">
-            <div class="ptop"><span class="ptag">{p.data.tags.join(' · ')}</span><span class="pyear">{p.data.year}</span></div>
-            <h3>{title}</h3>
-            <p>{summary}</p>
-            <span class="more soon">{t.projectsPage.writeUpComing}</span>
-          </div>
-        );
-      })}
-    </div>
+    {latestProject && (() => {
+      const p = latestProject;
+      const title = locale === 'zh' ? (p.data.zh?.title ?? p.data.title) : p.data.title;
+      const summary = locale === 'zh' ? (p.data.zh?.summary ?? p.data.summary) : p.data.summary;
+      const catLabel = t.categories[p.data.category];
+      return p.data.ready ? (
+        <a class="proj" style="max-width:460px" href={withLocale(`/projects/${p.slug}`)}>
+          <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
+          <h3>{title}</h3>
+          <p>{summary}</p>
+          <span class="more">{t.projectsPage.readCase}</span>
+        </a>
+      ) : (
+        <div class="proj disabled" style="max-width:460px">
+          <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
+          <h3>{title}</h3>
+          <p>{summary}</p>
+          <span class="more soon">{t.projectsPage.writeUpComing}</span>
+        </div>
+      );
+    })()}
   </section>
 
   {articles.length > 0 && (

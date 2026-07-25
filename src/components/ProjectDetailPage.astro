@@ -23,7 +23,7 @@ const what = locale === 'zh' ? (zh?.what ?? d.what) : d.what;
   <a class="back" href={withLocale('/projects')}>{t.projectsPage.backAllProjects}</a>
 
   <div class="dhead">
-    <div class="dmeta"><span>{d.tags.join(' · ')}</span><span>·</span><span>{d.year}</span><span>·</span><span>{d.status}</span></div>
+    <div class="dmeta"><span>{t.categories[d.category]}</span><span>·</span><span>{d.year}</span><span>·</span><span>{d.status}</span></div>
     <h1>{title}</h1>
     <p class="sum">{summary}</p>
     {d.links.length > 0 && (

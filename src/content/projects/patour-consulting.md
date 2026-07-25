@@ -1,9 +1,10 @@
 ---
 title: "Patour Consulting, Budapest"
 summary: "Founded and ran an EU export-sourcing and trade advisory company in Hungary — entity setup, regulatory compliance, and customs handled solo."
-period: "2022—2023"
-status: closed
-order: 1
+category: "Startup"
+year: "2022—2023"
+status: completed
+order: 6
 ready: false
 zh:
   title: "Patour Consulting（布達佩斯）"

@@ -13,12 +13,20 @@ const articles = defineCollection({
   }),
 });
 
+export const PROJECT_CATEGORIES = [
+  'Civil Defense',
+  'BDM',
+  'Startup',
+  'Information Resilience',
+  'Social Commentary',
+] as const;
+
 const projects = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
     summary: z.string(),
-    tags: z.array(z.string()).min(1),
+    category: z.enum(PROJECT_CATEGORIES),
     year: z.string(),
     status: z.enum(['ongoing', 'completed']).default('ongoing'),
     order: z.number().default(99),
@@ -41,18 +49,4 @@ const projects = defineCollection({
   }),
 });
 
-const startups = defineCollection({
-  type: 'content',
-  schema: z.object({
-    title: z.string(),
-    summary: z.string(),
-    period: z.string(),
-    status: z.enum(['active', 'closed']).default('closed'),
-    order: z.number().default(99),
-    ready: z.boolean().default(false),
-    url: z.string().optional(),
-    zh: z.object({ title: z.string().optional(), summary: z.string().optional() }).optional(),
-  }),
-});
-
-export const collections = { articles, projects, startups };
+export const collections = { articles, projects };
