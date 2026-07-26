@@ -4,7 +4,7 @@ summary: "Founded and ran an EU export-sourcing and trade advisory company in Hu
 category: "Startup"
 year: "2022—2023"
 status: completed
-order: 6
+order: 7
 is_published: false
 zh:
   title: "Patour Consulting（布達佩斯）"
