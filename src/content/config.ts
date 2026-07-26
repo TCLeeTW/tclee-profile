@@ -5,6 +5,7 @@ export const ARTICLE_CATEGORIES = [
   'Civil Defense',
   'AI',
   'Market Development',
+  'Startup',
   'Social Commentary',
 ] as const;
 

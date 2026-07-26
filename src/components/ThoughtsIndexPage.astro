@@ -11,7 +11,7 @@ const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 const articles = (await getCollection('articles', ({ data }) => data.is_published))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const categories = ['Hardware', 'Civil Defense', 'AI', 'Market Development', 'Social Commentary'];
+const categories = ['Hardware', 'Civil Defense', 'AI', 'Market Development', 'Startup', 'Social Commentary'];
 const catKey = (c: string) => c.toLowerCase().replace(/[^a-z]+/g, '-');
 ---
 
