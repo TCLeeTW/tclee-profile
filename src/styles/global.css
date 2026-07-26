@@ -141,6 +141,11 @@ footer { border-top: 1px solid var(--line); padding: 26px 0 46px; }
 .dlinks a { font-size: 13.5px; font-weight: 600; text-decoration: none; padding: 9px 15px; border-radius: 8px; border: 1px solid var(--line2); color: var(--ink); transition: .16s; }
 .dlinks a:hover { border-color: var(--accent); color: var(--accent); }
 .dlinks a::after { content: "↗"; margin-left: 6px; font-size: .85em; color: var(--faint); }
+.dimage { margin-bottom: 38px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line2); }
+.dimage img { display: block; width: 100%; height: auto; }
+.dvideo { margin-bottom: 38px; }
+.dvideo iframe { display: block; width: 100%; aspect-ratio: 16/9; border-radius: 12px; border: 1px solid var(--line2); }
+.dvideo a { font-size: 14px; font-weight: 600; color: var(--accent); }
 .qblock { margin-bottom: 38px; }
 .qlabel { font-size: 11.5px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
 .qblock h2 { font-size: 24px; margin-bottom: 13px; }

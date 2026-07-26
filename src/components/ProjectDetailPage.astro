@@ -15,6 +15,9 @@ const summary = locale === 'zh' ? (zh?.summary ?? d.summary) : d.summary;
 const why = locale === 'zh' ? (zh?.why ?? d.why) : d.why;
 const how = locale === 'zh' ? (zh?.how ?? d.how) : d.how;
 const what = locale === 'zh' ? (zh?.what ?? d.what) : d.what;
+
+const youtubeMatch = d.video?.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/)([\w-]+)/);
+const youtubeEmbed = youtubeMatch ? `https://www.youtube.com/embed/${youtubeMatch[1]}` : null;
 ---
 
 <Base title={title} description={summary} activeNav="projects" locale={locale}>
@@ -32,6 +35,20 @@ const what = locale === 'zh' ? (zh?.what ?? d.what) : d.what;
       </div>
     )}
   </div>
+
+  {d.image && (
+    <div class="dimage"><img src={d.image} alt={title} /></div>
+  )}
+
+  {d.video && (
+    <div class="dvideo">
+      {youtubeEmbed ? (
+        <iframe src={youtubeEmbed} title={title} frameborder="0" allowfullscreen></iframe>
+      ) : (
+        <a href={d.video} target="_blank" rel="noopener">{d.video}</a>
+      )}
+    </div>
+  )}
 
   {why && (
     <div class="qblock">
