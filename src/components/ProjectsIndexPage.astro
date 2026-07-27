@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { strings, type Locale } from '../i18n/strings';
-import { PROJECT_CATEGORIES } from '../content/config';
+import { PROJECT_CATEGORIES, catKey } from '../content/config';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -10,8 +10,6 @@ const t = strings[locale];
 const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
-
-const catKey = (cat: string) => cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 ---
 
 <Base title={t.projectsPage.title} description={t.projectsPage.body} activeNav="projects" locale={locale}>
@@ -59,14 +57,25 @@ const catKey = (cat: string) => cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 </Base>
 
 <script>
+function applyFilter(f: string) {
+  document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
+  const active = document.querySelector<HTMLButtonElement>(`.filters button[data-f="${f}"]`);
+  (active ?? document.querySelector<HTMLButtonElement>('.filters button[data-f="all"]'))?.classList.add('on');
+  document.querySelectorAll<HTMLElement>('#grid .tl-item').forEach((item) => {
+    item.style.display = (f === 'all' || item.dataset.c === f) ? '' : 'none';
+  });
+}
+
 document.querySelectorAll<HTMLButtonElement>('.filters button').forEach((b) => {
   b.onclick = () => {
-    document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
-    b.classList.add('on');
-    const f = b.dataset.f;
-    document.querySelectorAll<HTMLElement>('#grid .tl-item').forEach((item) => {
-      item.style.display = (f === 'all' || item.dataset.c === f) ? '' : 'none';
-    });
+    applyFilter(b.dataset.f ?? 'all');
+    const url = new URL(location.href);
+    if (b.dataset.f === 'all') url.searchParams.delete('cat');
+    else url.searchParams.set('cat', b.dataset.f ?? '');
+    history.replaceState(null, '', url);
   };
 });
+
+const initialCat = new URLSearchParams(location.search).get('cat');
+if (initialCat) applyFilter(initialCat);
 </script>

@@ -74,7 +74,8 @@ h2 { font-family: var(--display); font-weight: var(--dw); letter-spacing: var(--
 
 /* pillars */
 .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 19px; }
-.pillar { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 26px 24px; }
+.pillar { display: block; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 26px 24px; text-decoration: none; color: inherit; transition: border-color .16s, transform .16s; }
+.pillar:hover { border-color: var(--accent); transform: translateY(-2px); }
 .pnum { font-size: 11.5px; font-weight: 700; letter-spacing: .1em; color: var(--faint); margin-bottom: 14px; }
 .pillar h3 { font-family: var(--display); font-size: 19px; font-weight: var(--dw); letter-spacing: var(--dls); line-height: 1.28; margin-bottom: 10px; }
 .pillar p { font-size: 14.5px; color: var(--muted); }
@@ -93,6 +94,22 @@ a.proj:hover { border-color: var(--accent); transform: translateY(-2px); }
 .proj p { font-size: 14.5px; color: var(--muted); }
 .more { font-size: 13px; font-weight: 600; color: var(--accent); margin-top: 14px; display: inline-block; }
 .more.soon { color: var(--faint); }
+
+/* latest-projects carousel */
+.carousel-wrap { position: relative; }
+.proj-carousel {
+  display: flex; gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-bottom: 4px; scrollbar-width: none; -ms-overflow-style: none;
+}
+.proj-carousel::-webkit-scrollbar { display: none; }
+.proj-carousel .proj { flex: 0 0 min(360px, 82vw); scroll-snap-align: start; }
+.carousel-nav { display: flex; gap: 8px; margin-top: 16px; }
+.carousel-nav button {
+  width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line2);
+  background: var(--panel); color: var(--ink); cursor: pointer; font-size: 15px;
+  display: flex; align-items: center; justify-content: center; transition: .16s;
+}
+.carousel-nav button:hover { border-color: var(--accent); color: var(--accent); }
 
 /* milestone timeline */
 .timeline { position: relative; max-width: 760px; padding-left: 34px; }

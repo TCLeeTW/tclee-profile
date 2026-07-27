@@ -18,7 +18,7 @@ export const strings = {
       pillar03Title: 'AI, applied',
       pillar03Body: "AI lead at Axiomtek. I'm both the daily user and the one building the internal tools — which is why I write about what actually works.",
       projectsKicker: 'Latest',
-      projectsHeading: 'Latest project.',
+      projectsHeading: 'Latest projects.',
       allProjects: 'All projects →',
       thoughtsKicker: 'Writing',
       thoughtsHeading: 'Thoughts',
@@ -41,6 +41,7 @@ export const strings = {
     categories: {
       'Civil Defense': 'Civil Defense',
       'BDM': 'BDM',
+      'AI': 'AI',
       'Startup': 'Startup',
       'Information Resilience': 'Information Resilience',
       'Social Commentary': 'Social Commentary',
@@ -71,7 +72,7 @@ export const strings = {
       pillar03Title: 'AI 實戰應用',
       pillar03Body: 'Axiomtek AI 負責人。我既是每天使用 AI 的人，也是打造內部工具的人——這也是我持續寫作分享實務心得的原因。',
       projectsKicker: '最新',
-      projectsHeading: '最新專案。',
+      projectsHeading: '最新專案',
       allProjects: '所有專案 →',
       thoughtsKicker: '寫作',
       thoughtsHeading: '文章',
@@ -94,6 +95,7 @@ export const strings = {
     categories: {
       'Civil Defense': '民防',
       'BDM': 'BD／市場開發',
+      'AI': 'AI',
       'Startup': '新創',
       'Information Resilience': '資訊韌性',
       'Social Commentary': '社會評論',

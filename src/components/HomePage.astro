@@ -2,14 +2,17 @@
 import Base from '../layouts/Base.astro';
 import { getCollection } from 'astro:content';
 import { strings, type Locale } from '../i18n/strings';
+import { catKey } from '../content/config';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
 const t = strings[locale];
 const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
+const filteredProjects = (cat: string) => `${withLocale('/projects')}?cat=${catKey(cat)}`;
 
-const [latestProject] = (await getCollection('projects'))
-  .sort((a, b) => a.data.order - b.data.order);
+const latestProjects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 4);
 
 const articles = (await getCollection('articles', ({ data }) => data.is_published))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
@@ -36,24 +39,24 @@ const articles = (await getCollection('articles', ({ data }) => data.is_publishe
   <section id="pillars">
     <div class="shead"><div><div class="kicker">{t.home.pillarsKicker}</div><h2>{t.home.pillarsHeading}</h2></div></div>
     <div class="pillars">
-      <div class="pillar">
+      <a class="pillar" href={filteredProjects('BDM')}>
         <div class="pnum">01</div>
         <h3>{t.home.pillar01Title}</h3>
         <p>{t.home.pillar01Body}</p>
         <div class="chips"><span class="chip">IPC</span><span class="chip">Edge AI</span><span class="chip">EN 50155</span><span class="chip">Europe</span></div>
-      </div>
-      <div class="pillar">
+      </a>
+      <a class="pillar" href={filteredProjects('Civil Defense')}>
         <div class="pnum">02</div>
         <h3>{t.home.pillar02Title}</h3>
         <p>{t.home.pillar02Body}</p>
         <div class="chips"><span class="chip">Training</span><span class="chip">Exercises</span><span class="chip">TAK</span><span class="chip">Drones</span></div>
-      </div>
-      <div class="pillar">
+      </a>
+      <a class="pillar" href={filteredProjects('AI')}>
         <div class="pnum">03</div>
         <h3>{t.home.pillar03Title}</h3>
         <p>{t.home.pillar03Body}</p>
         <div class="chips"><span class="chip">Agents</span><span class="chip">Automation</span><span class="chip">GIS</span></div>
-      </div>
+      </a>
     </div>
   </section>
 
@@ -62,27 +65,36 @@ const articles = (await getCollection('articles', ({ data }) => data.is_publishe
       <div><div class="kicker">{t.home.projectsKicker}</div><h2>{t.home.projectsHeading}</h2></div>
       <a href={withLocale('/projects')}>{t.home.allProjects}</a>
     </div>
-    {latestProject && (() => {
-      const p = latestProject;
-      const title = locale === 'zh' ? (p.data.zh?.title ?? p.data.title) : p.data.title;
-      const summary = locale === 'zh' ? (p.data.zh?.summary ?? p.data.summary) : p.data.summary;
-      const catLabel = t.categories[p.data.category];
-      return p.data.is_published ? (
-        <a class="proj" style="max-width:460px" href={withLocale(`/projects/${p.slug}`)}>
-          <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
-          <h3>{title}</h3>
-          <p>{summary}</p>
-          <span class="more">{t.projectsPage.readCase}</span>
-        </a>
-      ) : (
-        <div class="proj disabled" style="max-width:460px">
-          <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
-          <h3>{title}</h3>
-          <p>{summary}</p>
-          <span class="more soon">{t.projectsPage.writeUpComing}</span>
+    <div class="carousel-wrap">
+      <div class="proj-carousel" id="latest-carousel">
+        {latestProjects.map((p) => {
+          const title = locale === 'zh' ? (p.data.zh?.title ?? p.data.title) : p.data.title;
+          const summary = locale === 'zh' ? (p.data.zh?.summary ?? p.data.summary) : p.data.summary;
+          const catLabel = t.categories[p.data.category];
+          return p.data.is_published ? (
+            <a class="proj" href={withLocale(`/projects/${p.slug}`)}>
+              <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
+              <h3>{title}</h3>
+              <p>{summary}</p>
+              <span class="more">{t.projectsPage.readCase}</span>
+            </a>
+          ) : (
+            <div class="proj disabled">
+              <div class="ptop"><span class="ptag">{catLabel}</span><span class="pyear">{p.data.year}</span></div>
+              <h3>{title}</h3>
+              <p>{summary}</p>
+              <span class="more soon">{t.projectsPage.writeUpComing}</span>
+            </div>
+          );
+        })}
+      </div>
+      {latestProjects.length > 1 && (
+        <div class="carousel-nav">
+          <button type="button" class="carousel-prev" aria-label="Previous">←</button>
+          <button type="button" class="carousel-next" aria-label="Next">→</button>
         </div>
-      );
-    })()}
+      )}
+    </div>
   </section>
 
   {articles.length > 0 && (
@@ -116,3 +128,16 @@ const articles = (await getCollection('articles', ({ data }) => data.is_publishe
 
 </div>
 </Base>
+
+<script>
+document.querySelectorAll<HTMLElement>('.carousel-wrap').forEach((wrap) => {
+  const track = wrap.querySelector<HTMLElement>('.proj-carousel');
+  if (!track) return;
+  const step = () => {
+    const card = track.querySelector<HTMLElement>('.proj');
+    return card ? card.getBoundingClientRect().width + 18 : 300;
+  };
+  wrap.querySelector('.carousel-prev')?.addEventListener('click', () => track.scrollBy({ left: -step(), behavior: 'smooth' }));
+  wrap.querySelector('.carousel-next')?.addEventListener('click', () => track.scrollBy({ left: step(), behavior: 'smooth' }));
+});
+</script>

@@ -25,6 +25,7 @@ const articles = defineCollection({
 export const PROJECT_CATEGORIES = [
   'Civil Defense',
   'BDM',
+  'AI',
   'Startup',
   'Information Resilience',
   'Social Commentary',
@@ -61,3 +62,5 @@ const projects = defineCollection({
 });
 
 export const collections = { articles, projects };
+
+export const catKey = (cat: string) => cat.toLowerCase().replace(/[^a-z0-9]+/g, '-');
