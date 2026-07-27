@@ -45,14 +45,26 @@ const categories = ARTICLE_CATEGORIES.filter((c) => articles.some((a) => a.data.
 </Base>
 
 <script>
+function applyFilter(f: string) {
+  const match = document.querySelector<HTMLButtonElement>(`.filters button[data-f="${f}"]`);
+  const target = match ? f : 'all';
+  document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
+  (match ?? document.querySelector<HTMLButtonElement>('.filters button[data-f="all"]'))?.classList.add('on');
+  document.querySelectorAll<HTMLElement>('#list .thought').forEach((p) => {
+    p.style.display = (target === 'all' || p.dataset.c === target) ? '' : 'none';
+  });
+}
+
 document.querySelectorAll<HTMLButtonElement>('.filters button').forEach((b) => {
   b.onclick = () => {
-    document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
-    b.classList.add('on');
-    const f = b.dataset.f;
-    document.querySelectorAll<HTMLElement>('#list .thought').forEach((p) => {
-      p.style.display = (f === 'all' || p.dataset.c === f) ? '' : 'none';
-    });
+    applyFilter(b.dataset.f ?? 'all');
+    const url = new URL(location.href);
+    if (b.dataset.f === 'all') url.searchParams.delete('cat');
+    else url.searchParams.set('cat', b.dataset.f ?? '');
+    history.replaceState(null, '', url);
   };
 });
+
+const initialCat = new URLSearchParams(location.search).get('cat');
+if (initialCat) applyFilter(initialCat);
 </script>
