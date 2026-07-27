@@ -27,9 +27,15 @@ const youtubeEmbed = youtubeMatch ? `https://www.youtube.com/embed/${youtubeMatc
   <a class="back" href={withLocale('/projects')}>{t.projectsPage.backAllProjects}</a>
 
   <div class="dhead">
-    <div class="dmeta"><span>{t.categories[d.category]}</span><span>·</span><span>{d.year}</span><span>·</span><span>{d.status}</span></div>
+    <div class="dmeta">
+      <span>{t.categories[d.category]}</span><span>·</span><span>{d.year}</span><span>·</span><span>{d.status}</span>
+      {d.date && (<><span>·</span><span>{d.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></>)}
+    </div>
     <h1>{title}</h1>
     <p class="sum">{summary}</p>
+    {d.tags.length > 0 && (
+      <div class="dtags">{d.tags.map(tag => <span class="chip">{tag}</span>)}</div>
+    )}
   </div>
 
   {d.image && (

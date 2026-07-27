@@ -41,6 +41,8 @@ const projects = defineCollection({
     status: z.enum(['ongoing', 'completed']).default('ongoing'),
     order: z.number().default(99),
     is_published: z.boolean().default(false),
+    date: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
     links: z
       .array(z.object({ label: z.string(), url: z.string(), source: z.string() }))
       .default([]),
