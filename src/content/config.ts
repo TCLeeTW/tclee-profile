@@ -46,6 +46,9 @@ const projects = defineCollection({
       .default([]),
     image: z.string().optional(),
     video: z.string().optional(),
+    screenshots: z
+      .array(z.object({ src: z.string(), caption: z.string(), captionZh: z.string().optional() }))
+      .default([]),
     why: z.object({ heading: z.string(), paragraphs: z.array(z.string()) }).optional(),
     how: z.object({ heading: z.string(), items: z.array(z.string()) }).optional(),
     what: z.object({ heading: z.string(), items: z.array(z.string()), note: z.string().optional() }).optional(),
