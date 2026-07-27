@@ -32,8 +32,10 @@ screenshots:
 why:
   heading: "The data existed, but nobody could use it."
   paragraphs:
-    - "Taiwan's 22 county governments each publish their own drone restriction notices under the national drone regulations. Every one of them does it differently — ODS here, XLSX there, scanned PDFs elsewhere, coordinates in degrees-minutes-seconds, numbering schemes that collide between counties."
+    - "Under Taiwan's regulations, drone flight restriction zones are managed and published independently by each local government. Every county does it differently — ODS here, XLSX there, scanned PDFs elsewhere, coordinates in degrees-minutes-seconds, numbering schemes that collide between counties."
+    - "But the regulation doesn't require local governments to retain or publish historical records — which means some counties' data only shows the current rules, with no way to see how the boundaries have changed."
     - "The Civil Aviation Administration runs a national map, but it's a single live snapshot: it shows you where you can't fly today, and nothing about how that changed. For anyone trying to understand how restricted airspace is actually expanding — researchers, civil defense planners, drone operators, journalists — there was no answer, because no one was keeping the history."
+    - "And when a boundary change becomes disputed, can we actually pinpoint the difference between what it was and what it is now?"
 how:
   heading: "Normalise everything, and keep every version."
   items:
