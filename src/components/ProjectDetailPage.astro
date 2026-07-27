@@ -62,6 +62,17 @@ const youtubeEmbed = youtubeMatch ? `https://www.youtube.com/embed/${youtubeMatc
     </div>
   )}
 
+  {d.screenshots.length > 0 && (
+    <div class="qblock shots">
+      {d.screenshots.map(s => (
+        <figure class="shot">
+          <img src={s.src} alt={locale === 'zh' ? (s.captionZh ?? s.caption) : s.caption} loading="lazy" />
+          <figcaption>{locale === 'zh' ? (s.captionZh ?? s.caption) : s.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+  )}
+
   {what && (
     <div class="qblock">
       <div class="qlabel">What</div>

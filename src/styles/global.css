@@ -175,6 +175,10 @@ footer { border-top: 1px solid var(--line); padding: 26px 0 46px; }
 .coverage a:hover { color: var(--accent); }
 .coverage .src { color: var(--faint); font-size: 13px; white-space: nowrap; }
 .dtags { margin: -8px 0 38px; }
+.shots { display: flex; flex-direction: column; gap: 24px; }
+.shot { margin: 0; }
+.shot img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line2); }
+.shot figcaption { font-size: 13.5px; color: var(--muted); margin-top: 9px; line-height: 1.5; }
 
 /* about page */
 .about-body { max-width: 720px; margin: 0 auto; padding: 56px 40px 60px; }

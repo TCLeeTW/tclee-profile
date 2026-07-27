@@ -19,6 +19,16 @@ links:
   - label: "CAA UAV airspace information system"
     url: "https://drone.caa.gov.tw"
     source: "drone.caa.gov.tw"
+screenshots:
+  - src: "/projects/drone-nofly/v2026-07-latest.jpg"
+    caption: "Latest version (2026/07) for Taipei — the sidebar lets you switch counties and page through every published version."
+    captionZh: "最新版本（2026/07，臺北市）——側欄可切換縣市、翻閱每一個已收錄的公告版次。"
+  - src: "/projects/drone-nofly/v2026-06-spike.jpg"
+    caption: "Paging back to 2026/06 shows the change: 42 newly restricted zones highlighted in red against the previous version."
+    captionZh: "回到 2026/06 版，紅色標示出比對上一版新增的 42 個禁限區域。"
+  - src: "/projects/drone-nofly/v2025-12-increment.jpg"
+    caption: "Every version carries its own diff — 2025/12 added 6 more restricted zones on top of what came before."
+    captionZh: "每個版本都有自己的差異——2025/12 版比前一版新增了 6 個禁限區。"
 why:
   heading: "The data existed, but nobody could use it."
   paragraphs:
