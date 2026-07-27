@@ -10,6 +10,7 @@ const t = strings[locale];
 const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const categories = PROJECT_CATEGORIES.filter((c) => projects.some((p) => p.data.category === c));
 ---
 
 <Base title={t.projectsPage.title} description={t.projectsPage.body} activeNav="projects" locale={locale}>
@@ -22,7 +23,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
   <section style="border-top:none;padding-top:34px">
     <div class="filters">
       <button class="on" data-f="all">{t.projectsPage.filterAll}</button>
-      {PROJECT_CATEGORIES.map(cat => <button data-f={catKey(cat)}>{t.categories[cat]}</button>)}
+      {categories.map(cat => <button data-f={catKey(cat)}>{t.categories[cat]}</button>)}
     </div>
 
     <div class="timeline" id="grid">
@@ -58,11 +59,12 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
 
 <script>
 function applyFilter(f: string) {
+  const match = document.querySelector<HTMLButtonElement>(`.filters button[data-f="${f}"]`);
+  const target = match ? f : 'all';
   document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
-  const active = document.querySelector<HTMLButtonElement>(`.filters button[data-f="${f}"]`);
-  (active ?? document.querySelector<HTMLButtonElement>('.filters button[data-f="all"]'))?.classList.add('on');
+  (match ?? document.querySelector<HTMLButtonElement>('.filters button[data-f="all"]'))?.classList.add('on');
   document.querySelectorAll<HTMLElement>('#grid .tl-item').forEach((item) => {
-    item.style.display = (f === 'all' || item.dataset.c === f) ? '' : 'none';
+    item.style.display = (target === 'all' || item.dataset.c === target) ? '' : 'none';
   });
 }
 

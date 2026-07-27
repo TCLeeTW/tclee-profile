@@ -34,7 +34,7 @@ const youtubeEmbed = youtubeMatch ? `https://www.youtube.com/embed/${youtubeMatc
     <h1>{title}</h1>
     <p class="sum">{summary}</p>
     {d.tags.length > 0 && (
-      <div class="dtags">{d.tags.map(tag => <span class="chip">{tag}</span>)}</div>
+      <div class="chips">{d.tags.map(tag => <span class="chip">{tag}</span>)}</div>
     )}
   </div>
 

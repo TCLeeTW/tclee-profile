@@ -6,6 +6,7 @@ year: "2026"
 status: ongoing
 order: 1
 is_published: true
+tags: ["GIS", "Open Data", "GeoJSON"]
 links:
   - label: "CD-TWN_Drone_Restrict_Area — source and data"
     url: "https://github.com/TCLeeTW/CD-TWN_Drone_Restrict_Area"

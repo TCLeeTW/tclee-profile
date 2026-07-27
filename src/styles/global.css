@@ -81,6 +81,8 @@ h2 { font-family: var(--display); font-weight: var(--dw); letter-spacing: var(--
 .pillar p { font-size: 14.5px; color: var(--muted); }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; }
 .chip { font-size: 11.5px; font-weight: 500; color: var(--muted); background: var(--chip); border-radius: 5px; padding: 4px 9px; }
+a.chip { text-decoration: none; transition: background .16s, color .16s; }
+a.chip:hover { background: var(--accent); color: var(--accent-ink); }
 
 /* projects */
 .projects { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }

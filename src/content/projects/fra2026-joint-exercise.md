@@ -3,6 +3,7 @@ title: "FRA2026 joint civil defense exercise"
 summary: "Multi-organisation field exercise in Nantou. I served on the exercise control staff, running administration and logistics across participating units."
 category: "Civil Defense"
 year: "2026"
+date: 2026-04-11
 status: completed
 order: 4
 is_published: false

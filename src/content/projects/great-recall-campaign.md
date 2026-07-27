@@ -3,6 +3,7 @@ title: "The Great Recall: Ganghu Campaign"
 summary: "In 2025 I worked on the recall campaign against a sitting legislator in the Neihu/Ganghu district — canvassing, phone banking, door-to-door outreach. The recall failed on July 26, but the team we built together became the starting point for CDAT and 港湖民防團 two days later."
 category: "Social Commentary"
 year: "2025"
+date: 2025-07-26
 status: completed
 order: 6
 is_published: false

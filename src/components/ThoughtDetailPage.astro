@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import type { CollectionEntry } from 'astro:content';
 import { strings, type Locale } from '../i18n/strings';
+import { catKey } from '../content/config';
 
 interface Props { locale: Locale; article: CollectionEntry<'articles'> }
 const { locale, article } = Astro.props;
@@ -26,7 +27,7 @@ const { Content } = await article.render();
     <Content />
   </div>
 
-  <div class="dtags"><span class="chip">{category}</span></div>
+  <div class="dtags"><a class="chip" href={`${withLocale('/thoughts')}?cat=${catKey(category)}`}>{category}</a></div>
 
   <a class="back" href={withLocale('/thoughts')}>{t.thoughtsPage.backAllThoughts}</a>
 </div>
