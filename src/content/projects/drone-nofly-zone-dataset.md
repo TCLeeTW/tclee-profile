@@ -10,9 +10,12 @@ links:
   - label: "CD-TWN_Drone_Restrict_Area — source and data"
     url: "https://github.com/TCLeeTW/CD-TWN_Drone_Restrict_Area"
     source: "GitHub"
+  - label: "Interactive version map"
+    url: "https://tcleetw.github.io/CD-TWN_Drone_Restrict_Area/"
+    source: "GitHub Pages"
   - label: "Regulations governing remotely piloted aircraft"
-    url: "https://law.moj.gov.tw"
-    source: "Law source"
+    url: "https://drone.caa.gov.tw/Default/DataDetail3/69"
+    source: "CAA"
   - label: "CAA UAV airspace information system"
     url: "https://drone.caa.gov.tw"
     source: "drone.caa.gov.tw"
@@ -38,22 +41,28 @@ what:
     - "Released openly: data under CC BY 4.0, code under MIT, fully rebuildable from source with one command."
     - "Usable straight in QGIS, web maps, or any analysis script — no scraping, no cleanup."
   note: "The dataset is maintained and open to contributions; the biggest remaining gap is historical versions from counties that haven't digitised their archives."
+additional:
+  items:
+    - "This is an open-source project — discussion and contributions are welcome via GitHub PR."
+    - "Historical data outside Taipei is sparse. If you're able to help source it, please get in touch."
 zh:
   title: "台灣無人機禁航區資料集"
   summary: "把全台 22 縣市的禁航區公告，整併成一份開放的 GeoJSON 資料集——約 5,000 個地點，並且保留了官方資料沒有的時間維度。"
   why:
     heading: "資料本來就存在，但沒人能用。"
     paragraphs:
-      - "台灣 22 個縣市政府依據國家無人機法規，各自發布自己的禁航區公告。每個縣市的格式都不一樣——有的是 ODS，有的是 XLSX，有的是掃描 PDF，座標系統用度分秒表示，編號規則在縣市之間還會互相衝突。"
+      - "台灣無人機飛行管制範圍依據法規是由地方政府管理並各自發布。每個縣市的格式都不一樣——有的是 ODS，有的是 XLSX，有的是掃描 PDF，座標系統用度分秒表示，編號規則在縣市之間還會互相衝突。"
+      - "但法規並沒有要求地方政府要保留並公告歷史紀錄--這造成部分地方政府的資料只能找到[現在]的規範，而無法看出範圍的變化。"
       - "民航局有一套全國地圖，但那只是單一即時快照：只能告訴你今天不能在哪裡飛，看不出隨時間的變化。對於想了解禁航區實際上如何擴張的人——研究者、民防規劃者、無人機操作者、記者——一直找不到答案，因為沒有人在保存歷史紀錄。"
+      - "而當區域的變化出現爭議時，我們究竟能不能準確地找到過去-現在之間的差異?"
   how:
     heading: "把所有資料標準化，並保留每一個版本。"
     items:
       - "蒐集全台 22 縣市的原始政府公告，完整保留每份來源檔案的原始樣貌，確保結果可追溯查核。"
-      - "建立一套轉換流程，把 ODS、XLSX 和 OCR 辨識的 PDF 統一轉成標準 WGS84 GeoJSON 格式，並自動修正部分來源把座標寫成緯度優先的錯誤。"
-      - "設計一套 ID 系統，把全域唯一識別碼對應到各縣市政府原始的公告編號，確保記錄可追溯、不會在縣市之間互相衝突。"
+      - "建立格式統一轉換流程，把 ODS、XLSX 和 OCR 辨識的 PDF 統一轉成標準 WGS84 GeoJSON 格式，並自動修正部分來源把座標寫成緯度優先的錯誤。"
+      - "設計全域唯一ID對應系統，把全域唯一識別碼對應到各縣市政府原始的公告編號，確保記錄可追溯、不會在縣市之間互相衝突。"
       - "把各版本快照合併成時間序列格式，每個地點都有自己的 history[]——首次出現、最後出現，以及每一次狀態變化。"
-      - "做了一個互動式 Leaflet 地圖，可以逐版本瀏覽，同時顯示變化（新增禁航／解除）與該版本的完整樣貌。"
+      - "以互動式 Leaflet 地圖方式呈現，可以逐版本瀏覽，同時顯示變化（新增禁航／解除）與該版本的完整樣貌。"
       - "誠實記錄資料的限制：只有台北市有真正連續的版本序列，因此跨來源的差異會被標記為資料完整度落差，而不是被誤算成政策變動。"
   what:
     heading: "一份先前不存在的開放資料集。"

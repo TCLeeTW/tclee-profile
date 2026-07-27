@@ -49,6 +49,7 @@ const projects = defineCollection({
     why: z.object({ heading: z.string(), paragraphs: z.array(z.string()) }).optional(),
     how: z.object({ heading: z.string(), items: z.array(z.string()) }).optional(),
     what: z.object({ heading: z.string(), items: z.array(z.string()), note: z.string().optional() }).optional(),
+    additional: z.object({ items: z.array(z.string()) }).optional(),
     zh: z
       .object({
         title: z.string().optional(),
@@ -56,6 +57,7 @@ const projects = defineCollection({
         why: z.object({ heading: z.string(), paragraphs: z.array(z.string()) }).optional(),
         how: z.object({ heading: z.string(), items: z.array(z.string()) }).optional(),
         what: z.object({ heading: z.string(), items: z.array(z.string()), note: z.string().optional() }).optional(),
+        additional: z.object({ items: z.array(z.string()) }).optional(),
       })
       .optional(),
   }),

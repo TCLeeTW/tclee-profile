@@ -15,6 +15,7 @@ const summary = locale === 'zh' ? (zh?.summary ?? d.summary) : d.summary;
 const why = locale === 'zh' ? (zh?.why ?? d.why) : d.why;
 const how = locale === 'zh' ? (zh?.how ?? d.how) : d.how;
 const what = locale === 'zh' ? (zh?.what ?? d.what) : d.what;
+const additional = locale === 'zh' ? (zh?.additional ?? d.additional) : d.additional;
 
 const youtubeMatch = d.video?.match(/(?:youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/embed\/)([\w-]+)/);
 const youtubeEmbed = youtubeMatch ? `https://www.youtube.com/embed/${youtubeMatch[1]}` : null;
@@ -29,11 +30,6 @@ const youtubeEmbed = youtubeMatch ? `https://www.youtube.com/embed/${youtubeMatc
     <div class="dmeta"><span>{t.categories[d.category]}</span><span>·</span><span>{d.year}</span><span>·</span><span>{d.status}</span></div>
     <h1>{title}</h1>
     <p class="sum">{summary}</p>
-    {d.links.length > 0 && (
-      <div class="dlinks">
-        {d.links.map(l => <a href={l.url} target="_blank" rel="noopener">{l.label}</a>)}
-      </div>
-    )}
   </div>
 
   {d.image && (
@@ -72,6 +68,13 @@ const youtubeEmbed = youtubeMatch ? `https://www.youtube.com/embed/${youtubeMatc
       <h2>{what.heading}</h2>
       <ul>{what.items.map(i => <li>{i}</li>)}</ul>
       {what.note && <p>{what.note}</p>}
+    </div>
+  )}
+
+  {additional && (
+    <div class="qblock">
+      <div class="qlabel">Additional Info</div>
+      <ul>{additional.items.map(i => <li>{i}</li>)}</ul>
     </div>
   )}
 
