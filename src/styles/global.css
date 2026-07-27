@@ -174,6 +174,7 @@ footer { border-top: 1px solid var(--line); padding: 26px 0 46px; }
 .coverage a { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); text-decoration: none; font-size: 14.5px; color: var(--ink); }
 .coverage a:hover { color: var(--accent); }
 .coverage .src { color: var(--faint); font-size: 13px; white-space: nowrap; }
+.dtags { margin: -8px 0 38px; }
 
 /* about page */
 .about-body { max-width: 720px; margin: 0 auto; padding: 56px 40px 60px; }
