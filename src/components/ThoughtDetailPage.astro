@@ -17,11 +17,7 @@ const { Content } = await article.render();
 <div class="detail">
   <a class="back" href={withLocale('/thoughts')}>{t.thoughtsPage.backAllThoughts}</a>
 
-  <div class="dhead">
-    <div class="dmeta"><span>{article.data.lang === 'zh' ? '中文' : 'EN'}</span><span>·</span><span>{date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></div>
-    <h1>{title}</h1>
-    <p class="sum">{description}</p>
-  </div>
+  <div class="dmeta article-meta"><span>{article.data.lang === 'zh' ? '中文' : 'EN'}</span><span>·</span><span>{date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></div>
 
   <div class="qblock">
     <Content />
