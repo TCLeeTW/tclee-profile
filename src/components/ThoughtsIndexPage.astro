@@ -13,6 +13,7 @@ const articles = (await getCollection('articles', ({ data }) => data.is_publishe
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 
 const categories = ARTICLE_CATEGORIES.filter((c) => articles.some((a) => a.data.category === c));
+const tags = [...new Set(articles.flatMap((a) => a.data.tags))].sort((a, b) => a.localeCompare(b));
 ---
 
 <Base title={t.thoughtsPage.title} description={t.thoughtsPage.body} activeNav="thoughts" locale={locale}>
@@ -24,9 +25,15 @@ const categories = ARTICLE_CATEGORIES.filter((c) => articles.some((a) => a.data.
 
   <section style="border-top:none;padding-top:34px">
     {articles.length > 0 && (
-      <div class="filters">
+      <div class="filters" data-group="cat">
         <button class="on" data-f="all">{t.projectsPage.filterAll}</button>
         {categories.map(c => <button data-f={catKey(c)}>{c}</button>)}
+      </div>
+    )}
+    {tags.length > 0 && (
+      <div class="filters" data-group="tag" style="margin-top:8px">
+        <button class="on" data-f="all">{t.projectsPage.filterAll}</button>
+        {tags.map(tag => <button data-f={catKey(tag)}>{tag}</button>)}
       </div>
     )}
 
@@ -34,7 +41,7 @@ const categories = ARTICLE_CATEGORIES.filter((c) => articles.some((a) => a.data.
       {articles.length === 0 ? (
         <p class="empty">{t.thoughtsPage.empty}</p>
       ) : articles.map(a => (
-        <a class="thought" data-c={catKey(a.data.category)} href={withLocale(`/thoughts/${a.slug}`)}>
+        <a class="thought" data-c={catKey(a.data.category)} data-t={a.data.tags.map(catKey).join(',')} href={withLocale(`/thoughts/${a.slug}`)}>
           <div class="trow"><h3>{a.data.title}</h3><span class="tmeta">{a.data.lang === 'zh' ? '中文' : 'EN'} · {a.data.category} · {a.data.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></div>
           <p>{a.data.description}</p>
         </a>
@@ -45,26 +52,48 @@ const categories = ARTICLE_CATEGORIES.filter((c) => articles.some((a) => a.data.
 </Base>
 
 <script>
-function applyFilter(f: string) {
-  const match = document.querySelector<HTMLButtonElement>(`.filters button[data-f="${f}"]`);
-  const target = match ? f : 'all';
-  document.querySelectorAll('.filters button').forEach((x) => x.classList.remove('on'));
-  (match ?? document.querySelector<HTMLButtonElement>('.filters button[data-f="all"]'))?.classList.add('on');
-  document.querySelectorAll<HTMLElement>('#list .thought').forEach((p) => {
-    p.style.display = (target === 'all' || p.dataset.c === target) ? '' : 'none';
+function activeIn(group: string): string {
+  return document.querySelector<HTMLButtonElement>(`.filters[data-group="${group}"] button.on`)?.dataset.f ?? 'all';
+}
+
+function applyFilters() {
+  const cat = activeIn('cat');
+  const tag = activeIn('tag');
+  document.querySelectorAll<HTMLElement>('#list .thought').forEach((item) => {
+    const matchesCat = cat === 'all' || item.dataset.c === cat;
+    const itemTags = (item.dataset.t ?? '').split(',').filter(Boolean);
+    const matchesTag = tag === 'all' || itemTags.includes(tag);
+    item.style.display = (matchesCat && matchesTag) ? '' : 'none';
   });
 }
 
-document.querySelectorAll<HTMLButtonElement>('.filters button').forEach((b) => {
-  b.onclick = () => {
-    applyFilter(b.dataset.f ?? 'all');
-    const url = new URL(location.href);
-    if (b.dataset.f === 'all') url.searchParams.delete('cat');
-    else url.searchParams.set('cat', b.dataset.f ?? '');
-    history.replaceState(null, '', url);
-  };
+function setActive(group: string, f: string) {
+  const container = document.querySelector<HTMLElement>(`.filters[data-group="${group}"]`);
+  if (!container) return;
+  const match = container.querySelector<HTMLButtonElement>(`button[data-f="${f}"]`);
+  container.querySelectorAll('button').forEach((x) => x.classList.remove('on'));
+  (match ?? container.querySelector<HTMLButtonElement>('button[data-f="all"]'))?.classList.add('on');
+}
+
+document.querySelectorAll<HTMLElement>('.filters').forEach((container) => {
+  const group = container.dataset.group ?? '';
+  const param = group === 'cat' ? 'cat' : 'tag';
+  container.querySelectorAll<HTMLButtonElement>('button').forEach((b) => {
+    b.onclick = () => {
+      setActive(group, b.dataset.f ?? 'all');
+      applyFilters();
+      const url = new URL(location.href);
+      if (b.dataset.f === 'all') url.searchParams.delete(param);
+      else url.searchParams.set(param, b.dataset.f ?? '');
+      history.replaceState(null, '', url);
+    };
+  });
 });
 
-const initialCat = new URLSearchParams(location.search).get('cat');
-if (initialCat) applyFilter(initialCat);
+const params = new URLSearchParams(location.search);
+const initialCat = params.get('cat');
+const initialTag = params.get('tag');
+if (initialCat) setActive('cat', initialCat);
+if (initialTag) setActive('tag', initialTag);
+applyFilters();
 </script>

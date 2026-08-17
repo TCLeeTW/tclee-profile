@@ -176,7 +176,7 @@ footer { border-top: 1px solid var(--line); padding: 26px 0 46px; }
 .coverage a { display: flex; justify-content: space-between; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); text-decoration: none; font-size: 14.5px; color: var(--ink); }
 .coverage a:hover { color: var(--accent); }
 .coverage .src { color: var(--faint); font-size: 13px; white-space: nowrap; }
-.dtags { margin: -8px 0 38px; }
+.dtags { display: flex; flex-wrap: wrap; gap: 6px; margin: -8px 0 38px; }
 .shots { display: flex; flex-direction: column; gap: 24px; }
 .shot { margin: 0; }
 .shot img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line2); }

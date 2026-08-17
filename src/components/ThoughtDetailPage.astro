@@ -9,7 +9,7 @@ const { locale, article } = Astro.props;
 const t = strings[locale];
 const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 
-const { title, description, date, category } = article.data;
+const { title, description, date, category, tags } = article.data;
 const { Content } = await article.render();
 ---
 
@@ -27,7 +27,10 @@ const { Content } = await article.render();
     <Content />
   </div>
 
-  <div class="dtags"><a class="chip" href={`${withLocale('/thoughts')}?cat=${catKey(category)}`}>{category}</a></div>
+  <div class="dtags">
+    <a class="chip" href={`${withLocale('/thoughts')}?cat=${catKey(category)}`}>{category}</a>
+    {tags.map(tag => <a class="chip" href={`${withLocale('/thoughts')}?tag=${catKey(tag)}`}>{tag}</a>)}
+  </div>
 
   <a class="back" href={withLocale('/thoughts')}>{t.thoughtsPage.backAllThoughts}</a>
 </div>
