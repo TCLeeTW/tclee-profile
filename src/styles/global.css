@@ -167,6 +167,8 @@ footer { border-top: 1px solid var(--line); padding: 26px 0 46px; }
 .dvideo iframe { display: block; width: 100%; aspect-ratio: 16/9; border-radius: 12px; border: 1px solid var(--line2); }
 .dvideo a { font-size: 14px; font-weight: 600; color: var(--accent); }
 .qblock { margin-bottom: 38px; }
+.qblock h1 { font-size: 26px; line-height: 1.3; margin: 34px 0 14px; }
+.qblock h1:first-child { margin-top: 0; }
 .qlabel { font-size: 11.5px; font-weight: 700; letter-spacing: .17em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
 .qblock h2 { font-size: 24px; margin-bottom: 13px; }
 .qblock p { color: var(--muted); margin-bottom: 14px; }
