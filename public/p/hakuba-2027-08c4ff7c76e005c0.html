@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet"/>
+<meta name="referrer" content="no-referrer"/>
+<title>白馬滑雪之旅 — Hakuba Ski Trip 2027</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  --bg:#10161f; --panel:#182130; --panel-2:#1e2a3b; --panel-3:#233046;
+  --line:#2a3a4e; --line-soft:#22303f;
+  --ink:#e9eff6; --ink-soft:#a9bccf; --ink-dim:#728499;
+  --ski:#4fa3e3; --ski-fill:#1c2c3d; --ski-soft:#8ec4ee;
+  --onsen:#e8a33d; --onsen-fill:#332715; --onsen-soft:#f0c37c;
+  --transit:#8b9db3; --transit-fill:#232d3a;
+  --good:#4fbf82; --good-fill:#173225;
+  --warn:#e8a33d; --warn-fill:#332715;
+  --pending:#7c8fa6;
+  --shadow: 0 10px 34px rgba(4,8,14,.45);
+  --radius:10px;
+  --font-display:'Bahnschrift','SF Compact Rounded','Segoe UI Semibold','Segoe UI',system-ui,sans-serif;
+  --font-body:'Segoe UI',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:'Cascadia Code','SF Mono',ui-monospace,'Consolas',monospace;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#f2f6fa; --panel:#ffffff; --panel-2:#eaf0f7; --panel-3:#dfe9f2;
+    --line:#d3e0eb; --line-soft:#e3ecf3;
+    --ink:#16202c; --ink-soft:#4e6072; --ink-dim:#8598aa;
+    --ski:#1f6fa8; --ski-fill:#e4f0fa; --ski-soft:#0f4d78;
+    --onsen:#b9701c; --onsen-fill:#fbeed8; --onsen-soft:#8a5314;
+    --transit:#5c6f83; --transit-fill:#eaeff4;
+    --good:#1f8f57; --good-fill:#e3f6ec;
+    --warn:#b9701c; --warn-fill:#fbeed8;
+    --pending:#8598aa;
+    --shadow: 0 8px 24px rgba(30,50,70,.10);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161f; --panel:#182130; --panel-2:#1e2a3b; --panel-3:#233046;
+  --line:#2a3a4e; --line-soft:#22303f;
+  --ink:#e9eff6; --ink-soft:#a9bccf; --ink-dim:#728499;
+  --ski:#4fa3e3; --ski-fill:#1c2c3d; --ski-soft:#8ec4ee;
+  --onsen:#e8a33d; --onsen-fill:#332715; --onsen-soft:#f0c37c;
+  --transit:#8b9db3; --transit-fill:#232d3a;
+  --good:#4fbf82; --good-fill:#173225;
+  --warn:#e8a33d; --warn-fill:#332715;
+  --pending:#7c8fa6;
+}
+:root[data-theme="light"]{
+  --bg:#f2f6fa; --panel:#ffffff; --panel-2:#eaf0f7; --panel-3:#dfe9f2;
+  --line:#d3e0eb; --line-soft:#e3ecf3;
+  --ink:#16202c; --ink-soft:#4e6072; --ink-dim:#8598aa;
+  --ski:#1f6fa8; --ski-fill:#e4f0fa; --ski-soft:#0f4d78;
+  --onsen:#b9701c; --onsen-fill:#fbeed8; --onsen-soft:#8a5314;
+  --transit:#5c6f83; --transit-fill:#eaeff4;
+  --good:#1f8f57; --good-fill:#e3f6ec;
+  --warn:#b9701c; --warn-fill:#fbeed8;
+  --pending:#8598aa;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:14px; line-height:1.5;
+}
+.wrap{display:flex; min-height:100vh; overflow-x:clip}
+
+/* ── Sidebar ─────────────────────────────────────── */
+#sidebar{
+  width:290px; flex-shrink:0; background:var(--panel);
+  border-right:1px solid var(--line); padding:22px 20px 20px;
+  display:flex; flex-direction:column; gap:22px;
+  overflow:hidden; transition:margin-left .22s ease, opacity .18s ease;
+}
+body.sb-collapsed #sidebar{
+  margin-left:-290px; opacity:0;
+  border-right-color:transparent; pointer-events:none;
+}
+.sb-toggle{
+  font-family:var(--font-body); font-size:14px; line-height:1; font-weight:700;
+  padding:7px 11px; border-radius:8px; border:1px solid var(--line);
+  background:var(--panel-2); color:var(--ink-soft); cursor:pointer;
+  margin-right:6px; flex-shrink:0; transition:all .15s;
+}
+.sb-toggle:hover{color:var(--ink); border-color:var(--ski)}
+.sb-toggle:focus-visible{outline:2px solid var(--ski); outline-offset:1px}
+.brand-eyebrow{
+  font-family:var(--font-mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ski); font-weight:600;
+}
+.brand-title{
+  font-family:var(--font-display); font-size:26px; font-weight:700; letter-spacing:-.01em;
+  margin-top:4px; text-wrap:balance; line-height:1.15;
+}
+.brand-sub{ font-size:12px; color:var(--ink-soft); margin-top:8px; line-height:1.6 }
+.brand-sub b{color:var(--ink)}
+
+.sb-block{border-top:1px solid var(--line-soft); padding-top:16px}
+.sb-h{
+  font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ink-dim); margin-bottom:10px; font-weight:600;
+}
+.legend-row{display:flex; align-items:center; gap:9px; font-size:12.5px; margin-bottom:8px; color:var(--ink-soft)}
+.legend-row:last-child{margin-bottom:0}
+.mk{width:13px; height:13px; flex-shrink:0; display:inline-block}
+.mk.circle{border-radius:50%; background:var(--ski); border:2px solid var(--ski-soft)}
+.mk.diamond{background:var(--onsen); border:2px solid var(--onsen-soft); transform:rotate(45deg)}
+.mk.line{width:16px; height:3px; border-radius:2px; background:var(--transit)}
+
+.stat-grid{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.stat{background:var(--panel-2); border:1px solid var(--line); border-radius:var(--radius); padding:9px 10px}
+.stat-v{font-family:var(--font-display); font-size:19px; font-weight:700; line-height:1}
+.stat-l{font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-dim); margin-top:4px}
+
+.roster{display:flex; flex-wrap:wrap; gap:6px}
+.chip{
+  font-size:11.5px; padding:3px 9px; border-radius:20px; background:var(--panel-2);
+  border:1px solid var(--line); color:var(--ink-soft);
+}
+.chip.you{background:var(--ski-fill); border-color:var(--ski); color:var(--ski-soft); font-weight:600}
+
+.sb-foot{margin-top:auto; font-size:10.5px; color:var(--ink-dim); line-height:1.6; padding-top:14px; border-top:1px solid var(--line-soft)}
+
+/* ── Main ────────────────────────────────────────── */
+#main{flex:1; min-width:0; display:flex; flex-direction:column}
+#topbar{
+  display:flex; align-items:center; gap:6px; padding:14px 26px; border-bottom:1px solid var(--line);
+  background:var(--panel); flex-wrap:wrap; position:sticky; top:0; z-index:5;
+}
+.tab-btn{
+  font-family:var(--font-body); font-size:12.5px; font-weight:600; padding:7px 15px;
+  border-radius:20px; border:1px solid transparent; background:transparent; color:var(--ink-dim);
+  cursor:pointer; transition:all .15s;
+}
+.tab-btn:hover{color:var(--ink-soft)}
+.tab-btn.active{background:var(--panel-2); border-color:var(--line); color:var(--ink)}
+.tab-btn:focus-visible{outline:2px solid var(--ski); outline-offset:1px}
+#topbar .spacer{flex:1}
+.updated{font-size:10.5px; color:var(--ink-dim); font-family:var(--font-mono)}
+
+.view{display:none; padding:26px; max-width:980px}
+.view.active{display:block}
+
+/* ── Timeline ────────────────────────────────────── */
+.rail{position:relative; padding-left:34px}
+.rail::before{
+  content:''; position:absolute; left:10px; top:6px; bottom:6px; width:2px;
+  background:linear-gradient(var(--line), var(--line));
+}
+.day{position:relative; margin-bottom:20px}
+.day:last-child{margin-bottom:0}
+.day-node{
+  position:absolute; left:-34px; top:4px; width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+}
+.day-node .shape{width:13px; height:13px}
+.day.group .shape{border-radius:50%; background:var(--ski); border:2.5px solid var(--ski-soft)}
+.day.personal .shape{background:var(--onsen); border:2.5px solid var(--onsen-soft); transform:rotate(45deg)}
+.day.transit .shape{background:var(--transit); border:2.5px solid var(--ink-dim); border-radius:3px}
+
+.day-card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow); overflow:hidden;
+}
+.day-hd{
+  display:flex; align-items:baseline; gap:10px; padding:11px 16px; flex-wrap:wrap;
+  border-bottom:1px solid var(--line-soft);
+}
+.day.group .day-hd{background:var(--ski-fill)}
+.day.personal .day-hd{background:var(--onsen-fill)}
+.day.transit .day-hd{background:var(--transit-fill)}
+.day-date{font-family:var(--font-display); font-weight:700; font-size:16px}
+.day-wd{font-size:11.5px; color:var(--ink-soft)}
+.day-tag{
+  margin-left:auto; font-size:10px; text-transform:uppercase; letter-spacing:.07em; font-weight:700;
+  padding:3px 10px; border-radius:20px; font-family:var(--font-mono);
+}
+.day.group .day-tag{background:var(--ski); color:#0b1f30}
+.day.personal .day-tag{background:var(--onsen); color:#2c1a06}
+.day.transit .day-tag{background:var(--transit); color:#131c26}
+.day-title{padding:10px 16px 2px; font-size:13.5px; font-weight:600; color:var(--ink)}
+
+.slots{padding:6px 16px 14px; display:flex; flex-direction:column; gap:8px}
+.slot{display:flex; gap:12px; align-items:flex-start}
+.slot-l{
+  width:56px; flex-shrink:0; font-size:10px; text-transform:uppercase; letter-spacing:.06em;
+  color:var(--ink-dim); font-weight:700; padding-top:2px; font-family:var(--font-mono);
+}
+.slot-body{flex:1; min-width:0}
+.slot-txt{font-size:13px; color:var(--ink); line-height:1.55}
+.slot-txt .zh{color:var(--ink)}
+.slot-txt .sub{color:var(--ink-soft); font-size:12px}
+.opts{display:flex; flex-direction:column; gap:5px; margin-top:4px}
+.opt{
+  display:flex; gap:8px; align-items:baseline; font-size:12px; padding:5px 9px;
+  border-radius:6px; background:var(--panel-2); border:1px solid var(--line-soft);
+}
+.opt b{
+  font-family:var(--font-mono); font-size:9.5px; padding:1px 6px; border-radius:4px;
+  background:var(--panel-3); color:var(--ink-soft); flex-shrink:0;
+}
+.flight-badge{
+  display:flex; align-items:center; gap:10px; background:var(--panel-2); border:1px solid var(--line);
+  border-radius:8px; padding:8px 12px; font-size:12.5px;
+}
+.flight-badge .fl{font-family:var(--font-mono); font-weight:700; color:var(--ski-soft)}
+.flight-badge .status{margin-left:auto; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--good); background:var(--good-fill); padding:2px 8px; border-radius:20px}
+.tbc{font-size:11px; color:var(--ink-dim); font-style:italic}
+.note-line{font-size:11.5px; color:var(--ink-dim); padding:8px 16px 14px; border-top:1px dashed var(--line-soft); line-height:1.6}
+
+/* ── Panels (Transport / Stay) ──────────────────── */
+.panel-hd{display:flex; align-items:baseline; gap:10px; margin:26px 0 12px}
+.panel-hd:first-child{margin-top:0}
+.panel-hd h2{font-family:var(--font-display); font-size:16px; margin:0; font-weight:700}
+.panel-hd .cnt{font-size:11px; color:var(--ink-dim); font-family:var(--font-mono)}
+
+.card-row{display:flex; flex-direction:column; gap:10px; margin-bottom:8px}
+.fcard{
+  display:grid; grid-template-columns:auto 1fr auto auto; gap:16px; align-items:center;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:13px 16px;
+  box-shadow:var(--shadow);
+}
+.fcard .dir{
+  font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--ink-dim); writing-mode:horizontal-tb;
+}
+.fcard .route{font-size:14px; font-weight:600}
+.fcard .route .code{font-family:var(--font-mono); color:var(--ski-soft); font-weight:700}
+.fcard .meta{font-size:11.5px; color:var(--ink-soft); margin-top:3px}
+.fcard .price{font-family:var(--font-mono); font-weight:700; font-size:13px; text-align:right}
+.fcard .status-pill{font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; padding:3px 10px; border-radius:20px; white-space:nowrap}
+.status-pill.ok{background:var(--good-fill); color:var(--good)}
+
+.tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); box-shadow:var(--shadow)}
+table.dt{border-collapse:collapse; width:100%; font-size:12.5px; min-width:520px}
+table.dt th{
+  background:var(--panel-2); color:var(--ink-dim); font-size:9.5px; text-transform:uppercase; letter-spacing:.08em;
+  text-align:left; padding:9px 14px; border-bottom:1px solid var(--line); white-space:nowrap; font-weight:700;
+}
+table.dt td{padding:9px 14px; border-bottom:1px solid var(--line-soft); vertical-align:top}
+table.dt tr:last-child td{border-bottom:none}
+table.dt tbody tr:hover{background:var(--panel-2)}
+table.dt td.num{font-family:var(--font-mono); white-space:nowrap; font-variant-numeric:tabular-nums}
+.mini{font-size:10.5px; color:var(--ink-dim)}
+.status-dot{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700}
+.status-dot::before{content:''; width:7px; height:7px; border-radius:50%}
+.status-dot.booked::before{background:var(--good)}
+.status-dot.booked{color:var(--good)}
+.status-dot.candidate::before{background:var(--pending)}
+.status-dot.candidate{color:var(--ink-soft)}
+.status-dot.cancelled::before{background:var(--ink-dim)}
+.status-dot.cancelled{color:var(--ink-dim); text-decoration:line-through}
+
+.callout{
+  border-radius:var(--radius); padding:12px 15px; font-size:12px; line-height:1.65; margin-bottom:18px;
+  background:var(--onsen-fill); border:1px solid color-mix(in srgb, var(--onsen) 40%, transparent); color:var(--onsen-soft);
+}
+.callout b{color:var(--ink)}
+.callout.ski{background:var(--ski-fill); border-color:color-mix(in srgb, var(--ski) 40%, transparent); color:var(--ski-soft)}
+
+/* ── Resort / rental cards ───────────────────────── */
+.resort-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:14px}
+.resort-card{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:15px 16px; display:flex; flex-direction:column; gap:8px;
+}
+.resort-card.spotlight{box-shadow:0 0 0 1.5px var(--ski), var(--shadow)}
+.resort-hd{display:flex; align-items:flex-start; gap:8px; flex-wrap:wrap}
+.resort-name{font-family:var(--font-display); font-weight:700; font-size:15.5px; line-height:1.25}
+.resort-name .en{display:block; font-size:10.5px; color:var(--ink-dim); font-weight:400; font-family:var(--font-mono); letter-spacing:.03em; margin-top:1px}
+.resort-price{margin-left:auto; text-align:right; flex-shrink:0}
+.resort-price .v{font-family:var(--font-mono); font-weight:700; font-size:14px; color:var(--ski-soft); white-space:nowrap}
+.resort-price .l{font-size:9px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.06em}
+.resort-tag{
+  font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; padding:2px 9px;
+  border-radius:20px; background:var(--ski-fill); color:var(--ski-soft); white-space:nowrap; align-self:flex-start;
+}
+.resort-card.north .resort-tag{background:var(--onsen-fill); color:var(--onsen-soft)}
+.resort-meta{font-size:10.5px; color:var(--ink-dim); font-family:var(--font-mono)}
+.resort-desc{font-size:12.5px; color:var(--ink-soft); line-height:1.62}
+.resort-food{font-size:11.5px; color:var(--ink); background:var(--panel-2); border-radius:7px; padding:8px 10px; line-height:1.55}
+.resort-food b{color:var(--onsen-soft); font-weight:700}
+
+.shop-card{
+  display:flex; flex-direction:column; gap:6px; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:14px 16px;
+}
+.shop-hd{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.shop-name{font-family:var(--font-display); font-weight:700; font-size:14.5px}
+.shop-name .en{font-size:11px; color:var(--ink-dim); font-weight:400; margin-left:6px}
+.shop-desc{font-size:12.5px; color:var(--ink-soft); line-height:1.6}
+.shop-meta{font-size:11px; color:var(--ink-dim); font-family:var(--font-mono)}
+
+/* ── Pick list (sights / restaurants / sake) ─────── */
+.pick-summary{display:flex; align-items:center; gap:10px; font-size:12px; color:var(--ink-soft); margin-bottom:6px}
+.pick-summary b{color:var(--ski-soft); font-family:var(--font-mono)}
+.pick-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px}
+.pick-card{
+  display:flex; gap:11px; align-items:flex-start; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:13px 15px; cursor:pointer;
+  transition:border-color .15s, background .15s;
+}
+.pick-card:hover{border-color:var(--ski-soft)}
+.pick-card.excluded{opacity:.55; cursor:default}
+.pick-cb{position:absolute; opacity:0; width:0; height:0}
+.pick-check{
+  width:20px; height:20px; border-radius:6px; border:1.5px solid var(--line); flex-shrink:0; margin-top:1px;
+  display:flex; align-items:center; justify-content:center; font-size:12px; color:transparent;
+  background:var(--panel-2); transition:all .15s;
+}
+.pick-card.checked{border-color:var(--good); background:var(--good-fill)}
+.pick-card.checked .pick-check{background:var(--good); border-color:var(--good); color:#0b1f14}
+.pick-main{flex:1; min-width:0; display:flex; flex-direction:column; gap:5px}
+.pick-name{font-family:var(--font-display); font-weight:700; font-size:14.5px; line-height:1.3}
+.pick-name .en{display:block; font-size:10.5px; color:var(--ink-dim); font-weight:400; font-family:var(--font-mono); margin-top:1px}
+.pick-tag{font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; font-weight:700; padding:2px 9px; border-radius:20px; background:var(--ski-fill); color:var(--ski-soft); align-self:flex-start; white-space:nowrap}
+.pick-desc{font-size:12px; color:var(--ink-soft); line-height:1.6}
+.pick-src{font-size:10.5px; color:var(--ink-dim); font-style:italic}
+.pick-strike{text-decoration:line-through; color:var(--ink-dim)}
+
+/* ── Map ──────────────────────────────────────────── */
+.map-wrap{
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:0; overflow:hidden;
+}
+#leafletMap{width:100%; height:640px; background:var(--panel-2)}
+.map-fallback{padding:40px 24px; text-align:center; color:var(--ink-soft); font-size:12.5px; line-height:1.7; display:none}
+.map-fallback.show{display:block}
+.map-legend{display:flex; flex-wrap:wrap; gap:16px; margin-top:14px; font-size:11.5px; color:var(--ink-soft)}
+.map-legend .li{display:flex; align-items:center; gap:7px}
+.map-legend .sw{width:14px; height:14px; flex-shrink:0}
+.leaflet-popup-content-wrapper{background:var(--panel); color:var(--ink); border-radius:8px}
+.leaflet-popup-tip{background:var(--panel)}
+.leaflet-popup-content{font-family:var(--font-body); font-size:12.5px; line-height:1.55; margin:10px 13px}
+.leaflet-popup-content b{font-family:var(--font-display); font-size:13.5px}
+.pin-emoji{
+  width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:15px; line-height:1; box-shadow:0 0 0 2px rgba(255,255,255,.7), 0 2px 6px rgba(0,0,0,.35);
+}
+
+@media (max-width:760px){
+  .wrap{flex-direction:column}
+  #sidebar{width:100%; border-right:none; border-bottom:1px solid var(--line)}
+  .fcard{grid-template-columns:1fr; text-align:left}
+  .fcard .price{text-align:left}
+}
+
+/* ── Schedule grid (橫=日子 / 縦=時間) ───────────── */
+#view-grid{max-width:none}
+.grid-legend{
+  display:flex; flex-wrap:wrap; gap:8px 16px; margin:12px 0 14px; padding:10px 13px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  font-size:11.5px; color:var(--ink-soft);
+}
+.grid-legend .li{display:flex; align-items:center; gap:7px}
+.grid-legend .sw{width:20px; height:13px; border-radius:3px; border:1px solid var(--line); border-left-width:3px; flex-shrink:0}
+
+.grid-wrap{
+  overflow:auto; max-height:calc(100vh - 250px);
+  border:1px solid var(--line); border-radius:var(--radius);
+  background:var(--panel); box-shadow:var(--shadow);
+}
+table.gsch{border-collapse:separate; border-spacing:0; width:100%; min-width:1420px; font-size:11.5px}
+table.gsch th{
+  background:var(--panel-2); padding:8px 8px; border-bottom:1px solid var(--line);
+  border-right:1px solid var(--line-soft); text-align:center; font-weight:700;
+  position:sticky; top:0; z-index:3;
+}
+table.gsch th.g-corner{
+  left:0; z-index:5; width:60px; min-width:60px;
+  font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase;
+  letter-spacing:.08em; color:var(--ink-dim);
+}
+table.gsch td{
+  padding:2px 3px; border-bottom:1px solid var(--line-soft);
+  border-right:1px solid var(--line-soft); vertical-align:top;
+}
+table.gsch td.g-hh{
+  position:sticky; left:0; z-index:2; background:var(--panel-2); color:var(--ink-dim);
+  font-family:var(--font-mono); font-size:10px; font-weight:700; text-align:center;
+  padding-top:5px; width:60px; min-width:60px; font-variant-numeric:tabular-nums;
+}
+table.gsch tr:not(.g-empty) td{height:34px}
+table.gsch tr.g-empty td{height:15px}
+table.gsch tr.g-empty td.g-hh{opacity:.42}
+table.gsch tr.g-night td.g-hh{color:var(--ink-dim)}
+table.gsch tr:hover td.g-hh{background:var(--panel-3); color:var(--ink-soft)}
+
+.g-dh{display:flex; flex-direction:column; gap:3px; align-items:center}
+.g-dh .dt{font-family:var(--font-display); font-size:14.5px; font-weight:700; color:var(--ink); line-height:1}
+.g-dh .wd{font-size:10px; color:var(--ink-soft)}
+.g-dh .tg{
+  font-size:9px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.06em;
+  padding:2px 8px; border-radius:20px; font-weight:700; white-space:nowrap;
+}
+th.d-group{background:var(--ski-fill)}     .d-group .tg{background:var(--ski); color:#0b1f30}
+th.d-personal{background:var(--onsen-fill)} .d-personal .tg{background:var(--onsen); color:#2c1a06}
+th.d-transit{background:var(--transit-fill)} .d-transit .tg{background:var(--transit); color:#131c26}
+
+.g-stack{display:flex; flex-direction:column; gap:4px; height:100%}
+.g-blk{
+  border-radius:6px; padding:5px 8px; height:100%; line-height:1.4; font-size:11.5px;
+  background:var(--panel-2); border:1px solid var(--line-soft); border-left:3px solid var(--ink-dim);
+  color:var(--ink);
+}
+.g-stack > .g-blk{height:auto; flex:1 1 auto}
+.g-blk b{font-weight:700}
+.g-blk .g-sub{display:block; font-size:10px; color:var(--ink-soft); margin-top:3px; font-weight:400; line-height:1.45}
+.g-blk.flight{background:var(--good-fill); border-color:var(--good); color:var(--good)}
+.g-blk.flight b{color:var(--good)}
+.g-blk.ski{background:var(--ski-fill); border-color:var(--ski); color:var(--ski-soft)}
+.g-blk.ski .g-sub{color:var(--ski-soft); opacity:.85}
+.g-blk.sight{background:var(--onsen-fill); border-color:var(--onsen); color:var(--onsen-soft)}
+.g-blk.sight .g-sub{color:var(--onsen-soft); opacity:.85}
+.g-blk.move{background:var(--transit-fill); border-color:var(--transit); color:var(--ink-soft)}
+.g-blk.food{background:var(--panel-3); border-color:#e8825a; color:var(--ink)}
+.g-blk.sake{background:var(--panel-3); border-color:#b06fc9; color:var(--ink)}
+.g-blk.lodge{background:var(--panel-3); border-color:var(--good); color:var(--ink-soft)}
+.g-blk.est{border-style:dashed; border-left-style:dashed}
+.g-tag{
+  display:inline-block; font-family:var(--font-mono); font-size:9px; font-weight:700;
+  padding:1px 6px; border-radius:4px; background:var(--panel-3); color:var(--ink-soft);
+  margin-right:5px; vertical-align:1px;
+}
+.g-tag.a{background:var(--ski); color:#0b1f30}
+.g-tag.b{background:var(--onsen); color:#2c1a06}
+.g-tag.warnt{background:var(--warn); color:#2c1a06}
+table.gsch tr.g-stayrow td{background:var(--panel-3); height:auto; padding:5px 4px}
+table.gsch tr.g-stayrow td.g-hh{
+  background:var(--panel-3); font-size:9.5px; letter-spacing:.05em; color:var(--ink-soft);
+  text-transform:uppercase; padding-top:8px;
+}
+.g-stayval{font-size:11px; color:var(--ink); line-height:1.5}
+.g-stayval .g-sub{display:block; font-size:9.5px; color:var(--ink-dim); margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <aside id="sidebar">
+    <div>
+      <div class="brand-eyebrow">⛷️ Trip Plan</div>
+      <div class="brand-title">白馬滑雪之旅<br>Hakuba 2027</div>
+      <div class="brand-sub">週四 <b>1/28</b> – 週五 <b>2/5</b> · 9天8夜<br>TC &amp; Grace，滑雪日與朋友群同行</div>
+    </div>
+
+    <div class="sb-block">
+      <div class="sb-h">Segment Key 行程段落</div>
+      <div class="legend-row"><span class="mk circle"></span>滑雪團體日 · Group ski block (everyone)</div>
+      <div class="legend-row"><span class="mk diamond"></span>TC &amp; Grace 客製前後段 · Personal before/after</div>
+      <div class="legend-row"><span class="mk line"></span>移動 / 新幹線 · Transit leg</div>
+    </div>
+
+    <div class="sb-block">
+      <div class="sb-h">At a Glance</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-v">9</div><div class="stat-l">Days 天</div></div>
+        <div class="stat"><div class="stat-v">3</div><div class="stat-l">Ski days 滑雪日</div></div>
+        <div class="stat"><div class="stat-v">2</div><div class="stat-l">Flights 航班</div></div>
+        <div class="stat"><div class="stat-v">3</div><div class="stat-l">Shinkansen legs</div></div>
+        <div class="stat"><div class="stat-v">5</div><div class="stat-l">Resorts 雪場</div></div>
+        <div class="stat"><div class="stat-v">1</div><div class="stat-l">Car TBC 租車</div></div>
+      </div>
+    </div>
+
+    <div class="sb-foot">來源：<code>2027 白馬滑雪.xlsx</code>（行程總表 / 交通 / 機票比較 / 住宿）<br>標示 <span class="tbc" style="font-style:normal">TBC</span> 的項目尚未定案，僅為草案。</div>
+  </aside>
+
+  <div id="main">
+    <div id="topbar">
+      <button class="sb-toggle" id="sbToggle" title="收合側邊欄" aria-label="收合／展開側邊欄" aria-expanded="true">⟨</button>
+      <button class="tab-btn active" data-tab="grid">🗓️ 時間表 Schedule Grid</button>
+      <button class="tab-btn" data-tab="timeline">📅 逐日行程 Timeline</button>
+      <button class="tab-btn" data-tab="transport">✈️ 交通 Flights &amp; Transport</button>
+      <button class="tab-btn" data-tab="stay">🏨 住宿 Stay</button>
+      <button class="tab-btn" data-tab="resorts">🏔️ 雪場 Resorts</button>
+      <button class="tab-btn" data-tab="rental">🥾 裝備 Rental</button>
+      <button class="tab-btn" data-tab="picks">🍶 景點美食地酒 Picks</button>
+      <button class="tab-btn" data-tab="map">🗺️ 地圖 Map</button>
+      <div class="spacer"></div>
+      <div class="updated">draft · from booking sheet 2026-07-24</div>
+    </div>
+
+    <!-- ============ TIMELINE ============ -->
+    <div class="view" id="view-timeline">
+      <div class="rail">
+
+        <div class="day personal">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">1/28 週四</span><span class="day-wd">Day 1</span>
+              <span class="day-tag">Personal</span>
+            </div>
+            <div class="day-title">出發日 · 東京 → 上田</div>
+            <div class="slots">
+              <div class="slot">
+                <div class="slot-l">凌晨</div>
+                <div class="slot-body">
+                  <div class="flight-badge">
+                    <span class="fl">IT216</span>
+                    <span>台北 TPE 00:10 → 東京 HND 04:00</span>
+                    <span class="status">Confirmed</span>
+                  </div>
+                </div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">04:00-05:00</div>
+                <div class="slot-body"><div class="slot-txt zh">入境、提領行李 <span class="sub">紅眼班機清晨時段，入境通常較快，抓45-60分鐘</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">~05:00-06:00</div>
+                <div class="slot-body"><div class="slot-txt zh">羽田 → 上野 <span class="sub">單軌電車／京急首班約05:00-05:20發車，轉乘山手線到上野約45-55分鐘——這段基本上是等首班車，東京市區沒什麼能做的</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">07:35 起</div>
+                <div class="slot-body">
+                  <div class="opts">
+                    <div class="opt"><b>07:35</b> 上野→上田「あさま」約76-88分鐘，抓08:50-09:00抵達 · ¥8,320</div>
+                    <div class="opt"><b>09:00 起</b> 柳町 · <b>岡崎酒造</b>買<b>信州亀齢</b> <span class="sub">抵達上田的第一站。上田舊城町柳町的百年酒藏，代表銘柄就是亀齢——先把酒買到手再說。<a href="https://maps.app.goo.gl/mbbk1pHgBkrkYQmX6">Google 地圖</a></span></div>
+                    <div class="opt"><b>10:00-12:00</b> 上田城・柳町老街散策 <span class="sub">岡崎酒造就在柳町這條街上，買完順路逛</span></div>
+                    <div class="opt"><b>12:00-15:00</b> 與 <b>W / Jojo</b> 一起吃 <span class="sub">從 1/29 挪到今天——1/29 要一早出發衝小布施，那天塞不下這一餐。TC 住上田的朋友，葡萄酒商出身，當地人帶吃，順便當面問他們平常在哪買酒最準。<b>吃完再進旅館，時間比較順。</b><br>⚠️ 時間還要跟 Jojo 那邊喬</span></div>
+                    <div class="opt"><b>15:00起</b> 入住上松や <span class="sub">維持原訂1/28不變，官方Check-in 15:00／Check-out 11:00。行李跟酒一起帶進旅館。時間有餘也可以走別所溫泉三寺（安樂寺／北向觀音／常樂寺）</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day personal">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">1/29 週五</span><span class="day-wd">Day 2</span>
+              <span class="day-tag">Personal</span>
+            </div>
+            <div class="day-title">一早直奔小布施（全天）</div>
+            <div class="slots">
+              <div class="slot">
+                <div class="slot-l">10:00</div>
+                <div class="slot-body"><div class="slot-txt zh">上松や 退房 → 別所温泉 → 上田 <span class="sub">上田電鉄別所線約30分鐘。官方 Check-out 11:00，但今天要衝小布施，10:00 就走。</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">~11:00</div>
+                <div class="slot-body"><div class="slot-txt zh">上田 → 長野 → 小布施 <span class="sub">上田→長野 北陸新幹線 <b>11分鐘</b>；長野→小布施 長野電鐵快車 <b>36分鐘</b>。今天還沒有車（1/30 早上才取車），全程搭車。</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">中午前</div>
+                <div class="slot-body"><div class="slot-txt zh">抵達小布施・午餐 <span class="sub">四個點全部 17:00 關，中午前到才有五小時可用——這是今天唯一的硬條件</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">13:00-17:00</div>
+                <div class="slot-body">
+                  <div class="slot-txt zh">小布施四個點 <span class="sub">全部 17:00 關門，鎮上很小可以走路串。</span></div>
+                  <div class="opts" style="margin-top:6px">
+                    <div class="opt"><b>★ 酒 · 主目標</b> 松葉屋 本店 <span class="sub">兩間酒造只挑這間，優先去 · <a href="https://maps.app.goo.gl/3Z4emG1ri6yGns889">地圖</a></span></div>
+                    <div class="opt"><b>美術館</b> 北齋美術館 <span class="sub">葛飾北齋晚年在小布施創作，鎮上的招牌館 · <a href="https://maps.app.goo.gl/nW4Nd23dVuGoEnxV9">地圖</a></span></div>
+                    <div class="opt"><b>栗菓子</b> 小布施堂 本店 <span class="sub">跟桝一市村酒造場同一個集團 · <a href="https://maps.app.goo.gl/3gvQipfSfssKGAWZ9">地圖</a></span></div>
+                    <div class="opt"><b>有時間才去</b> 桝一市村酒造場 <span class="sub">1755年創業，付費試飲台可一次喝遍全部銘柄，預約可參觀酒藏。跟松葉屋重疊，時間不夠就砍這個 · <a href="https://maps.app.goo.gl/XUVehdD73qRAi8xy8">地圖</a></span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">晚餐</div>
+                <div class="slot-body">
+                  <div class="opts">
+                    <div class="opt"><b>方案一</b> 小布施吃完再回長野 <span class="sub">不用趕車，逛到收攤直接吃</span></div>
+                    <div class="opt"><b>方案二</b> 回長野吃居酒屋 <span class="sub">晚一點吃也沒關係，反正明天 09:00 才出門</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">住宿</div>
+                <div class="slot-body"><div class="slot-txt zh">長野 <span class="tbc">— 飯店 TBC</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day transit">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">1/30 週六</span><span class="day-wd">Day 3</span>
+              <span class="day-tag">Merge → Group</span>
+            </div>
+            <div class="day-title">長野取車 → 善光寺 → 戶隱 → 進栂池</div>
+            <div class="slots">
+              <div class="slot">
+                <div class="slot-l">09:00</div>
+                <div class="slot-body"><div class="slot-txt zh">🍶 長野車站買清酒 · 信州蔵人 <span class="sub">MIDORI長野 2F，車站直結，跟租車店同一側，走過去就到。<b>09:00 就開門</b>，時間沒問題。Ted 點名要找的「<b>水尾</b>」可以在這裡問。</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">09:30</div>
+                <div class="slot-body"><div class="slot-txt zh">Toyota Rent a Car 長野駅前店 取車 <span class="sub">JR長野駅 善光寺口 徒步約3分鐘 · 026-228-0100 · 13人建議拆2台（冬季務必先確認雪胎／4WD）</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">10:00</div>
+                <div class="slot-body"><div class="slot-txt zh">出發 → 善光寺 <span class="sub">長野駅開車約10-15分鐘，參拜＋表參道走一圈</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">11:00</div>
+                <div class="slot-body"><div class="slot-txt zh">長野 → 戶隱 <span class="sub">開車約1小時（冬季山路，抓寬一點）</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">12:00</div>
+                <div class="slot-body"><div class="slot-txt zh">午餐 · うずら家 蕎麥麵 <span class="sub">戶隱蕎麥麵老店，就在中社旁邊那條路上——先吃再參拜</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">13:00</div>
+                <div class="slot-body"><div class="slot-txt zh">戶隱神社 中社 參拜 <span class="sub">冬季照常開放9:00-17:00；奧社・九頭龍社參道（神木群）1/7起到4月下旬封閉，五社御朱印這期間統一在中社領</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">14:00 起</div>
+                <div class="slot-body"><div class="slot-txt zh">戶隱 → 小谷・栂池（移動） <span class="sub">冬季多半得先繞回長野方向再轉 R19／K31 北上，抓2-2.5小時（鬼無里 R406 那條冬季不建議）。預計16:00前後抵達。這段是全天最不確定的部分，出發前查路況。</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">~16:00</div>
+                <div class="slot-body"><div class="slot-txt zh">松ノ木亭「いろり」Check-in <span class="sub">小谷村千国乙12840-1 · 整棟包棟 · 朋友群集合點。先卸行李就好，雪具店在等。</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">~17:00</div>
+                <div class="slot-body"><div class="slot-txt zh">取雪具 · ウッディレンタル栂池店 <span class="sub"><b>⚠️ 18:00 關門，這是全天最硬的死線</b>——13人只剩約1小時。就在栂池高原，跟住處同一區。<b>務必在10/31早鳥期間先線上預約鎖好尺寸</b>，現場才不用量腳調 binding。若戶隱那段路塞車，先打電話給店家，必要時跳過 check-in 直接去拿。</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">~18:00</div>
+                <div class="slot-body"><div class="slot-txt zh">A-COOP Hakuba 採購 <span class="sub"><b>19:30 關門</b> · 長野県北安曇郡白馬村北城6398-1 · <a href="https://maps.app.goo.gl/w3zKyawvHM8Rn7Nz8">Google 地圖</a><br>從栂池開下去約20-25分鐘。包棟不含早餐，13人份的早餐、飲料、行動糧要一次補齊——這是進山前最後一次大採買，隔天開始整天在雪場。</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">住宿</div>
+                <div class="slot-body"><div class="slot-txt zh">松ノ木亭 貸別荘「いろり」 <span class="sub">— 小谷村千国乙12840-1（栂池高原山腳）· 整棟包棟 · 不含早餐</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day group">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">1/31 週日</span><span class="day-wd">Day 4</span>
+              <span class="day-tag">⛷️ Ski Day 1 / 3</span>
+            </div>
+            <div class="day-title">滑雪 Day 1 — 全員 · 傍晚跑鍛冶倉商店</div>
+            <div class="slots">
+              <div class="slot"><div class="slot-l">全日</div><div class="slot-body"><div class="slot-txt zh">滑雪 · 朋友群同行 <span class="sub">主場栂池高原；八方／五竜47 機動搭配</span></div></div></div>
+              <div class="slot"><div class="slot-l">~16:00</div>
+                <div class="slot-body"><div class="slot-txt zh">🍶 鍛冶倉商店 <span class="sub"><b>⚠️ 只開到 17:00</b> · 長野県北安曇郡白馬村北城瑞穂3010（〒399-9301）· <a href="https://maps.app.goo.gl/eWM45FoWCoJduRDL6">Google 地圖</a><br>從栂池開下去約20-25分鐘，等於<b>16:00 一收板就得直接出發</b>，中間不能先回住處。<br>若當天排的是八方，鍛冶倉就在同一個北城區域，時間會寬鬆很多——想買酒的話這天排八方比排栂池順。</span></div></div>
+              </div>
+              <div class="slot"><div class="slot-l">住宿</div><div class="slot-body"><div class="slot-txt zh">松ノ木亭 貸別荘「いろり」 <span class="sub">小谷村・栂池</span></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day group">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">2/1 週一</span><span class="day-wd">Day 5</span>
+              <span class="day-tag">⛷️ Ski Day 2 / 3</span>
+            </div>
+            <div class="day-title">白馬滑雪 — 全員</div>
+            <div class="slots">
+              <div class="slot"><div class="slot-l">全日</div><div class="slot-body"><div class="slot-txt zh">滑雪 · 朋友群同行</div></div></div>
+              <div class="slot"><div class="slot-l">住宿</div><div class="slot-body"><div class="slot-txt zh">松ノ木亭 貸別荘「いろり」 <span class="sub">小谷村・栂池</span></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day group">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">2/2 週二</span><span class="day-wd">Day 6</span>
+              <span class="day-tag">⛷️ Ski Day 3 / 3</span>
+            </div>
+            <div class="day-title">白馬滑雪 — 全員</div>
+            <div class="slots">
+              <div class="slot"><div class="slot-l">全日</div><div class="slot-body"><div class="slot-txt zh">滑雪 · 朋友群同行</div></div></div>
+              <div class="slot"><div class="slot-l">住宿</div><div class="slot-body"><div class="slot-txt zh">松ノ木亭 貸別荘「いろり」 <span class="sub">小谷村・栂池</span></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day personal">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">2/3 週三</span><span class="day-wd">Day 7</span>
+              <span class="day-tag">Personal</span>
+            </div>
+            <div class="day-title">白馬 → 長野 → 東京 · 原宿</div>
+            <div class="slots">
+              <div class="slot">
+                <div class="slot-l">上午</div>
+                <div class="slot-body"><div class="slot-txt zh">白馬 → 長野（開車還車） <span class="sub">約1小時，抓還車＋到站緩衝</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">上午</div>
+                <div class="slot-body"><div class="slot-txt zh">長野 → 東京（上野）· 北陸新幹線 <span class="sub">約96-97分鐘 · ¥10,070</span></div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">下午</div>
+                <div class="slot-body"><div class="slot-txt zh">原宿・表參道</div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">住宿</div>
+                <div class="slot-body"><div class="slot-txt zh">東京 <span class="tbc">— 飯店 TBC</span></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day personal">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">2/4 週四</span><span class="day-wd">Day 8</span>
+              <span class="day-tag">Personal</span>
+            </div>
+            <div class="day-title">東京觀光 · Wanyi 生日晚餐 🎂</div>
+            <div class="slots">
+              <div class="slot">
+                <div class="slot-l">全日</div>
+                <div class="slot-body"><div class="slot-txt zh">與 Felix、穎睿、千蓉、依蓁 同遊</div></div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">晚上</div>
+                <div class="slot-body">
+                  <div class="flight-badge">
+                    <span class="fl">🎂 Ryuzu</span>
+                    <span>レストラン リューズ · 六本木 · 米其林二星法國料理</span>
+                  </div>
+                  <div class="slot-txt sub" style="margin-top:5px">Wanyi Birthday Dinner — VORT六本木Dual's B1F · 晚餐18:00-23:30（L.O. 21:00）· 每人約¥24,200-33,000 · 03-5770-4236 · 週一公休（2/4是週四，沒問題）</div>
+                  <div class="slot-txt sub">⚠️ 米其林餐廳建議盡早訂位，跨年節期間更要提前——確認人數後就去電或線上預約</div>
+                </div>
+              </div>
+              <div class="slot">
+                <div class="slot-l">住宿</div>
+                <div class="slot-body"><div class="slot-txt zh">東京</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="day personal">
+          <div class="day-node"><span class="shape"></span></div>
+          <div class="day-card">
+            <div class="day-hd">
+              <span class="day-date">2/5 週五</span><span class="day-wd">Day 9</span>
+              <span class="day-tag">Return</span>
+            </div>
+            <div class="day-title">東京 → 台北（回程）</div>
+            <div class="slots">
+              <div class="slot">
+                <div class="slot-l">傍晚</div>
+                <div class="slot-body">
+                  <div class="flight-badge">
+                    <span class="fl">IT203</span>
+                    <span>東京 NRT 18:25 → 台北 TPE 21:55</span>
+                    <span class="status">Confirmed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="note-line">原始表格在此欄位另有「長野美術館」字樣，與回程日行程矛盾，判斷為草稿殘留 — 已略過，待 TC 確認。</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ============ SCHEDULE GRID (day × hour) ============ -->
+    <div class="view active" id="view-grid"></div>
+
+    <!-- ============ TRANSPORT ============ -->
+    <div class="view" id="view-transport">
+      <div class="panel-hd"><h2>✈️ 機票 Flights</h2><span class="cnt">2 legs · Tigerair Taiwan</span></div>
+      <div class="card-row">
+        <div class="fcard">
+          <div class="dir">Outbound<br>去程</div>
+          <div>
+            <div class="route"><span class="code">IT216</span> TPE → HND</div>
+            <div class="meta">週四 1/28 · 00:10 起飛 → 04:00 抵達（Terminal 1 → Terminal 3）</div>
+          </div>
+          <div class="price">來回共<br>TWD 34,520</div>
+          <div class="status-pill ok">Confirmed</div>
+        </div>
+        <div class="fcard">
+          <div class="dir">Inbound<br>回程</div>
+          <div>
+            <div class="route"><span class="code">IT203</span> NRT → TPE</div>
+            <div class="meta">週五 2/5 · 18:25 起飛 → 21:55 抵達（Terminal 2 → Terminal 1）</div>
+          </div>
+          <div class="price">&nbsp;</div>
+          <div class="status-pill ok">Confirmed</div>
+        </div>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">虎航（Tigerair）為最終決定；比價階段另比較過 EVA、長榮、星宇、中華、捷星、樂桃、酷航等 20+ 航班（見原始 Excel「機票比較」／「Flight TT」分頁）。</div>
+
+      <div class="panel-hd"><h2>🚄 新幹線 Shinkansen</h2><span class="cnt">3 legs</span></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>Day</th><th>路線 Route</th><th>車程 Time</th><th>票價 Price</th></tr></thead>
+          <tbody>
+            <tr><td>1/28</td><td>東京（上野）→ 上田 <span class="mini">07:35 首班あさま</span></td><td class="num">約76-88分</td><td class="num">¥8,320</td></tr>
+            <tr><td>1/29</td><td>上田 → 長野 <span class="mini">北陸新幹線 直達</span></td><td class="num">11分</td><td class="num">約¥3,000</td></tr>
+            <tr><td>2/3</td><td>長野 → 東京（上野）</td><td class="num">約96-97分</td><td class="num">¥10,070</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">單價 · 每人 JPY。時間為あさま一般班次參考值，實際依車次略有差異；上田→長野直達價未逐一核對票價系統，抓¥3,000上下量級即可。</div>
+
+      <div class="panel-hd"><h2>🚃 在來線・私鐵</h2><span class="cnt">1/29 全程搭車（1/30 才取車）</span></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>Day</th><th>路線 Route</th><th>車程 Time</th><th>票價 Price</th></tr></thead>
+          <tbody>
+            <tr><td>1/29</td><td>別所温泉 → 上田 <span class="mini">上田電鉄別所線</span></td><td class="num">約30分</td><td class="num">未查</td></tr>
+            <tr><td>1/29</td><td>長野 → 小布施 <span class="mini">長野電鐵 快車</span></td><td class="num">36分</td><td class="num">未查</td></tr>
+            <tr><td>1/29</td><td>小布施 → 長野 <span class="mini">長野電鐵（回程）</span></td><td class="num">約36分</td><td class="num">未查</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">1/29 是唯一沒有車的一天——租車 1/30 早上 09:30 才取。<b>10:00 從上松や出發</b>：別所線30分＋新幹線11分＋長野電鐵36分，換乘等車抓寬一點，中午前到小布施。票價尚未查，別所線與長野電鐵都是短程私鐵，量級不大。</div>
+
+      <div class="panel-hd"><h2>🚗 租車 Car Rental</h2><span class="cnt">1/30 09:00 取車 · Toyota 長野駅前店</span></div>
+      <div class="fcard">
+        <div class="dir">Pickup<br>取車</div>
+        <div>
+          <div class="route">Toyota Rent a Car <span class="code">長野駅前店</span></div>
+          <div class="meta">JR長野駅 善光寺口 徒步約3分鐘 · 026-228-0100 · <b>1/30（六）09:00 取車</b>，10:00 出發跑善光寺→戶隱→栂池</div>
+        </div>
+        <div class="price">乗り捨て<br>可（範圍洽詢）</div>
+        <div class="status-pill" style="background:var(--warn-fill); color:var(--warn); border:1px solid var(--warn)">未下訂</div>
+      </div>
+      <div class="tbl-wrap" style="margin-top:10px">
+        <table class="dt">
+          <thead><tr><th>車型 Class</th><th>座位</th><th>24小時價格</th></tr></thead>
+          <tbody>
+            <tr><td>Sienta シエンタ</td><td class="num">7人座</td><td class="num">¥13,200</td></tr>
+            <tr><td>Noah / Esquire</td><td class="num">8人座</td><td class="num">¥20,900</td></tr>
+            <tr><td>Vellfire / Alphard</td><td class="num">8人座</td><td class="num">¥27,500</td></tr>
+            <tr><td>Hiace Grand Cabin</td><td class="num">10人座</td><td class="num">¥29,700</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">Toyota 長野駅前店官網公開價格（一般時期，未含雪胎加價），僅供比較；13+人的團現在應該要拆2台車（例如 Noah/Esquire ×2 或 Alphard+Hiace）。冬季山區務必致電確認雪胎／4WD車款與旺季加價。備案：Ted 找到 KKday 白馬包車服務可比價（不用自己開）。</div>
+    </div>
+
+    <!-- ============ STAY ============ -->
+    <div class="view" id="view-stay">
+      <div class="callout ski"><b>滑雪段住宿已定案 — 松ノ木亭 貸別荘「いろり」整棟包棟</b>，地址在<b>小谷村千国乙</b>，也就是<b>栂池高原</b>山腳那一帶（不是白馬村）。這跟「主場打栂池」的安排一致：住處就在主雪場旁，八方／五竜47 當機動搭配時再開車下去。<br><b>NT$86,000 / 12大1小 / 4晚 / 不含早餐</b> — 換算每人每晚約 <b>NT$1,654</b>，比原先所有候選（NT$2,273–3,418）都便宜。原本的白馬酒店已退訂。<br>上田（1/28）、長野（1/29）、東京（2/3-2/4）三段另計。</div>
+
+      <div class="panel-hd"><h2>上田 · 1/28 住 1 晚</h2></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>名稱</th><th>備註</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>信州別所温泉 旅宿 上松や</td><td class="mini">上田溫泉飯店</td><td><span class="status-dot booked">Booked</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel-hd"><h2>長野 · 1/29 住 1 晚</h2></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>名稱</th><th>備註</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td colspan="3" class="mini">尚未選定 — 原始表格未填入候選飯店</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel-hd"><h2>小谷村・栂池 · 1/30 – 2/2 住 4 晚</h2><span class="cnt">已定案</span></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>名稱</th><th>位置</th><th>人數</th><th>含早餐</th><th>總價 NTD</th><th>每人每晚 NTD</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>松ノ木亭 貸別荘「いろり」<span class="mini">Matsunokitei Chalet Irori — Entire Place · 整棟包棟</span></td>
+              <td>長野県北安曇郡小谷村千国乙 12840-1<span class="mini">〒399-9422 · 栂池高原山腳一帶</span></td>
+              <td class="num">12大1小<span class="mini">13人</span></td>
+              <td>x</td>
+              <td class="num">86,000<span class="mini">4晚</span></td>
+              <td class="num">1,654</td>
+              <td><span class="status-dot booked">Booked</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">每人每晚 NT$1,654 = 86,000 ÷ 13人 ÷ 4晚（小孩以全額分攤計，實際怎麼拆看群組決定）。<b>不含早餐</b>，13人份早餐要自理——1/30 進場當天先去超商／超市補齊。鑰匙交付方式與到栂池纜車站的實際距離請用 Google 地圖搜「松ノ木亭」確認。</div>
+
+      <div class="panel-hd"><h2>先前的比價候選</h2><span class="cnt">保留紀錄 · 已由松ノ木亭取代</span></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>名稱</th><th>位置</th><th>人數</th><th>含早餐</th><th>總價 NTD</th><th>每人每天 NTD</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td>白馬酒店</td><td>靠近五龍</td><td class="num">2人</td><td>v</td><td class="num">27,345</td><td class="num">3,418</td><td><span class="status-dot cancelled">已退訂 Cancelled</span></td></tr>
+            <tr><td>Hotel Sejour Mint in Hakuba</td><td>神城</td><td class="num">13人</td><td>v</td><td class="num">172,193</td><td class="num">3,311</td><td><span class="status-dot candidate">Candidate</span></td></tr>
+            <tr><td>Garden Pension Obergurgl <span class="mini">(方案一)</span></td><td>神城</td><td class="num">13人</td><td>x</td><td class="num">118,194</td><td class="num">2,273</td><td><span class="status-dot candidate">Candidate</span></td></tr>
+            <tr><td>Garden Pension Obergurgl <span class="mini">(方案二 · 全員)</span></td><td>神城</td><td class="num">13人</td><td>x</td><td class="num">131,624</td><td class="num">2,531</td><td><span class="status-dot candidate">Candidate</span></td></tr>
+            <tr><td>白馬天堂山林小屋</td><td>—</td><td class="num">2人</td><td>v</td><td class="num">—</td><td class="num">—</td><td><span class="status-dot candidate">Candidate</span></td></tr>
+            <tr><td>Apprising Hotels GranJam Tsugaike</td><td>—</td><td class="num">2人</td><td>v</td><td class="num">—</td><td class="num">—</td><td><span class="status-dot candidate">Candidate</span></td></tr>
+            <tr><td>白馬第七天堂酒店</td><td>—</td><td class="num">2人</td><td>v</td><td class="num">—</td><td class="num">—</td><td><span class="status-dot candidate">Candidate</span></td></tr>
+            <tr><td>雪花菜山莊</td><td>—</td><td class="num">2人</td><td>x</td><td class="num">—</td><td class="num">—</td><td><span class="status-dot candidate">Candidate</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">「人數」= Booking.com 該筆報價的入住人數設定（2人一室 vs 13人整棟包棟），非最終同住名單。這張表留著只是比價紀錄，滑雪段已改訂松ノ木亭。白馬酒店（原 Grace/DC/Kate/Wanyi）<b>已退訂</b>，全員併入包棟。</div>
+
+      <div class="panel-hd"><h2>東京 · 2/3 – 2/4 住 2 晚</h2></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>名稱</th><th>備註</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td colspan="3" class="mini">尚未選定 — 原始表格未填入候選飯店</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============ SKI RESORTS ============ -->
+    <div class="view" id="view-resorts">
+      <div class="callout ski"><b>今年是強聖嬰年，Ted 查了氣象廳數據</b> — 長野地區有約83%機率降雪量低於往年均值，山腳基地（700-800m）容易「該白不白、變成下雨」。但白馬地形本身頗抗打：山頂多在1,600-1,900m以上，通常仍有正常降雪；且村子由南向北延伸，<b>愈北（コルチナ、栂池高原）愈靠近日本海側，接雪能力愈強</b>。我們排的 1/31-2/4 剛好落在「1月中-2月中」這個聖嬰年裡相對安全的窗口，日期抓得不錯。<b>而且住宿選在小谷村千国乙（栂池山腳）等於直接住在最北那一段</b>，聖嬰年反而是站在雪況最穩的位置——這點比原本住五竜側有利很多。</div>
+
+      <div class="callout ski"><b>目前的打法：以栂池高原為主場</b>（住宿就在山腳），視當天雪況與大家體力，機動搭配<b>八方尾根</b>或<b>五竜 &amp; Hakuba47</b>。コルチナ與岩岳列為備選，還沒排進行程。<br>從栂池開車下去的概略車程：八方約20-25分鐘、五竜/47約30分鐘（未實測，冬季路況會更久）。</div>
+      <div class="panel-hd"><h2>🎫 纜車票 · 早鳥與購票時程</h2><span class="cnt">查於 2026-08-22</span></div>
+      <div class="callout warn"><b>結論先講：現在還買不到我們要的票，但也不用急。</b><br>目前有早鳥的都是<b>整季券（シーズン券）</b>，一張 11 萬日圓起跳——我們只滑 3 天，完全不划算。<br>我們真正要買的<b>1日券／多日券</b>，官方公告是<b>2026 年 11 月前後才在 Hakuba Valley 官方 Webshop 開賣</b>，而且目前<b>沒有公告任何早鳥折扣</b>。所以雪場票這塊，<b>11 月再回來看即可</b>；真正該現在動的是雪具店的 10/31 早鳥。</div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>票種</th><th>價格（大人／兒童）</th><th>開賣～截止</th><th>對我們的意義</th></tr></thead>
+          <tbody>
+            <tr class="accent"><td><b>HAKUBA VALLEY 全山共通 3日券</b><span class="mini">10 座雪場通用</span></td><td class="num">¥32,200 ／ ¥18,100</td><td>約 2026年11月 開賣<span class="mini">官方寫「11月頃」，未公告早鳥</span></td><td><b>最符合我們的打法</b>——栂池為主、機動搭八方或五竜47，一張票全部通吃</td></tr>
+            <tr><td>HAKUBA VALLEY 全山共通 1日券</td><td class="num">¥11,100 ／ ¥6,400</td><td>同上</td><td>只想單天跨雪場時用</td></tr>
+            <tr><td>HAKUBA VALLEY 全山共通 2日券</td><td class="num">¥21,800 ／ ¥12,500</td><td>同上</td><td>若只滑 2 天</td></tr>
+            <tr><td>HAKUBA VALLEY 全山共通 4日券</td><td class="num">¥42,800 ／ ¥23,900</td><td>同上</td><td>用不到（我們 3 天）</td></tr>
+            <tr><td>各雪場自家 1日券<span class="mini">栂池 / 八方 / 五竜47</span></td><td class="num">2026-27 價格未公布<span class="mini">2025-26 為 ¥8,200 / ¥8,700 / ¥9,500</span></td><td>各雪場官網另行公告<span class="mini">栂池官網目前仍掛 2025-26 價目</span></td><td>三天都待同一座才划算</td></tr>
+            <tr><td>五竜47 共通シーズン券<span class="mini">整季券</span></td><td class="num">—</td><td><b>早割 2026/8/1 – 10/31</b></td><td>整季券，3 天用不到</td></tr>
+            <tr><td>HAKUBA VALLEY 全山共通シーズン券<span class="mini">整季券</span></td><td class="num">早割 ¥110,000 起</td><td>7/14 開賣，早割檔期已近尾聲</td><td>整季券，3 天用不到</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mini" style="margin:10px 2px 0"><b>算給你看：</b>全山共通 3日券 ¥32,200，對上「栂池¥8,200＋八方¥8,700＋五竜47¥9,500 = ¥26,400」（用 2025-26 舊價估），差約 ¥5,800。多花這筆買到的是「當天早上看雪況再決定去哪座」的自由度——以強聖嬰年的雪況不確定性來說，我覺得這筆值得，但等 11 月新價出來再定案。<br>另外栂池官網有寫「WEB チケット比窗口便宜」，2026-27 價目出來後值得再比一次。<br>資料查於 2026-08-22，價格與檔期以官方公告為準。</div>
+
+      <div class="panel-hd"><h2>雪場比較 · 由北到南</h2><span class="cnt">5 resorts · 主場栂池</span></div>
+      <div class="resort-grid">
+
+        <div class="resort-card spotlight north">
+          <div class="resort-hd">
+            <div class="resort-name">栂池高原<span class="en">Tsugaike Kogen</span></div>
+            <div class="resort-price"><div class="v">¥8,200</div><div class="l">/ 大人1日券</div></div>
+          </div>
+          <div class="resort-tag">★ 主場 · 住宿就在山腳 · 大型新手雪原</div>
+          <div class="resort-meta">山谷最北端 · 纜車直達 · 松ノ木亭同一區</div>
+          <div class="resort-desc">日本數一數二寬闊的初學者雪原，地形平緩好上手；經纜車可再深入栂池自然園方向的中上級地形。位置最北，ENSO 年份雪況通常相對穩定。</div>
+          <div class="resort-food"><b>餐飲</b>山頂餐廳選擇較少，以雪場基本餐飲為主，精緻用餐建議留到岩岳或八方。</div>
+        </div>
+
+        <div class="resort-card north">
+          <div class="resort-hd">
+            <div class="resort-name">白馬コルチナ<span class="en">Hakuba Cortina</span></div>
+            <div class="resort-price"><div class="v">洽官網</div><div class="l">未查得確切1日價</div></div>
+          </div>
+          <div class="resort-tag">備選 · 全谷粉雪之王 · 離住宿最近的第二選擇</div>
+          <div class="resort-meta">16條雪道 · 最大坡度42°</div>
+          <div class="resort-desc">全山谷最北、降雪量最大、雪質最乾爽的天然粉雪聖地；從200m寬的新手雪原到42°險坡都有，變化豐富，遊客相對少。</div>
+          <div class="resort-food"><b>餐飲</b>山中小屋提供咖啡、手工甜點與信州在地食材餐點，氣氛悠閒。</div>
+        </div>
+
+        <div class="resort-card">
+          <div class="resort-hd">
+            <div class="resort-name">白馬岩岳<span class="en">Hakuba Iwatake</span></div>
+            <div class="resort-price"><div class="v">¥6,500 起</div><div class="l">/ 大人1日券</div></div>
+          </div>
+          <div class="resort-tag">備選 · 全景露台 · 適合半天行程</div>
+          <div class="resort-meta">纜車7分鐘登頂1,289m · 360°展望</div>
+          <div class="resort-desc">地形平緩，適合家庭與初中階；山頂「HAKUBA MOUNTAIN HARBOR」露台可360度眺望北阿爾卑斯山脈，是拍照打卡熱點。</div>
+          <div class="resort-food"><b>餐飲</b>山頂景觀咖啡廳／餐廳是亮點，很適合半天滑雪＋悠閒午餐的安排。</div>
+        </div>
+
+        <div class="resort-card">
+          <div class="resort-hd">
+            <div class="resort-name">八方尾根<span class="en">Happo-One</span></div>
+            <div class="resort-price"><div class="v">¥8,700</div><div class="l">/ 大人1日券</div></div>
+          </div>
+          <div class="resort-tag">◆ 機動搭配 · 1998冬奧滑降場地</div>
+          <div class="resort-meta">長陡雪道 · 白馬谷代表雪場</div>
+          <div class="resort-desc">白馬最具代表性的雪場，1998長野冬奧滑降賽道所在地；雪道長且具挑戰性，中高階滑雪者的首選。</div>
+          <div class="resort-food"><b>餐飲</b>Pilar（纜車山頂義式餐廳，可俯瞰整個白馬谷）／Alps360（輕食咖哩、烏龍麵，較平價）。</div>
+        </div>
+
+        <div class="resort-card">
+          <div class="resort-hd">
+            <div class="resort-name">五竜 &amp; Hakuba47<span class="en">Goryu &amp; Hakuba47</span></div>
+            <div class="resort-price"><div class="v">¥9,500</div><div class="l">/ 大人1日券（含500円可退保證金）</div></div>
+          </div>
+          <div class="resort-tag">◆ 機動搭配 · 共通票</div>
+          <div class="resort-meta">24條雪道 · 14條纜車 · 2條纜車銜接</div>
+          <div class="resort-desc">兩座雪場地形相連可互滑，樹林雪道與地形公園豐富（Hakuba47 以公園、半管著稱），適合喜歡變化地形的滑雪者。從栂池的住處開車下來約30分鐘，是三個主要選項裡最遠的一個。</div>
+          <div class="resort-food"><b>餐飲</b>山腰餐廳選擇多，拉麵、咖哩、燒烤等一應俱全。</div>
+        </div>
+
+      </div>
+      <div class="mini" style="margin:14px 2px 0">價格為 2025-26 雪季公開資訊，2026-27 雪季正式價格尚未全面公布，僅供比較參考；栂池、コルチナ也都在 Hakuba Valley 全山共通票（¥10,400 起／日）範圍內。</div>
+    </div>
+
+    <!-- ============ EQUIPMENT RENTAL ============ -->
+    <div class="view" id="view-rental">
+      <div class="callout ski"><b>已選定：ウッディレンタル栂池店（Woody Rental Tsugaike）</b> — 就在栂池高原，跟松ノ木亭同一區，抵達當晚（1/30）租、隔天一早直接上栂池，動線最短。<b>店 18:00 關門</b>，1/30 那天的動線要抓好。</div>
+      <div class="callout warn"><b>⏰ 10/31 前線上預約有早鳥折扣</b> — 這是目前這趟行程<b>最近的一個死線</b>。13 人份的板／靴／杖要一次到位，旺季（1/31–2/2 週日～週二）現場不一定有齊尺寸，早鳥又剛好省一筆，沒有理由拖。<br>要準備的資料：每個人的<b>身高、體重、鞋碼、滑雪程度（初/中/高）、雙板還是單板</b>，以及要不要加租雪衣雪褲。建議做成一張表一次送出。</div>
+
+      <div class="panel-hd"><h2>行情 Market Rate</h2></div>
+      <div class="tbl-wrap">
+        <table class="dt">
+          <thead><tr><th>組合 Set</th><th>內容</th><th>1日價格 JPY</th></tr></thead>
+          <tbody>
+            <tr><td>基本雪板組</td><td class="mini">雪板／雪鞋／雪杖</td><td class="num">¥2,700 – 4,500</td></tr>
+            <tr><td>一般行情均價</td><td class="mini">白馬地區整體平均</td><td class="num">¥4,500 – 5,500</td></tr>
+            <tr><td>高性能／新款組</td><td class="mini">當季新款雙板或雪板</td><td class="num">¥7,500 起</td></tr>
+            <tr><td>雪衣雪褲組</td><td class="mini">外套＋褲子</td><td class="num">另計，店家而異</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">連續4天（1/30晚取～2/2還）多數店家有多日優惠，實際折扣依店家而定。</div>
+
+      <div class="panel-hd"><h2>店家 Shop Spotlight</h2><span class="cnt">1 家已選定 · 2 家備選</span></div>
+      <div class="card-row">
+        <div class="shop-card">
+          <div class="shop-hd"><div class="shop-name">★ ウッディレンタル 栂池店<span class="en">Woody Rental Tsugaike Shop</span></div></div>
+          <div class="shop-desc"><b>這次選這家。</b>Woody 系統的栂池分店，位置就在栂池高原，跟松ノ木亭同一區——不用為了拿板子跑去八方。Woody 本身是在白馬工作的在地朋友跟 Ted 各自獨立點名「板子比較好」的那家；八方本店的全套（板+靴+杖）官網最低 ¥8,800 起，栂池店價目請以下單頁面為準。</div>
+          <div class="shop-meta">長野県北安曇郡小谷村 · 栂池高原 · <a href="https://maps.app.goo.gl/2fYtVsP3rpU5AeKq5">Google 地圖</a> · 官網 rentalshop-woody.jp<span class="mini">栂池店的地址門牌與電話尚未核對，請以 Google 地圖頁面為準</span></div>
+        </div>
+        <div class="shop-card">
+          <div class="shop-name">Woody Rental 八方本店<span class="en">Woody Rental Happo</span></div>
+          <div class="shop-desc">備選：同集團的八方本店，規模較大。八方巴士總站步行約3分鐘。大人雙板／單板全套（板+靴+杖）官網最低 <b>¥8,800 起</b>，71則評價可查。只有在排八方那天想順路換板時才需要跑這裡。</div>
+          <div class="shop-meta">長野県北安曇郡白馬村北城5256 · 0261-72-9595 · 官網 rentalshop-woody.jp</div>
+        </div>
+        <div class="shop-card">
+          <div class="shop-name">Rhythm Hakuba<span class="en">和田野店 Wadano ／ 八方店 Happo</span></div>
+          <div class="shop-desc">歐美精品品牌雙板／雪板租借（K2、Armada、Salomon、Burton、Jones 等），提供靴子 fitting。官網公開日租表：<b>1天 ¥8,500（板+杖）／¥10,000（含靴）</b>，<b>3天 ¥21,500／¥24,000</b>；Ted 之前查到約¥18,000/3天，可能是提前預訂折扣價（官網寫7/31前訂有機會折20%），實際請以下單時頁面為準。</div>
+          <div class="shop-meta">+81 (0)261-72-3288 · 建議線上先預約鎖尺寸</div>
+        </div>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">Rhythm 兩家店都在八方一帶（和田野／八方），從栂池開車下去約20-25分鐘 — 除非特別想租精品板，否則栂池店就夠用。</div>
+
+      <div class="panel-hd"><h2>其他區域的租借點</h2><span class="cnt">排八方／五竜那天才會用到</span></div>
+      <div class="mini" style="margin:2px 2px 10px">五竜／47 雪場那邊自己也有租借點：<b>チェリーレンタル白馬五竜店</b>、<b>エイブル白馬五竜レンタル</b>（Escal Plaza 2F、飯森 Base Center）、<b>Yamaha滑雪租借</b>（距離纜車站步行1分鐘），整個白馬谷估計有30家以上。既然板子在栂池店一次租滿4天，這些只當臨時換板／加租的備案。</div>
+    </div>
+
+    <!-- ============ PICKS (sights / restaurants / sake) ============ -->
+    <div class="view" id="view-picks">
+      <div class="callout ski">從 LINE 群組聊天記錄（2025.12–2026.07）撈出來的，來源標在每張卡片下面。點卡片打勾＝你的選擇，會存在這台瀏覽器裡，下次打開還在。</div>
+      <div class="pick-summary">已選 <b id="pickCount">0</b> 項</div>
+
+      <div class="panel-hd"><h2>📍 景點 Sights</h2></div>
+      <div class="pick-grid">
+        <div class="pick-card excluded">
+          <span class="pick-check">✕</span>
+          <div class="pick-main">
+            <div class="pick-name pick-strike">戶隱奧社・神木群參道<span class="en">Togakushi Okusha cedar avenue</span></div>
+            <div class="pick-tag">只有這一段封閉 · 戶隱其餘照去</div>
+            <div class="pick-desc">奧社・九頭龍社每年1/7起冬季閉殿到4月下旬（參道雪崩風險），停車場冬季可能也關閉。<b>走不了的只有奧社參道的神木群這一段</b>——中社與うずら家都不受影響，Day3 已把戶隱重新排進去。</div>
+            <div class="pick-src">來源：Sherry 查證，2026.05.19；獨立覆核：戶隱觀光協會官方公告＋神社チャンネル參拜指南</div>
+          </div>
+        </div>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="chusha">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">戶隱神社 中社<span class="en">Togakushi Chusha</span></div>
+            <div class="pick-tag">★ Day3 排定 · 冬季仍開放</div>
+            <div class="pick-desc">奧社關閉期間，中社是唯一冬季開放授與所（御守／御朱印）的地方，9:00-17:00照常參拜，五社的御朱印這期間都在中社統一領取。剛好跟うずら家蕎麥麵同一條路上，順路一起排。</div>
+            <div class="pick-src">來源：獨立查證，戶隱觀光協會＋神社チャンネル參拜指南，2026.07.28</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="bessho-temples">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">別所溫泉三寺<span class="en">安樂寺・北向觀音・常樂寺</span></div>
+            <div class="pick-tag">Day1 住宿地，走路到</div>
+            <div class="pick-desc">Day1 就住在別所溫泉，這三間走路可達：安樂寺有日本現存唯一木造八角三重塔（國寶）；北向觀音是少數「北向」的靈場，跟善光寺合稱「兩參り」；常樂寺有國家重文石造多寶塔。三間收集御朱印剛好一組。</div>
+            <div class="pick-src">來源：既有住宿地點延伸研究，2026.07.28</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="matsushiro">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">松代<span class="en">Matsushiro</span></div>
+            <div class="pick-tag">長野市區內，車程短</div>
+            <div class="pick-desc">真田氏十萬石城下町，松代城跡、真田邸、真田寶物館都在小範圍內走得到；在長野市範圍內，車程比小布施更短。適合當 Day3 上午另一個候補。</div>
+            <div class="pick-src">來源：路線研究，2026.07.28</div>
+          </div>
+        </label>
+        <div class="pick-card excluded">
+          <span class="pick-check">✕</span>
+          <div class="pick-main">
+            <div class="pick-name pick-strike">地獄谷野猿公苑<span class="en">Snow Monkey Park</span></div>
+            <div class="pick-tag">方向不順路，先排除</div>
+            <div class="pick-desc">很知名沒錯，但從長野開車是往東北（湯田中方向），跟往白馬的西北方向正好相反；電車來回加停車場走到公苑單趟就要35-40分鐘，會吃掉大半天。除非有人想脫隊單獨排一天，不建議塞進主行程。</div>
+            <div class="pick-src">來源：路線研究，2026.07.28</div>
+          </div>
+        </div>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="zenkoji">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">善光寺<span class="en">Zenkoji Temple</span></div>
+            <div class="pick-tag">★ Day3 排定 10:00</div>
+            <div class="pick-desc">1/30 取完車第一站就是這裡，長野駅開車約10-15分鐘。參拜完直接往戶隱，兩個都排得進去。</div>
+            <div class="pick-src">來源：Sherry 提案，2025.12（Plan B）</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="obuse">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">小布施<span class="en">Obuse</span></div>
+            <div class="pick-tag">★ Day2 排定 · 1/29 全天</div>
+            <div class="pick-desc">栗子甜點聞名的小鎮，有北齋美術館；<b>桝一市村酒造場</b>就在美術館旁，1755年創業，付費試飲台可一次喝遍全部銘柄，預約可參觀酒藏，9:30-17:00全年無休。<br>1/29 <b>整天都給小布施</b>：10:00 從上松や退房 → 上田（別所線30分）→ 長野（新幹線11分）→ 小布施（長野電鐵快車36分），目標中午前到。<br>四個目標點<b>全部 17:00 關</b>：<b>松葉屋本店（酒的主目標）</b>、北齋美術館、小布施堂本店，桝一市村酒造場有時間才去（跟松葉屋重疊，時間不夠就砍它）。鎮上很小走得完，晚餐可以在小布施吃完再回長野。</div>
+            <div class="pick-src">來源：TC 提議、Ted 確認車程，2026.07.12；酒藏補充查證，2026.07.28</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="ueda-castle">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">上田城・柳町<span class="en">Ueda Castle &amp; Yanagimachi</span></div>
+            <div class="pick-tag">上田舊城町</div>
+            <div class="pick-desc">保存完整的舊酒藏街道，岡崎酒造本店就在這條街上——順路逛街順路買酒。</div>
+            <div class="pick-src">來源：地緣自明（岡崎酒造地址即在此）</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="panel-hd"><h2>🍜 餐廳 Restaurants</h2></div>
+      <div class="pick-grid">
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="jojo-lunch">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">W / Jojo<span class="en">@jojoh.food</span></div>
+            <div class="pick-tag">★ 改排 Day1（1/28）· 待喬時間</div>
+            <div class="pick-desc">TC 住上田的朋友，葡萄酒商出身——當地人帶吃，順便當面問他們平常在哪買酒最準。<br>原本排 1/29 午餐，但 1/29 改成一早直奔小布施（四個點都17:00關），那天塞不下，所以<b>挪到 1/28 進旅館之前</b>吃。時間要跟 Jojo 那邊確認。</div>
+            <div class="pick-src">來源：TC，2026.04.24</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="uzuraya">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">うずら家<span class="en">Uzuraya</span></div>
+            <div class="pick-tag">★ Day3 午餐</div>
+            <div class="pick-desc">戶隱地區知名蕎麥麵老店，即使奧社參道封閉，餐廳本身冬天照常營業。就在中社同一條路上，參拜完直接吃。</div>
+            <div class="pick-src">來源：TC 在地朋友推薦，2026.04.24</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="panel-hd"><h2>🍶 地酒・葡萄酒店 Local Sake &amp; Wine</h2><span class="cnt">避開觀光店，走群組真的查過的路線</span></div>
+      <div class="pick-grid">
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="okazaki-shuzo">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">岡崎酒造<span class="en">Okazaki Shuzo</span></div>
+            <div class="pick-tag">★ Day1 排定 · 抵達上田第一站</div>
+            <div class="pick-desc">上田舊城町柳町的百年酒藏，代表銘柄「<b>信州亀齢</b>」——1/28 到上田先來這裡買，買完再逛柳町、再進溫泉旅館。Ted 前後兩次（4月、7月）獨立存下同一個點，訊號最強的一家。<a href="https://maps.app.goo.gl/mbbk1pHgBkrkYQmX6">Google 地圖</a></div>
+            <div class="pick-src">來源：Ted，2026.04.22 ＋ 2026.07.24 兩次；TC 定案排入 Day1，2026.08.22</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="miyajima">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">地酒屋 宮嶋<span class="en">Jizakeya Miyajima</span></div>
+            <div class="pick-tag">專門地酒店 · 上田真田町</div>
+            <div class="pick-desc">在上田真田町（車程略遠、非市中心），Ted 特別註記「不知為何分數很高」——這種偏郊區的高分店通常就是在地人真的在買的那種。</div>
+            <div class="pick-src">來源：Ted，2026.07.24</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="monmato">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">もんまーと富屋酒店<span class="en">Monmato Tomiya Liquor</span></div>
+            <div class="pick-tag">酒販店 · 長野市</div>
+            <div class="pick-desc">長野市區的酒販店，位置在「長野往白馬的路上」——不用特地繞路，Ted 存了兩次。</div>
+            <div class="pick-src">來源：Ted，2026.04.30 ＋ 2026.05.14 兩次</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="shinshu-kurando">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">信州蔵人<span class="en">Shinshu Kurando</span></div>
+            <div class="pick-tag">車站內 · 零繞路</div>
+            <div class="pick-desc">就在長野車站直結的 MIDORI長野 2樓，對應「長野車站有一間賣酒的，大家應該會瘋掉」那句——取車前後最順手的一站。</div>
+            <div class="pick-src">來源：Ted，2026.06.05</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="kajikura">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">鍛冶倉商店<span class="en">Kajikura Shoten</span></div>
+            <div class="pick-tag">★ 排定 1/31 滑完 · ⚠️ 只開到 17:00</div>
+            <div class="pick-desc">長野県北安曇郡白馬村北城瑞穂3010（〒399-9301）。不用跑去富山——TC 想找「上次買到兩隻十四代」那種店，Ted 給的白馬在地替代方案。<br><b>17:00 關門</b>，從栂池開下去約20-25分鐘，所以 1/31 得 16:00 一收板就直接出發，中間不能先回住處。那天若排八方會順很多（同在北城區域）。<a href="https://maps.app.goo.gl/eWM45FoWCoJduRDL6">Google 地圖</a></div>
+            <div class="pick-src">來源：Ted，2026.05.01；地址與營業時間由 TC 補齊，2026.08.22</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="jojo-wine">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">Jojo / Kao Wines<span class="en">@jojoh.food ／ @kao.wines</span></div>
+            <div class="pick-tag">問在地人本人</div>
+            <div class="pick-desc">跟上面 W/Jojo 午餐同一組人，葡萄酒商出身——與其猜店家，不如當面問他們平常在哪裡買，這是最準的來源。</div>
+            <div class="pick-src">來源：TC，2026.04.24</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="mizuo">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">水尾<span class="en">Mizuo（酒銘）</span></div>
+            <div class="pick-tag">找這個牌子，不是店名</div>
+            <div class="pick-desc">Ted 點名要在長野車站找的地酒品牌，不是特定店家——去信州蔵人或富屋酒店時可以順口問有沒有。</div>
+            <div class="pick-src">來源：Ted，2026.04.22</div>
+          </div>
+        </label>
+        <label class="pick-card"><input type="checkbox" class="pick-cb" data-key="nagano-city-breweries">
+          <span class="pick-check">✓</span>
+          <div class="pick-main">
+            <div class="pick-name">長野市區酒藏<span class="en">Nagano City Breweries</span></div>
+            <div class="pick-tag">酒藏 · 長野市區</div>
+            <div class="pick-desc">長野市區本身就有好幾間酒藏：<b>西飯田酒造店</b>（銘柄「信濃光」，犀川伏流水，還兼做葡萄酒／蘋果酒）、<b>長野銘醸</b>、<b>酒千蔵野</b>、<b>東飯田酒造店</b>。有些從車站走路15分鐘內就到，1/29 下午直達長野後可以排一間。</div>
+            <div class="pick-src">來源：路線研究，2026.07.28</div>
+          </div>
+        </label>
+      </div>
+      <div class="mini" style="margin:14px 2px 0">刻意排除：三郎丸／若鶴酒造、滿壽泉（都在富山，Peter 有商業關係可牽線）——TC 已明確表態「跳過」，因為會讓回程改道名古屋；如果 Peter/Ted 那組人臨時想分兵去，算是他們自己的支線，不影響主行程。</div>
+    </div>
+
+    <!-- ============ MAP ============ -->
+    <div class="view" id="view-map">
+      <div class="panel-hd"><h2>行程地圖</h2><span class="cnt">real map · OpenStreetMap</span></div>
+      <div class="map-wrap">
+        <div id="leafletMap"></div>
+        <div class="map-fallback" id="mapFallback">🗺️ 地圖圖磚需要連外網路。<br>用瀏覽器直接打開本機檔案時會正常顯示；若在受限網路環境（例如發布後的 Artifact 頁）看到這行字，代表圖磚被擋下了，請改用本機檔案開啟。</div>
+      </div>
+      <div class="map-legend">
+        <span class="li"><span class="sw" style="border-radius:50%;background:#4fa3e3;display:flex;align-items:center;justify-content:center;font-size:9px">⛷️</span>滑雪 Ski resorts</span>
+        <span class="li"><span class="sw" style="border-radius:50%;background:#4fbf82;display:flex;align-items:center;justify-content:center;font-size:9px">🏠</span>住宿 Lodging</span>
+        <span class="li"><span class="sw" style="border-radius:50%;background:#b06fc9;display:flex;align-items:center;justify-content:center;font-size:9px">🍶</span>地酒・葡萄酒 Sake &amp; wine</span>
+        <span class="li"><span class="sw" style="border-radius:50%;background:#e8825a;display:flex;align-items:center;justify-content:center;font-size:9px">🍽️</span>餐廳 Restaurants</span>
+        <span class="li"><span class="sw" style="border-radius:50%;background:#e8a33d;display:flex;align-items:center;justify-content:center;font-size:9px">📍</span>景點 Sights</span>
+        <span class="li"><span class="sw" style="border-radius:50%;background:#5ec8c0;display:flex;align-items:center;justify-content:center;font-size:9px">🥾</span>雪具店 Rental</span>
+        <span class="li"><span class="sw" style="border-radius:50%;background:#8b9db3;display:flex;align-items:center;justify-content:center;font-size:9px">🚉</span>車站 Transit</span>
+      </div>
+      <div class="mini" style="margin:10px 2px 0">雪場、上田/白馬周邊酒屋、景點定位以官方地址反查，較偏僻或未查得精確地址的（真田町地酒屋、長野富屋酒店、鍛冶倉商店、A-COOP Hakuba、松ノ木亭、Woody 栂池店等）以區域中心概略標示，可能有數百公尺到1公里誤差，僅供路線規劃參考，實際請以Google地圖搜尋店名為準。東京的 Ryuzu 餐廳不在此區域地圖範圍內，未標示。</div>
+    </div>
+
+    <div id="footerNote">草稿頁面，依 <code>2027 白馬滑雪.xlsx</code> 現況產生 · Plan A/B 與 TBC 項目待 TC 確認後更新。</div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.tab).classList.add('active');
+    if (btn.dataset.tab === 'map') { initMap(); setTimeout(function(){ if (mapInstance) mapInstance.invalidateSize(); }, 60); }
+  });
+});
+
+/* ── Schedule grid (橫軸=日期 / 縱軸=時間) ──────────
+   資料同步自 Timeline 分頁。1/31–2/2 三個滑雪日內容相同，合併為一欄。
+   虛線框 = 推算填空，原始表格沒寫。 */
+(function(){
+  var DAYS = [
+    {k:'d1', dt:'1/28', wd:'週四 · Day 1', tag:'Personal', cls:'personal',
+     stay:'上松や（別所溫泉）<span class="g-sub">已訂 · 維持 1/28 這晚不變</span>'},
+    {k:'d2', dt:'1/29', wd:'週五 · Day 2', tag:'Personal', cls:'personal',
+     stay:'長野 <span class="tbc">飯店 TBC</span>'},
+    {k:'d3', dt:'1/30', wd:'週六 · Day 3', tag:'Merge', cls:'transit',
+     stay:'松ノ木亭 貸別荘「いろり」<span class="g-sub">小谷村千国乙12840-1 · 栂池高原山腳<br>整棟包棟 · 12大1小 · 不含早餐 · 朋友群集合點</span>'},
+    {k:'ski', dt:'1/31 – 2/2', wd:'週日–週二 · Day 4–6', tag:'⛷️ Ski ×3', cls:'group',
+     stay:'松ノ木亭「いろり」 ×3 晚<span class="g-sub">小谷村・栂池 · 共4晚 NT$86,000<br>每人每晚約 NT$1,654 · 不含早餐</span>'},
+    {k:'d7', dt:'2/3', wd:'週三 · Day 7', tag:'Personal', cls:'personal',
+     stay:'東京 <span class="tbc">飯店 TBC</span>'},
+    {k:'d8', dt:'2/4', wd:'週四 · Day 8', tag:'Personal', cls:'personal',
+     stay:'東京 <span class="tbc">飯店 TBC</span>'},
+    {k:'d9', dt:'2/5', wd:'週五 · Day 9', tag:'Return', cls:'transit', stay:'—'}
+  ];
+
+  /* h=起始整點 · n=佔幾小時 · c=樣式 · est=推算 */
+  var B = {
+   d1:[
+    {h:0,  n:4, c:'flight', t:'✈️ <b>IT216</b> 台北 TPE 00:10 → 東京 HND 04:00',
+     s:'虎航 · Confirmed · Terminal 1 → Terminal 3'},
+    {h:4,  n:1, c:'move', t:'入境・提領行李', s:'紅眼清晨時段通常較快，抓 45–60 分'},
+    {h:5,  n:2, c:'move', t:'羽田 → 上野',
+     s:'單軌／京急首班約 05:00–05:20 發車，轉山手線約 45–55 分<br>這段基本上是等首班車'},
+    {h:7,  n:2, c:'move', t:'上野 → 上田「あさま」',
+     s:'07:35 首班 · 約 76–88 分 · ¥8,320<br>抓 08:50–09:00 抵達'},
+    {h:9,  n:1, c:'sake', t:'🍶 岡崎酒造 · 買信州亀齢',
+     s:'抵達上田第一站 · 柳町的百年酒藏<br>代表銘柄「亀齢」'},
+    {h:10, n:2, c:'sight', t:'上田城・柳町 散策',
+     s:'岡崎酒造就在柳町這條街上，買完順路逛'},
+    {h:12, n:3, c:'food', t:'🍽️ 與 W / Jojo 一起吃',
+     s:'從 1/29 挪到今天 — 明天要一早衝小布施<br>上田友人，葡萄酒商出身，順便問他們平常在哪買酒<br><b>吃完再進旅館，時間比較順</b><br>⚠️ 時間還要跟 Jojo 那邊喬'},
+    {h:15, n:2, c:'lodge', t:'入住 上松や',
+     s:'別所溫泉 · Check-in 15:00 ／ Check-out 11:00'},
+    {h:18, n:2, c:'food', est:1, t:'晚餐', s:'別所溫泉旅館晚膳'}
+   ],
+   d2:[
+    {h:10, n:1, c:'move', t:'上松や 退房 → 上田',
+     s:'別所温泉 → 上田 · 上田電鉄別所線約 30 分<br>官方 Check-out 11:00，今天要衝小布施所以 10:00 就走'},
+    {h:11, n:1, c:'move', t:'上田 → 長野 → 小布施',
+     s:'上田→長野 北陸新幹線 <b>11 分</b><br>長野→小布施 長野電鐵快車 <b>36 分</b><br>今天還沒車，全程搭車'},
+    {h:12, n:1, c:'food', t:'🍽️ 抵達小布施・午餐',
+     s:'四個點全部 17:00 關，中午前到才有五小時可用'},
+    {h:13, n:4, c:'sight', t:'小布施 四個點<span class="g-sub" style="margin-top:1px">鎮上很小，走路串得完</span>',
+     s:'<span class="g-tag warnt">全部 17:00 關</span><b>★ 松葉屋 本店</b>（酒 · 主目標）<br>北齋美術館<br>小布施堂 本店<br>桝一市村酒造場（有時間才去）'},
+    {h:17, n:3, c:'food', t:'🍽️ 晚餐',
+     s:'<b>方案一</b> 小布施吃完再回長野（不用趕車）<br><b>方案二</b> 回長野吃居酒屋，晚一點也沒關係<br>明天 09:00 才出門'}
+   ],
+   d3:[
+    {h:9,  n:1, c:'sake', t:'🍶 09:00 信州蔵人 買清酒<span class="g-sub" style="margin-top:1px">→ 09:30 Toyota 長野駅前店 取車</span>',
+     s:'MIDORI長野 2F，車站直結，跟租車店同一側<br><b>09:00 開門</b>，時間沒問題<br>Ted 點名的「水尾」可在這裡問<br>取車：026-228-0100 · 13 人拆 2 台 · 確認雪胎／4WD'},
+    {h:10, n:1, c:'sight', t:'出發 → 善光寺',
+     s:'長野駅開車約 10–15 分<br>參拜＋表參道走一圈'},
+    {h:11, n:1, c:'move', t:'長野 → 戶隱', s:'開車約 1 小時（冬季山路抓寬一點）'},
+    {h:12, n:1, c:'food', t:'🍽️ 午餐 · うずら家 蕎麥麵',
+     s:'戶隱蕎麥麵老店，就在中社旁那條路上<br>先吃再參拜'},
+    {h:13, n:1, c:'sight', t:'戶隱神社 中社 參拜',
+     s:'冬季照常開放 9:00–17:00<br>封閉期間五社御朱印統一在中社領<br><span class="g-tag warnt">封閉</span>奧社・九頭龍社參道（神木群）1/7–4月下旬'},
+    {h:14, n:2, c:'move', t:'戶隱 → 小谷・栂池（移動）',
+     s:'抓 2–2.5 小時：先繞回長野方向再轉 R19／K31 北上<br>（鬼無里 R406 冬季不建議）<br>⚠️ 全天最不確定的一段，出發前查路況'},
+    {h:16, n:1, c:'lodge', t:'松ノ木亭「いろり」Check-in',
+     s:'小谷村千国乙12840-1 · 整棟包棟<br>先卸行李就好，雪具店在等'},
+    {h:17, n:1, c:'ski', t:'🥾 取雪具 · ウッディレンタル栂池店',
+     s:'<span class="g-tag warnt">18:00 關</span>全天最硬的死線 — 13 人只剩約 1 小時<br>務必在 10/31 早鳥期間先線上預約鎖尺寸<br>路上塞車就先打給店家，必要時跳過 check-in 直接去拿'},
+    {h:18, n:2, c:'food', t:'🛒 A-COOP Hakuba 採購',
+     s:'<span class="g-tag warnt">19:30 關</span>白馬村北城6398-1<br>從栂池開下去約 20–25 分<br>包棟不含早餐，13 人份早餐＋飲料＋行動糧一次補齊'}
+   ],
+   ski:[
+    {h:8, n:8, c:'ski', t:'⛷️ <b>滑雪 — 全員</b><span class="g-sub" style="margin-top:1px">三天內容相同，當天視雪況決定去哪座</span>',
+     s:'<b>主場</b><br>栂池高原（住宿就在山腳）<br><b>機動搭配</b><br>八方尾根（開車約 20–25 分）<br>五竜 &amp; Hakuba47（開車約 30 分）'},
+    {h:17, n:1, c:'sake', t:'🍶 鍛冶倉商店（僅 1/31）',
+     s:'<span class="g-tag warnt">17:00 關</span>白馬村北城瑞穂3010<br>從栂池開下去約 20–25 分 → 16:00 收板就得直接出發<br>那天若排八方，同在北城區域會寬鬆很多'},
+    {h:18, n:2, c:'food', est:1, t:'晚餐 · 全員', s:''}
+   ],
+   d7:[
+    {h:8,  n:1, c:'lodge', est:1, t:'白馬退房', s:''},
+    {h:9,  n:1, c:'move', t:'白馬 → 長野（開車）', s:'約 1 小時'},
+    {h:10, n:1, c:'move', t:'長野站還車',
+     s:'抓還車＋到站緩衝<br>車站內可補貨：信州蔵人（MIDORI 長野 2F）· 找「水尾」'},
+    {h:11, n:2, c:'move', t:'長野 → 東京（上野）· 北陸新幹線', s:'約 96–97 分 · ¥10,070'},
+    {h:14, n:4, c:'sight', t:'原宿・表參道', s:''},
+    {h:18, n:2, c:'food', est:1, t:'晚餐 · 東京', s:''}
+   ],
+   d8:[
+    {h:10, n:7, c:'sight', t:'東京觀光', s:'與 Felix、穎睿、千蓉、依蓁 同遊'},
+    {h:18, n:4, c:'food', t:'🎂 <b>Ryuzu</b> レストラン リューズ · Wanyi 生日晚餐',
+     s:'六本木 VORT六本木Dual\'s B1F · 米其林二星法國料理<br>晚餐 18:00–23:30（L.O. 21:00）<br>每人約 ¥24,200–33,000 · 03-5770-4236<br>週一公休（2/4 週四無妨）<br>⚠️ 建議盡早訂位，確認人數後就去電或線上預約'}
+   ],
+   d9:[
+    {h:9,  n:3, c:'sight', est:1, t:'東京自由・打包', s:''},
+    {h:12, n:1, c:'food', est:1, t:'午餐', s:''},
+    {h:13, n:2, c:'move', est:1, t:'前往成田 NRT',
+     s:'都心 → NRT 約 60–90 分<br>國際線建議起飛前 3 小時到'},
+    {h:15, n:3, c:'move', est:1, t:'NRT 報到・出境', s:''},
+    {h:18, n:4, c:'flight', t:'✈️ <b>IT203</b> 東京 NRT 18:25 → 台北 TPE 21:55',
+     s:'虎航 · Confirmed · Terminal 2 → Terminal 1'}
+   ]
+  };
+
+  /* 佔用表 + 起始表 */
+  var occ={}, starts={};
+  DAYS.forEach(function(d){
+    occ[d.k]={}; starts[d.k]={};
+    (B[d.k]||[]).forEach(function(b){
+      starts[d.k][b.h]=b;
+      for(var i=0;i<b.n;i++){ occ[d.k][b.h+i]=true; }
+    });
+  });
+
+  function blkHTML(b){
+    return '<div class="g-blk '+b.c+(b.est?' est':'')+'">'+b.t
+         + (b.s?'<span class="g-sub">'+b.s+'</span>':'')+'</div>';
+  }
+
+  var h='';
+  h+='<div class="panel-hd"><h2>🗓️ 時間表 Schedule Grid</h2>'
+    +'<span class="cnt">橫軸日期 / 縱軸時間 · 24h</span></div>';
+  h+='<div class="callout ski"><b>跟 Timeline 分頁同一份資料，換成格子看。</b>'
+    +'<br>1/28–1/29 直接上野 → 上田 → 長野。'
+    +'<br>1/31–2/2 三個滑雪日安排完全相同，合併成一欄，只列出雪場。'
+    +'<br>虛線框的格子是依交通時間與常識<b>推算填空</b>，原始表格沒寫，僅供抓時間感。</div>';
+  h+='<div class="grid-legend">'
+    +'<span class="li"><span class="sw" style="background:var(--good-fill);border-left-color:var(--good)"></span>✈️ 航班（已確認）</span>'
+    +'<span class="li"><span class="sw" style="background:var(--ski-fill);border-left-color:var(--ski)"></span>⛷️ 滑雪・雪具</span>'
+    +'<span class="li"><span class="sw" style="background:var(--onsen-fill);border-left-color:var(--onsen)"></span>📍 觀光・景點</span>'
+    +'<span class="li"><span class="sw" style="background:var(--transit-fill);border-left-color:var(--transit)"></span>🚄 移動・交通</span>'
+    +'<span class="li"><span class="sw" style="background:var(--panel-3);border-left-color:#e8825a"></span>🍽️ 餐飲</span>'
+    +'<span class="li"><span class="sw" style="background:var(--panel-3);border-left-color:#b06fc9"></span>🍶 地酒</span>'
+    +'<span class="li"><span class="sw" style="background:var(--panel-3);border-left-color:var(--good)"></span>🏨 住宿 check-in/out</span>'
+    +'<span class="li"><span class="sw" style="background:var(--panel-2);border-style:dashed;border-left-style:dashed"></span>虛線 = 推算填空，未定案</span>'
+    +'</div>';
+
+  h+='<div class="grid-wrap"><table class="gsch"><thead>';
+  h+='<tr><th class="g-corner">Time</th>';
+  DAYS.forEach(function(d){
+    h+='<th class="d-'+d.cls+'"><div class="g-dh">'
+      +'<span class="dt">'+d.dt+'</span>'
+      +'<span class="wd">'+d.wd+'</span>'
+      +'<span class="tg">'+d.tag+'</span></div></th>';
+  });
+  h+='</tr></thead><tbody>';
+
+  for(var hh=0; hh<24; hh++){
+    var anyOcc=false;
+    DAYS.forEach(function(d){ if(occ[d.k][hh]) anyOcc=true; });
+    var cls=[];
+    if(!anyOcc) cls.push('g-empty');
+    if(hh<6)    cls.push('g-night');
+    h+='<tr'+(cls.length?' class="'+cls.join(' ')+'"':'')+'>';
+    h+='<td class="g-hh">'+(hh<10?'0':'')+hh+':00</td>';
+    DAYS.forEach(function(d){
+      var b=starts[d.k][hh];
+      if(b){ h+='<td rowspan="'+b.n+'">'+blkHTML(b)+'</td>'; }
+      else if(!occ[d.k][hh]){ h+='<td></td>'; }
+    });
+    h+='</tr>';
+  }
+
+  h+='<tr class="g-stayrow"><td class="g-hh">住宿</td>';
+  DAYS.forEach(function(d){ h+='<td><div class="g-stayval">'+d.stay+'</div></td>'; });
+  h+='</tr>';
+  h+='</tbody></table></div>';
+  h+='<div class="mini" style="margin:10px 2px 0">'
+    +'滑雪日的用餐時段、以及 2/5 往成田的時段，都是排版用的推算 — 原表只寫「全日滑雪」與「傍晚 IT203」，'
+    +'已用虛線標示，等 TC 定案後再改成實線。</div>';
+
+  document.getElementById('view-grid').innerHTML=h;
+})();
+
+/* ── Sidebar collapse (localStorage-persisted) ──────*/
+(function(){
+  var K='hakuba2027_sbcollapsed';
+  var btn=document.getElementById('sbToggle');
+  if(!btn) return;
+  function apply(v){
+    document.body.classList.toggle('sb-collapsed', v);
+    btn.setAttribute('aria-expanded', v?'false':'true');
+    btn.textContent = v ? '☰' : '⟨';
+    btn.title = v ? '展開側邊欄' : '收合側邊欄';
+  }
+  var init=false; try{ init = localStorage.getItem(K)==='1'; }catch(e){}
+  apply(init);
+  btn.addEventListener('click', function(){
+    var v = !document.body.classList.contains('sb-collapsed');
+    apply(v);
+    try{ localStorage.setItem(K, v?'1':'0'); }catch(e){}
+    if(window.mapInstance){ setTimeout(function(){ mapInstance.invalidateSize(); }, 260); }
+  });
+})();
+
+/* ── Picks (localStorage-persisted checklist) ────────*/
+(function(){
+  var STORE_KEY = 'hakuba2027_picks';
+  var saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch(e) {}
+
+  function updateCount(){
+    var n = document.querySelectorAll('.pick-cb:checked').length;
+    var el = document.getElementById('pickCount');
+    if (el) el.textContent = n;
+  }
+  document.querySelectorAll('.pick-cb').forEach(function(cb){
+    var key = cb.dataset.key;
+    if (saved[key]) { cb.checked = true; cb.closest('.pick-card').classList.add('checked'); }
+    cb.addEventListener('change', function(){
+      saved[key] = cb.checked;
+      localStorage.setItem(STORE_KEY, JSON.stringify(saved));
+      cb.closest('.pick-card').classList.toggle('checked', cb.checked);
+      updateCount();
+    });
+  });
+  updateCount();
+})();
+
+/* ── Real map (Leaflet + OpenStreetMap) ─────────────
+   Resort pin positions are geocoded from each resort's official access address
+   (Oito Line corridor, Hakuba village -> Otari village). +/-100-300m accuracy. */
+var STOPS = [
+  // ── 滑雪 Ski resorts ──
+  {name:'栂池高原', en:'Tsugaike Kogen', lat:36.7691, lng:137.8319, kind:'ski', note:'★ 主場 · ¥8,200/日 · 大型新手雪原，位置最北，住宿就在山腳'},
+  {name:'白馬コルチナ', en:'Hakuba Cortina', lat:36.7745, lng:137.8115, kind:'ski', note:'全谷粉雪之王，16條雪道，最大坡度42°'},
+  {name:'白馬岩岳', en:'Hakuba Iwatake', lat:36.7215, lng:137.8437, kind:'ski', note:'¥6,500起 · 360°展望台、家庭友善'},
+  {name:'八方尾根', en:'Happo-One', lat:36.6994, lng:137.8654, kind:'ski', note:'¥8,700/日 · 1998冬奧滑降場地'},
+  {name:'五竜 & Hakuba47', en:'Goryu / Hakuba47', lat:36.6294, lng:137.8408, kind:'ski', note:'¥9,500/日 · 已訂住宿在此側（步行可達）'},
+  // ── 住宿 Lodging ──
+  {name:'上松や', en:'Uematsuya (Bessho Onsen)', lat:36.3476, lng:138.1465, kind:'lodge', note:'Day1（1/28）過夜 · 信州別所温泉'},
+  {name:'松ノ木亭 貸別荘「いろり」', en:'Matsunokitei Chalet Irori', lat:36.7672, lng:137.8342, kind:'lodge', note:'★ 1/30-2/2 滑雪段住宿 · 整棟包棟 · 小谷村千国乙12840-1（栂池高原山腳，圖釘為概略位置）'},
+  {name:'ウッディレンタル栂池店', en:'Woody Rental Tsugaike', lat:36.7660, lng:137.8365, kind:'shop', note:'★ 已選定雪具店 · 栂池高原，跟住處同一區（圖釘為概略位置）'},
+  // ── 地酒・葡萄酒 Sake & wine shops ──
+  {name:'岡崎酒造', en:'Okazaki Shuzo', lat:36.4055, lng:138.2530, kind:'sake', note:'★ Day1 抵達上田第一站 · 買信州亀齢 · 上田柳町百年酒藏'},
+  {name:'地酒屋 宮嶋', en:'Jizakeya Miyajima', lat:36.4285, lng:138.3409, kind:'sake', note:'上田真田町，Ted 標記「分數很高」的專門地酒店（位置為真田町中心約略估）'},
+  {name:'もんまーと富屋酒店', en:'Monmato Tomiya Liquor', lat:36.6486, lng:138.1948, kind:'sake', note:'長野市區酒販店，長野往白馬路上（位置為市區約略估）'},
+  {name:'信州蔵人', en:'Shinshu Kurando', lat:36.6408, lng:138.1892, kind:'sake', note:'長野車站直結 MIDORI長野 2F，零繞路'},
+  {name:'鍛冶倉商店', en:'Kajikura Liquor Shop', lat:36.7000, lng:137.8660, kind:'sake', note:'★ 排定 1/31 滑完 · ⚠️ 只開到17:00 · 白馬村北城瑞穂3010 · 圖釘為概略位置'},
+  {name:'A-COOP Hakuba', en:'A-COOP Hakuba', lat:36.6975, lng:137.8620, kind:'shop', note:'★ 1/30 進場採購 · ⚠️ 19:30 關 · 白馬村北城6398-1 · 圖釘為概略位置'},
+  {name:'桝一市村酒造場', en:'Masuichi Ichimura (Obuse)', lat:36.6977, lng:138.3124, kind:'sake', note:'小布施，1755年創業，北齋美術館旁，付費試飲台'},
+  {name:'長野市區酒藏', en:'Nagano City Breweries', lat:36.6520, lng:138.2010, kind:'sake', note:'西飯田酒造店／長野銘醸／酒千蔵野／東飯田酒造店，多間步行可達（位置概略）'},
+  // ── 餐廳 Restaurants ──
+  {name:'うずら家', en:'Uzuraya', lat:36.7423, lng:138.0834, kind:'food', note:'戶隱蕎麥麵老店，神社參道封閉也照常營業'},
+  {name:'W / Jojo 午餐', en:'Lunch with Ueda friends', lat:36.4023, lng:138.2489, kind:'food', note:'上田友人，葡萄酒商出身，順便問買酒地點（位置概略在上田市區）'},
+  // ── 景點 Sights ──
+  {name:'善光寺', en:'Zenkoji Temple', lat:36.6614, lng:138.1877, kind:'sight', note:'長野市區，Day3 上午選項'},
+  {name:'上田城・柳町', en:'Ueda Castle & Yanagimachi', lat:36.4040, lng:138.2437, kind:'sight', note:'舊酒藏街，岡崎酒造就在這條街上'},
+  {name:'別所溫泉三寺', en:'Bessho Onsen temples', lat:36.3480, lng:138.1475, kind:'sight', note:'安樂寺（國寶八角三重塔）／北向觀音／常樂寺，走路可達上松や'},
+  {name:'松代', en:'Matsushiro', lat:36.5659, lng:138.1960, kind:'sight', note:'真田氏城下町，長野市區內車程短'},
+  {name:'戶隱中社', en:'Togakushi Chusha', lat:36.7425, lng:138.0850, kind:'sight', note:'冬季仍開放參拜9:00-17:00，奧社參道才是封閉的那段'},
+  // ── 交通節點 Transit ──
+  {name:'白馬駅', en:'Hakuba Station', lat:36.6985, lng:137.8577, kind:'transit', note:'JR大糸線 · 各雪場接駁巴士起點'},
+  {name:'長野', en:'Nagano Station', lat:36.6403, lng:138.1886, kind:'transit', note:'新幹線站 · Toyota Rent a Car 起點'},
+  {name:'上田', en:'Ueda Station', lat:36.4023, lng:138.2489, kind:'transit', note:'北陸新幹線站 · Day1 上野直達，Day2 轉長野'}
+];
+var CAT = {
+  ski:    {emoji:'⛷️', color:'#4fa3e3'},
+  lodge:  {emoji:'🏠', color:'#4fbf82'},
+  sake:   {emoji:'🍶', color:'#b06fc9'},
+  food:   {emoji:'🍽️', color:'#e8825a'},
+  sight:  {emoji:'📍', color:'#e8a33d'},
+  shop:   {emoji:'🥾', color:'#5ec8c0'},
+  transit:{emoji:'🚉', color:'#8b9db3'}
+};
+
+var mapInstance = null, mapInitDone = false;
+function initMap(){
+  if (mapInitDone) return;
+  mapInitDone = true;
+  try {
+    if (typeof L === 'undefined') throw new Error('leaflet not loaded');
+    var map = L.map('leafletMap', {scrollWheelZoom:true}).setView([36.66, 137.98], 9);
+    mapInstance = map;
+    var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 17,
+      attribution: '&copy; OpenStreetMap contributors'
+    });
+    var tileFailed = false;
+    tileLayer.on('tileerror', function(){
+      if (tileFailed) return;
+      tileFailed = true;
+      document.getElementById('mapFallback').classList.add('show');
+    });
+    tileLayer.addTo(map);
+
+    var bounds = [];
+    STOPS.forEach(function(s){
+      var cat = CAT[s.kind];
+      var icon = L.divIcon({
+        className: '',
+        html: '<div class="pin-emoji" style="background:' + cat.color + '">' + cat.emoji + '</div>',
+        iconSize: [28,28], iconAnchor: [14,14]
+      });
+      L.marker([s.lat, s.lng], {icon: icon}).addTo(map)
+        .bindPopup('<b>' + s.name + '</b><br><span style="opacity:.7">' + s.en + '</span><br>' + s.note);
+      bounds.push([s.lat, s.lng]);
+    });
+    map.fitBounds(bounds, {padding:[30,30]});
+
+    setTimeout(function(){ map.invalidateSize(); }, 120);
+  } catch (e) {
+    document.getElementById('mapFallback').classList.add('show');
+  }
+}
+</script>
+
+</body>
+</html>

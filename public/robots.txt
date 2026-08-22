@@ -1,0 +1,5 @@
+# Everything on tclee.dev is crawlable except /p/, which holds unlisted
+# share-by-link pages (trip plans, drafts shared with a specific group).
+# Those pages also carry <meta name="robots" content="noindex">.
+User-agent: *
+Disallow: /p/
