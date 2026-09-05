@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet"/>
+<meta name="referrer" content="no-referrer"/>
+<title>Nordic Business Trip — Sun 13 Sep – Sat 3 Oct 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  /* Per-country identity colours (flag-based) */
+  --dk:#C8102E; --dk-fill:#FBE0E4;
+  --fi:#002F6C; --fi-fill:#FFFFFF; --fi-border:#B8B8B8;
+  --de:#FFCE00; --de-fill:#FFF4C2;
+  --no:#00205B; --no-fill:#D6DCEA;
+  --se:#4E95D9; --se-fill:#E3F0FA;
+  /* Transport — distinct from every flag colour and high-contrast over the map's green land */
+  --air:#7B1FA2;   --road:#F57C00;
+  /* Week hexes retained only for the Accommodation view's Wk column */
+  --w1-hd:#14505E; --w1-fill:#D9EDF2;
+  --w2-hd:#BF8F00; --w2-fill:#FFF2CC;
+  --w3-hd:#C00000; --w3-fill:#FCE4EC;
+  --ink:#1d2733; --ink-soft:#4d5a6b;
+  --bg:#0f1420; --panel:#1a1f2e; --line:#2a3044; --dim:#7a899e; --txt:#dde2ee;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;height:100vh;overflow:hidden;background:var(--bg);color:var(--txt);margin:0}
+#app-root{display:flex;height:100vh;overflow:hidden}
+
+/* ── Sidebar ─────────────────────────────────────────── */
+#sidebar{width:300px;background:var(--panel);color:var(--txt);overflow-y:auto;display:flex;flex-direction:column;flex-shrink:0;transition:width .22s ease}
+#sidebar.collapsed{width:0;overflow:hidden}
+.sb-toggle{width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:#1f2637;color:#cfdaea;cursor:pointer;font-size:17px;line-height:1;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0}
+.sb-toggle:hover{background:#2a3550;color:#fff}
+.sb-toggle:focus-visible{outline:2px solid #3b82f6;outline-offset:1px}
+.sb-head{padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+.sb-title{font-size:15px;font-weight:700;margin-bottom:2px;letter-spacing:-.01em}
+.sb-sub{font-size:11px;color:var(--dim);line-height:1.5}
+.sb-section{padding:12px 16px;border-bottom:1px solid var(--line)}
+.sb-section h3{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:8px}
+.leg{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;line-height:1.4}
+.dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;border:1.5px solid rgba(255,255,255,.3)}
+.line-key{width:22px;height:0;border-top:3px solid;flex-shrink:0}
+.notice{background:#2a2418;border:1px solid #5c4a1e;border-radius:6px;padding:9px 11px;font-size:11px;color:#e8c97a;line-height:1.55}
+.notice b{color:#f5d98a}
+.rs{display:flex;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding:4px 0;font-size:11px}
+.rs:first-of-type{border-top:none}
+.rs-l{color:var(--dim);flex:1}
+.rs-v{font-weight:600;white-space:nowrap}
+.rs.total{border-top:1px solid var(--road);margin-top:2px;padding-top:6px}
+.rs.total .rs-l,.rs.total .rs-v{color:var(--road)}
+
+/* Company list */
+.co-item{display:flex;align-items:flex-start;gap:8px;padding:6px 8px;background:#222b3e;border-radius:4px;margin-bottom:4px;cursor:pointer;transition:background .15s;border-left:3px solid transparent}
+.co-item:hover{background:#2a3550}
+.co-item.flexslot{background:transparent;border:1px dashed #465274;border-left:3px dashed #465274;opacity:.75}
+.co-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:3px;border:1.5px solid rgba(255,255,255,.25)}
+.co-info{flex:1;min-width:0}
+.co-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.co-meta{font-size:10px;color:var(--dim);margin-top:1px}
+.grp-hd{font-size:10px;text-transform:uppercase;letter-spacing:.08em;margin:10px 0 5px;font-weight:700}
+
+/* ── Main pane ───────────────────────────────────────── */
+#main{flex:1;display:flex;flex-direction:column;min-width:0}
+#dochead{background:#141926;border-bottom:1px solid var(--line);padding:12px 16px 11px;flex-shrink:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px}
+.dh-l{min-width:0;flex:1 1 300px}
+.dh-title{font-size:17px;font-weight:700;letter-spacing:-.015em;color:#fff;line-height:1.2}
+.dh-span{font-size:12px;color:#93b4e8;font-weight:600;margin-top:3px}
+.dh-anchor{font-size:11px;color:var(--dim);margin-top:2px;line-height:1.45}
+.dh-stats{display:flex;flex-wrap:wrap;gap:7px}
+.stat{background:#1b2233;border:1px solid var(--line);border-radius:6px;padding:5px 10px;text-align:center;min-width:74px}
+.stat-v{font-size:14px;font-weight:700;color:#fff;line-height:1.1}
+.stat-l{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--dim);margin-top:2px}
+.stat.s1,.stat.s2,.stat.s3,.stat.s4{border-top:2px solid #3b82f6}
+.stat.flights{border-top:2px solid var(--air)}
+.stat.flights .stat-v{color:#c58af0}
+.stat.ferry{border-top:2px solid var(--road)}
+.stat.ferry .stat-v{color:#ffa733}
+
+#topbar{min-height:44px;background:#141926;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:6px 14px;gap:8px;flex-shrink:0;flex-wrap:wrap}
+.view-btn{padding:6px 15px;font-size:12px;font-weight:600;border:1px solid var(--line);background:#1f2637;color:#8896ab;border-radius:5px;cursor:pointer;white-space:nowrap;transition:all .15s}
+.view-btn:hover{color:#cfdaea}
+.view-btn.active{background:#2a3550;color:#fff;border-color:#3b82f6}
+#topbar .tb-note{margin-left:auto;font-size:11px;color:#6b7a90}
+#map{flex:1;width:100%;min-height:0}
+#calendar,#transport,#hotels,#budget,#sfcodes,#itmatrix,#itschedule,#floorplan{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px;background:var(--bg);display:none}
+
+/* ── Shared document typography ──────────────────────── */
+.panel{margin-bottom:20px}
+.panel-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:8px;padding-left:9px;border-left:4px solid #3b82f6;flex-wrap:wrap}
+.panel-title{font-size:13px;font-weight:700;color:var(--txt)}
+.panel-meta{font-size:11px;color:var(--dim)}
+.panel-tag{margin-left:auto;font-size:11px;background:#222b3e;border:1px solid var(--line);border-radius:11px;padding:2px 10px;color:#9db0c8;font-weight:600}
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+table.dt{border-collapse:collapse;width:100%;font-size:11.5px}
+table.dt th{background:#141926;color:var(--dim);font-size:9.5px;text-transform:uppercase;letter-spacing:.09em;text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap;font-weight:700}
+table.dt td{padding:8px 10px;border-bottom:1px solid #232a3c;color:#c8d4e4;vertical-align:top;line-height:1.45}
+table.dt tr:last-child td{border-bottom:none}
+table.dt tbody tr:hover{background:#1f2637}
+table.dt td.num{white-space:nowrap;font-variant-numeric:tabular-nums}
+table.dt .sub{color:var(--dim);font-size:10.5px}
+table.dt tr.accent td:first-child{border-left:3px solid transparent}
+.pill{display:inline-block;border-radius:10px;padding:1px 8px;font-size:10px;font-weight:700;white-space:nowrap}
+.pill.ok{background:#14401f;color:#86efac;border:1px solid #2c6b3f}
+.pill.warn{background:#3d2f10;color:#f5d98a;border:1px solid #8a6a1e}
+.pill.risk{background:#4a1a1a;color:#fca5a5;border:1px solid #8a2e2e}
+.pill.info{background:#1c2c4a;color:#93b4e8;border:1px solid #33507f}
+.callout{border-radius:6px;padding:11px 13px;font-size:11.5px;line-height:1.6;margin-bottom:12px;color:#c8d4e4}
+.callout b{color:#eef3fa}
+.callout.risk{background:#2a1616;border:1px solid #7f2d2d}
+.callout.risk b{color:#fca5a5}
+.callout.warn{background:#2a2418;border:1px solid #5c4a1e;color:#e8c97a}
+.callout.warn b{color:#f5d98a}
+.wait-chip{display:inline-flex;align-items:center;gap:6px;background:#1b2233;color:#eef3fa;border:1px solid #3a3320;border-radius:5px;padding:5px 9px;margin:2px 6px;cursor:pointer;font-weight:700;font-size:11px;transition:background .15s}
+.wait-chip:hover{background:#242e44}
+.callout.info{background:#161f2e;border:1px solid #2f4670}
+.callout.info b{color:#93b4e8}
+.mini{font-size:11px;color:#8fa3bd;margin-top:8px;line-height:1.6}
+
+/* ── Foldable groups (budget) ───────────────────────── */
+.fold{border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-bottom:10px;background:var(--panel)}
+.fold>summary{display:flex;align-items:center;gap:10px;padding:9px 12px;cursor:pointer;list-style:none;font-size:12px;font-weight:700;color:var(--txt);background:#1b2233}
+.fold>summary::-webkit-details-marker{display:none}
+.fold>summary::before{content:'▸';display:inline-block;width:12px;flex-shrink:0;font-size:10px;color:var(--dim);transition:transform .15s}
+.fold[open]>summary::before{transform:rotate(90deg)}
+.fold>summary:hover{filter:brightness(1.12)}
+.fold-sub{margin-left:auto;font-size:11px;color:var(--dim);font-weight:600;white-space:nowrap}
+.fold-body{padding:10px 12px}
+.fold.nested{margin:8px 0;background:#161c2a;border-color:#232a3c}
+.fold.nested>summary{background:#1a2032;font-size:11.5px}
+
+/* Transport section accents */
+.hd-flights{border-left-color:var(--air)}
+.hd-flights .panel-title{color:#c58af0}
+.hd-road{border-left-color:var(--road)}
+.hd-road .panel-title{color:#ffb74d}
+table.dt.t-flights th{background:#241830;color:#c58af0;border-bottom-color:var(--air)}
+table.dt.t-flights tr.accent td:first-child{border-left-color:var(--air)}
+table.dt.t-road th{background:#2e2314;color:#ffb74d;border-bottom-color:#8a5a1e}
+table.dt.t-road tr.accent td:first-child{border-left-color:var(--road)}
+.ferry-row td{background:#2a2015}
+
+/* Accommodation week accents */
+.wk1 td:first-child{border-left:3px solid var(--w1-hd) !important}
+.wk2 td:first-child{border-left:3px solid var(--w2-hd) !important}
+.wk3 td:first-child{border-left:3px solid var(--w3-hd) !important}
+.wkpill{display:inline-block;width:20px;text-align:center;border-radius:4px;font-size:10px;font-weight:700;padding:1px 0}
+.wkpill.w1{background:var(--w1-hd);color:var(--w1-fill)}
+.wkpill.w2{background:var(--w2-hd);color:var(--w2-fill)}
+.wkpill.w3{background:var(--w3-hd);color:var(--w3-fill)}
+.wk1 .city{color:var(--w1-fill)}
+.wk2 .city{color:var(--w2-fill)}
+.wk3 .city{color:var(--w3-fill)}
+.city{font-weight:700}
+tr.totalrow td{background:#141926;font-weight:700;color:#7aa2f7;border-top:1px solid #3b82f6}
+
+/* Budget */
+.cost-cell{text-align:right;color:#5d6b80;font-weight:700;white-space:nowrap;min-width:64px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+
+/* ── Calendar — per-country colour scheme ────────────── */
+.wk{margin-bottom:20px}
+.wk-hd{display:flex;align-items:center;gap:10px;padding:7px 12px;border-radius:6px 6px 0 0;flex-wrap:wrap;background:#1b2233;border:1px solid var(--line);border-bottom:none}
+.wk-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:-.01em}
+.wk-meta{font-size:11px;color:var(--dim)}
+.wk-count{margin-left:auto;font-size:11px;background:#222b3e;border:1px solid var(--line);border-radius:11px;padding:2px 10px;color:#9db0c8;font-weight:600}
+.wk-grid-wrap{overflow-x:auto;border-radius:0 0 6px 6px}
+.wk-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;padding:6px;border-radius:0 0 6px 6px;background:rgba(255,255,255,.03);border:1px solid var(--line);border-top:none;min-width:840px}
+.dow{font-size:9px;text-transform:uppercase;letter-spacing:.1em;text-align:center;padding-bottom:2px;font-weight:700;color:var(--dim)}
+.cell{border-radius:5px;padding:7px 8px;min-height:138px;min-width:0;display:flex;flex-direction:column;gap:4px;color:var(--ink);border-top:3px solid transparent;overflow-wrap:break-word;word-break:break-word}
+.cell.f-DK{background:var(--dk-fill);border-top-color:var(--dk)}
+.cell.f-FI{background:var(--fi-fill);border:1px solid var(--fi-border);border-top:3px solid var(--fi)}
+.cell.f-DE{background:var(--de-fill);border-top-color:var(--de)}
+.cell.f-NO{background:var(--no-fill);border-top-color:var(--no)}
+.cell.f-SE{background:var(--se-fill);border-top-color:var(--se)}
+.cell.air{background:var(--air);color:#fff;border-top-color:#4a1466}
+.cell.empty{background:rgba(255,255,255,.05);border-top-color:transparent}
+.c-date{font-size:11px;font-weight:800;display:flex;align-items:center;gap:4px}
+.c-flag{margin-left:auto;font-size:11px}
+.slot{border-radius:4px;padding:5px 6px;font-size:10.5px;line-height:1.35;background:rgba(255,255,255,.72);border-left:3px solid var(--ink-soft);cursor:pointer;transition:background .15s,transform .1s}
+.slot:hover{background:#fff;transform:translateX(1px)}
+.cell.f-DK .slot{border-left-color:var(--dk)}
+.cell.f-FI .slot{border-left-color:var(--fi)}
+.cell.f-DE .slot{border-left-color:var(--de)}
+.cell.f-NO .slot{border-left-color:var(--no)}
+.cell.f-SE .slot{border-left-color:var(--se)}
+.cell.air .slot{background:rgba(255,255,255,.9);border-left-color:var(--ink-soft);color:var(--ink)}
+.slot-l{font-size:8.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.65;font-weight:800;margin-bottom:1px}
+.slot-n{font-weight:700;color:var(--ink)}
+.slot-c{opacity:.72;font-size:9.5px;color:var(--ink)}
+.slot.noclick{cursor:default;background:rgba(255,255,255,.42)}
+.slot.noclick:hover{transform:none;background:rgba(255,255,255,.42)}
+.slot.social{background:rgba(255,255,255,.6);border:1.5px dotted #e05a8f;border-left:3px solid #e05a8f}
+.slot.flexslot{background:rgba(255,255,255,.4);border:1.5px dashed #8a93a3;border-left:3px dashed #8a93a3}
+.slot.innotrans{background:rgba(255,255,255,.8);border-left-color:var(--de)}
+.slot.mtg-conf{background:rgba(126,200,140,.28);border-left-color:#2e7d32}
+.slot.mtg-pend{background:rgba(245,200,120,.26);border-left-color:#c99a1e}
+.slot.booth-walk{background:rgba(200,210,225,.4);border-left:3px dashed #5a6883}
+/* inter-meeting transport connector */
+.hop{display:flex;align-items:center;gap:5px;margin:1px 0 1px 10px;font-size:9px;font-weight:700;letter-spacing:.01em;opacity:.9}
+.hop::before{content:'';width:2px;height:13px;border-radius:1px;flex:0 0 2px}
+.hop span{padding:1px 5px;border-radius:3px;white-space:nowrap}
+.hop.road::before{background:var(--road)}
+.hop.road span{background:var(--road);color:var(--ink)}
+.hop.air::before{background:var(--air)}
+.hop.air span{background:var(--air);color:#fff}
+.hop.sea::before{background:var(--road)}
+.hop.sea span{background:var(--road);color:var(--ink);border:1px dashed rgba(0,0,0,.35)}
+/* a flight/ferry that occupies a slot itself */
+.slot.move{color:#fff}
+.slot.move.air{background:var(--air);border-left-color:var(--air)}
+.slot.move.air .slot-n,.slot.move.air .slot-c,.slot.move.air .slot-l{color:#fff}
+.slot.move.sea{background:var(--road);border-left-color:var(--road)}
+.slot.move.sea .slot-n,.slot.move.sea .slot-c,.slot.move.sea .slot-l{color:var(--ink)}
+.slot.move:hover{transform:none}
+.stay-in{margin-top:3px;font-size:9px;font-weight:700;letter-spacing:.02em;padding:3px 6px;border-radius:4px;
+  background:rgba(0,0,0,.055);border:1px dashed rgba(0,0,0,.22);color:var(--ink);opacity:.85}
+.cell.air .stay-in{background:rgba(255,255,255,.5)}
+.travel-leg{margin-top:auto;font-size:9.5px;border-radius:4px;padding:4px 6px;line-height:1.4;font-weight:600}
+.travel-leg.air{background:var(--air);color:#fff}
+.travel-leg.road{background:var(--road);color:var(--ink)}
+.travel-leg.none{background:rgba(255,255,255,.45);color:var(--ink-soft)}
+.cell.air .travel-leg.air{background:rgba(255,255,255,.16);color:#fff}
+.cal-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;padding:11px 13px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:11px;color:#9db0c8}
+.cal-legend span.li{display:flex;align-items:center;gap:6px}
+.sw{width:18px;height:12px;border-radius:3px;flex-shrink:0;border:1px solid rgba(255,255,255,.18)}
+
+/* ── Detail drawer (shared by Calendar + Map) ────────── */
+#scrim{position:fixed;inset:0;background:rgba(6,9,15,.55);opacity:0;pointer-events:none;transition:opacity .2s;z-index:1200}
+#scrim.on{opacity:1;pointer-events:auto}
+#detail{position:fixed;top:0;right:0;height:100%;width:min(400px,94vw);background:#151b28;border-left:1px solid var(--line);
+        box-shadow:-14px 0 40px rgba(0,0,0,.5);transform:translateX(102%);transition:transform .24s ease;z-index:1300;display:flex;flex-direction:column}
+#detail.on{transform:translateX(0)}
+.d-head{padding:14px 16px 12px;border-bottom:1px solid var(--line);flex-shrink:0;position:relative}
+.d-head.c-DK{border-top:4px solid var(--dk)}
+.d-head.c-FI{border-top:4px solid var(--fi)}
+.d-head.c-DE{border-top:4px solid var(--de)}
+.d-head.c-NO{border-top:4px solid var(--no)}
+.d-head.c-SE{border-top:4px solid var(--se)}
+.d-name{font-size:16px;font-weight:700;color:#fff;padding-right:30px;line-height:1.25;letter-spacing:-.01em}
+.d-where{font-size:11.5px;color:var(--dim);margin-top:3px}
+.d-close{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:5px;background:#222b3e;border:1px solid var(--line);
+         color:#9db0c8;font-size:13px;line-height:1;cursor:pointer}
+.d-close:hover{background:#2f3a52;color:#fff}
+.d-body{padding:14px 16px 22px;overflow-y:auto;flex:1}
+.d-sec{margin-bottom:15px}
+.d-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.11em;color:var(--dim);font-weight:800;margin-bottom:5px}
+.d-row{background:#1b2233;border:1px solid var(--line);border-radius:6px;padding:9px 11px;font-size:12px;line-height:1.55;color:#cfdaea}
+.d-row b{color:#fff}
+.d-when{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:7px}
+.d-chip{background:#222b3e;border:1px solid var(--line);border-radius:5px;padding:3px 9px;font-size:11px;font-weight:700;color:#cfdaea}
+.d-chip.date{background:#1c2c4a;border-color:#33507f;color:#93b4e8}
+.d-addr{font-size:11.5px;color:#a9b7c9;line-height:1.5}
+.d-addr .apt{color:var(--dim);font-size:10.5px;display:block;margin-top:3px}
+.d-mail{display:inline-block;margin-top:4px;font-size:11.5px;color:#7aa2f7;word-break:break-all;text-decoration:none}
+.d-mail:hover{text-decoration:underline}
+.d-mail.missing{color:#fca5a5;font-style:italic}
+.d-status{border-radius:6px;padding:9px 11px;font-size:11.5px;font-weight:700;line-height:1.5;border:1px solid}
+.d-status.green{background:#14311f;border-color:#2c6b3f;color:#86efac}
+.d-status.amber{background:#332813;border-color:#8a6a1e;color:#f5d98a}
+.d-status.grey{background:#222b3e;border-color:#39445c;color:#9db0c8}
+.d-status.red{background:#331818;border-color:#8a2e2e;color:#fca5a5}
+/* 4-level meeting-invite status */
+.d-status.ms-red{background:#331818;border-color:#b02a2a;color:#fca5a5}
+.d-status.ms-yellow{background:#332813;border-color:#c99a1e;color:#f5d98a}
+.d-status.ms-lgreen{background:#0d3535;border-color:#b4ece3;color:#b4ece3}
+.d-status.ms-dgreen{background:#0f2f18;border-color:#2e7d32;color:#7fe0a0}
+.ms-tag{display:block;font-size:9px;letter-spacing:.06em;text-transform:uppercase;opacity:.85;margin-bottom:3px}
+/* glanceable status dot on calendar slots */
+.slot{position:relative}
+.ms-dot{position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.ms-dot.ms-red{background:#e53935}
+.ms-dot.ms-yellow{background:#f5b301}
+.ms-dot.ms-lgreen{background:#b4ece3}
+.ms-dot.ms-dgreen{background:#2e7d32}
+.d-taxo{display:grid;grid-template-columns:1fr;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.d-tx{background:#1b2233;padding:7px 11px;display:flex;gap:10px;font-size:11.5px}
+.d-tx-k{color:var(--dim);width:82px;flex-shrink:0;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding-top:1px}
+.d-tx-v{color:#dde2ee;font-weight:600}
+.d-goal{background:#161f2e;border:1px solid #2f4670;border-radius:6px;padding:11px 12px;font-size:12px;line-height:1.65;color:#c8d4e4}
+.d-hint{font-size:10.5px;color:var(--dim);text-align:center;padding:8px 0 0}
+
+/* ── InnoTrans Matrix + Schedule views ───────────────── */
+.itm-tbl{border-collapse:separate;border-spacing:0;width:100%;font-size:11px;min-width:860px}
+.itm-tbl th{background:#141926;color:#9db0c8;font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:8px 9px;border-bottom:1px solid var(--line);border-right:1px solid #222a3c;text-align:center;font-weight:700;position:sticky;top:0;z-index:2}
+.itm-tbl th.dom-h{text-align:left;left:0;z-index:3;min-width:190px}
+.itm-tbl td{padding:5px 7px;border-bottom:1px solid #222a3c;border-right:1px solid #222a3c;vertical-align:top}
+.itm-tbl td.dom{background:#161c2a;font-weight:700;color:#c8d4e4;font-size:11px;position:sticky;left:0;z-index:1;min-width:190px}
+.itm-tbl tr:hover td.dom{background:#1c2439}
+.co-chip{display:block;border-radius:4px;padding:3px 7px;margin:2px 0;font-size:10.5px;font-weight:600;border-left:3px solid;line-height:1.35}
+.co-chip.conf{background:#14311f;border-color:#2c6b3f;color:#8fe3ab}
+.co-chip.prio{background:#3a2a12;border-color:#d3901e;color:#f5c877}
+.co-chip.booth{background:#222b3e;border-color:#5a6883;color:#a7b6ca}
+.co-chip.work{background:#161f2e;border-color:#33507f;color:#93b4e8}
+.co-hall{display:block;font-weight:400;font-size:9px;opacity:.72;margin-top:1px;letter-spacing:.02em}
+.floor-embed{width:100%;height:68vh;min-height:420px;border:1px solid var(--line);border-radius:6px;background:#0b0f18;overflow:hidden}
+.floor-embed object,.floor-embed embed{width:100%;height:100%;border:0}
+.floor-fallback{display:flex;align-items:center;justify-content:center;height:100%;color:var(--dim);font-size:13px;text-align:center;padding:20px}
+.floor-fallback a{color:#7aa2f7}
+tr.ourhall td{background:#16301d}
+tr.ourhall td:first-child{border-left:3px solid #4ade80}
+.itm-legend{display:flex;flex-wrap:wrap;gap:10px;margin:10px 0 16px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);border-radius:6px;font-size:11px;color:#9db0c8}
+.itm-legend .li{display:flex;align-items:center;gap:6px}
+.itm-legend .sw{width:22px;height:14px;border-radius:3px;border-left:3px solid;flex-shrink:0}
+.stat.itc .stat-v{color:#8fe3ab}
+.stat.itp .stat-v{color:#f5c877}
+
+/* Schedule grid */
+.sch-tbl{border-collapse:separate;border-spacing:0;width:100%;font-size:11.5px;min-width:640px}
+.sch-tbl th{background:#141926;color:#9db0c8;font-size:10px;text-transform:uppercase;letter-spacing:.07em;padding:8px 10px;border-bottom:1px solid var(--line);border-right:1px solid #222a3c;text-align:center;font-weight:700}
+.sch-tbl td{padding:4px 8px;border-bottom:1px solid #222a3c;border-right:1px solid #222a3c;height:30px;vertical-align:middle;text-align:center;color:#c8d4e4}
+.sch-tbl td.tm{background:#161c2a;color:#8fa3bd;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.sch-tbl tr.lunch td{background:#20242f;color:#6b7690;font-style:italic}
+.sch-slot{border-radius:4px;padding:4px 6px;font-weight:700;line-height:1.3}
+.sch-slot.conf{background:#14311f;color:#8fe3ab;border:1px solid #2c6b3f}
+.sch-slot.pend{background:#332813;color:#f5c877;border:1px dashed #c99a1e}
+.sch-slot.prio{background:#1c2c4a;color:#93b4e8;border:1px solid #33507f}
+.sch-slot.walk{background:#20262f;color:#9db0c8;border:1px dashed #4d5a6b}
+.sch-slot.event{background:#3a1030;color:#f0a5d0;border:1px solid #a02a6a}
+.sch-sub{display:block;font-weight:400;font-size:9px;opacity:.82;margin-top:1px}
+.sch-book{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:6px;margin-top:6px}
+.sch-book .bk{border-radius:5px;padding:6px 9px;font-size:11px;border-left:3px solid;background:#1b2233;color:#c8d4e4}
+.sch-book .bk.prio{border-color:#d3901e;background:#241c10}
+.sch-book .bk.conf{border-color:#2c6b3f;background:#132a1c}
+.sch-book .bk.pend{border-color:#c99a1e;background:#241f10}
+.sch-book .bk b{color:#fff}
+#pw-gate{position:fixed;inset:0;z-index:9999;background:var(--bg,#0f1420);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+#pw-gate .pw-box{background:var(--panel,#1a1f2e);border:1px solid var(--line,#2a3044);border-radius:10px;padding:32px 36px;max-width:380px;width:90%;text-align:center}
+#pw-gate h2{color:#fff;font-size:18px;margin-bottom:6px}
+#pw-gate p{color:var(--dim,#7a899e);font-size:13px;margin-bottom:20px}
+#pw-gate input{width:100%;padding:10px 14px;border-radius:6px;border:1px solid var(--line,#2a3044);background:#141926;color:#fff;font-size:14px;outline:none}
+#pw-gate input:focus{border-color:#3b82f6}
+#pw-gate button{margin-top:12px;padding:9px 28px;border-radius:6px;border:none;background:#3b82f6;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+#pw-gate button:hover{background:#2563eb}
+#pw-gate .pw-err{color:#fca5a5;font-size:12px;margin-top:10px;min-height:18px}
+#app-root{display:none}
+</style>
+</head>
+<body>
+
+<div id="pw-gate">
+  <div class="pw-box">
+    <h2>🔒 This page is password-protected</h2>
+    <p>Enter the password to view the trip plan.</p>
+    <input type="password" id="pw-input" placeholder="Password" autocomplete="off"/>
+    <button onclick="tryUnlock()">Unlock</button>
+    <div class="pw-err" id="pw-err"></div>
+  </div>
+</div>
+<script>
+var _k=atob('ZnVqdTAzMTJAZ21haWwuY29t');
+function tryUnlock(){
+  var v=document.getElementById('pw-input').value;
+  if(!v){document.getElementById('pw-err').textContent='Please enter a password.';return;}
+  if(v===_k){
+    document.getElementById('pw-gate').style.display='none';
+    document.getElementById('app-root').style.display='flex';
+    if(typeof map!=='undefined')setTimeout(function(){map.invalidateSize()},100);
+  }else{document.getElementById('pw-err').textContent='Incorrect password. Please try again.';}
+}
+document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock();});
+</script>
+
+<div id="app-root">
+<div id="sidebar" class="collapsed">
+  <div class="sb-head">
+    <div class="sb-title">Nordic Business Trip 2026</div>
+    <div class="sb-sub">Sun 13 Sep – Sat 3 Oct 2026 · 3 weeks<br>Anchor: InnoTrans Berlin, 22–25 Sep</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="notice">Dates provisional — week-level commitments are being secured now; <b>exact days lock at the end of August</b>. The AM/PM allocation shown here is a working draft.</div>
+  </div>
+
+  <div class="sb-section">
+    <h3>Countries</h3>
+    <div class="leg"><div class="dot" style="background:#C8102E"></div>🇩🇰 Denmark</div>
+    <div class="leg"><div class="dot" style="background:#FFFFFF;border-color:#B8B8B8"></div>🇫🇮 Finland</div>
+    <div class="leg"><div class="dot" style="background:#FFCE00"></div>🇩🇪 Germany · InnoTrans</div>
+    <div class="leg"><div class="dot" style="background:#00205B"></div>🇳🇴 Norway</div>
+    <div class="leg"><div class="dot" style="background:#4E95D9"></div>🇸🇪 Sweden</div>
+  </div>
+
+  <div class="sb-section">
+    <h3>Transport</h3>
+    <div class="leg"><div class="line-key" style="border-color:#7B1FA2"></div>Flight</div>
+    <div class="leg"><div class="line-key" style="border-color:#F57C00"></div>Road &amp; ferry</div>
+  </div>
+
+  <div class="sb-section">
+    <h3>Week 3 Driving</h3>
+    <div class="rs"><span class="rs-l">Oslo → Tønsberg</span><span class="rs-v">~95 km · 1h15</span></div>
+    <div class="rs"><span class="rs-l">Tønsberg → Horten ⛴ Moss</span><span class="rs-v">15 km · ~50 min</span></div>
+    <div class="rs"><span class="rs-l">Moss → Stora Höga</span><span class="rs-v">240 km · 2h30</span></div>
+    <div class="rs"><span class="rs-l">Stora Höga → Jönköping</span><span class="rs-v">186 km · ~2h</span></div>
+    <div class="rs"><span class="rs-l">Jönköping → Stockholm</span><span class="rs-v">290 km · 3h</span></div>
+    <div class="rs total"><span class="rs-l">Total</span><span class="rs-v">~830 km · ~9h30</span></div>
+  </div>
+
+  <div class="sb-section" style="border-bottom:none">
+    <h3>Companies · click for detail</h3>
+    <div id="co-items"></div>
+  </div>
+</div>
+
+<div id="main">
+  <div id="dochead">
+    <div class="dh-l">
+      <div class="dh-title">Nordic Business Trip 2026 — Plan Proposal</div>
+      <div class="dh-span">Sun 13 Sep – Sat 3 Oct 2026</div>
+      <div class="dh-anchor">Anchored on InnoTrans Berlin, Tue 22 – Fri 25 Sep · Denmark · Finland · Germany · Norway · Sweden</div>
+    </div>
+    <div class="dh-stats">
+      <div class="stat s1"><div class="stat-v">17</div><div class="stat-l">Nordic mtgs</div></div>
+      <div class="stat s2"><div class="stat-v">22</div><div class="stat-l">InnoTrans mtgs</div></div>
+      <div class="stat s3"><div class="stat-v">19</div><div class="stat-l">Hotel nights</div></div>
+      <div class="stat s4"><div class="stat-v">~830</div><div class="stat-l">km driving</div></div>
+      <div class="stat flights" title="TPE→AMS · AMS→CPH · CPH→HEL · HEL→BER · BER→OSL · ARN→TPE"><div class="stat-v">6</div><div class="stat-l">Flights</div></div>
+      <div class="stat ferry" title="Horten→Moss (Bastø Fosen)"><div class="stat-v">1</div><div class="stat-l">Ferry</div></div>
+    </div>
+  </div>
+  <div id="topbar">
+    <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" aria-label="Expand side panel" aria-expanded="false" title="Show panel">›</button>
+    <div class="view-btn active" id="vb-cal" onclick="setView('cal')">📅 Calendar</div>
+    <div class="view-btn" id="vb-itm" onclick="setView('itm')">🎯 IT Matrix</div>
+    <div class="view-btn" id="vb-its" onclick="setView('its')">🗓️ IT Schedule</div>
+    <div class="view-btn" id="vb-floor" onclick="setView('floor')">🧭 Hall Plan</div>
+    <div class="view-btn" id="vb-map" onclick="setView('map')">🗺️ Map</div>
+    <div class="view-btn" id="vb-trn" onclick="setView('trn')">✈️ Transportation</div>
+    <div class="view-btn" id="vb-htl" onclick="setView('htl')">🏨 Accommodation</div>
+    <div class="view-btn" id="vb-bud" onclick="setView('bud')">💰 Budget</div>
+    <div class="view-btn" id="vb-sf" onclick="setView('sf')">🏷️ SF Codes</div>
+    <div class="tb-note">Dates provisional — exact days lock end of August</div>
+  </div>
+  <div id="calendar"></div>
+  <div id="itmatrix"></div>
+  <div id="itschedule"></div>
+  <div id="floorplan"></div>
+  <div id="map"></div>
+  <div id="transport"></div>
+  <div id="hotels"></div>
+  <div id="budget"></div>
+  <div id="sfcodes"></div>
+</div>
+
+<div id="scrim" onclick="closeDetail()"></div>
+<aside id="detail" role="dialog" aria-label="Meeting detail"><div id="detail-inner"></div></aside>
+
+<script>
+/* ── Curated detail — verbatim from popup_data.json ───── */
+var DETAIL=[
+ {company:"Milestone Systems",country:"Denmark",city:"Brøndby",date:"⏸️ Skipped this trip",slot:"—",
+  address:"Banemarksvej 50, DK-2605 Brøndby",airport:"CPH ~20 min",
+  contact:"Timme WATSON — Lead Sourcing & Supply Chain Advisor · Patricia PEDRO — Program Ops, Tech Partner Program",email:"timme@watson.dk / pped@milestone.dk",
+  meeting_status:"⏸️ SKIPPED for this trip (TC, Aug 18) — invited Jul 29, Timme (coffee, personal) + Patricia (Case #00103700), no reply. Tue 15 Sep is now fully given to Recab/Heidi's Alfa Laval visit. Follow up separately, outside this itinerary",class:"ISV",domain:"Surveillance",subdomain:"—",company_status:"Developing",
+  goal:"BD target: land the tBOX210 hardware verification, then use it to become a listed/recommended hardware base for Milestone XProtect deployments — recurring design-in, not a one-off cert. Verification is currently blocked internally (RD not yet assigned by Kirk Lo, see Milestone Technology Partner Program)."},
+ {company:"Novicom",country:"Denmark",city:"Rødovre",date:"⏸️ Tue 15 Sep only — contingent",slot:"—",
+  address:"Fjeldhammervej 19, 2610 Rødovre",airport:"CPH ~20 min",
+  contact:"Henrik RASMUSSEN — CEO and Partner",email:"hr@novicom.dk",
+  meeting_status:"🔗 <b>COUPLED TO THE ALFA LAVAL ANSWER.</b> Henrik re-opened the thread himself (Aug 31) after two unanswered mails — but he is <b>out of the office Mon 14 Sep</b>, so the arrival-day slot is dead. He will only meet on <b>Tue 15 Sep</b>, which is currently Aalborg. If Recab comes back saying Alfa Laval is not set, switch to Novicom on the 15th <b>immediately</b> — Rødovre is 20 min from the hotel. <b>⏳ Cutoff Wed 2 Sep</b>: if Recab is still silent, thank Henrik and move him to an online call. (He offered ISE Barcelona, but TC may not attend, so the call is the real fallback)",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Display",company_status:"Re-Engage",
+  goal:"BD target: re-engage a lapsed account. Two mails, no reply. Meeting goal is to establish whether live business exists here, understand Novicom's direction, and decide continue vs downgrade."},
+ {company:"Alfa Laval (via Recab)",country:"Denmark",city:"Aalborg",date:"Tue 15 Sep",slot:"PM",
+  address:"Aalborg, Denmark",airport:"CPH, then travel to Aalborg AM",
+  contact:"Heidi HANSEN (Recab) · via Jan-Fredric KARLSSON",email:"jan-fredric.karlsson@recab.com",
+  meeting_status:"✅ LOCKED — Tue 15 Sep PM, Alfa Laval's Aalborg site, with the Recab team. No separate Recab DK office visit — the whole day is travel (AM) + this meeting (PM). Update Aug 18 (Jan-Fredric): Alfa Laval has started testing the tBOX810 unit; Heidi will reach out to book the on-site visit directly with them",class:"End customer (via Recab channel)",domain:"Transportation",subdomain:"Marine",company_status:"ProActive",
+  goal:"Visit Alfa Laval's Aalborg site together with the Recab team (tBOX810 sample project) — see the evaluation in person and discuss volume/recurring potential."},
+ {company:"DANBIT",country:"Denmark",city:"Køge",date:"Wed 16 Sep",slot:"9:00",
+  address:"Værkstedsvej 39, 4600 Køge",airport:"CPH ~40 min",
+  contact:"Peter GRUBB — Purchaser / Technical Contact (cc Leif Olesen)",email:"pegr@danbit.dk",
+  meeting_status:"✅ CONFIRMED — Wed 16 Sep 9:00 AM, Peter replied to confirm (Aug 18), leaving ~11:00 for the 13:55 CPH→HEL flight",class:"Distributor / Channel Partner",domain:"Mixed",subdomain:"—",company_status:"Active",
+  goal:"BD target: active channel partner — use the visit for a broader 2027 line review (their end-customers, order rhythm, where Axiomtek can take more share), not just the two open quotes (ICO310→ICO150 replacement due Jul 26; Leif's P6171PR-DC-U-V3)."},
+ {company:"Suomen Addon",country:"Finland",city:"Vantaa",date:"Thu 17 Sep",slot:"13:30 arrival · 14:00 start",
+  address:"Vantaa, Finland (~5 min from HEL airport)",airport:"HEL ~5 min",
+  contact:"Tomi LEHTONEN — Managing Director",email:"tomi.lehtonen@addon.fi",
+  meeting_status:"✅ CONFIRMED — Thu 17 Sep PM at Suomen's Vantaa office, moved so Alpha Point takes the morning. TC arrives 13:30 so the 14:00 start is graceful. Tomi is bringing two of his own end customers — <b>14:00 Advenica</b> (CAPA55R), <b>16:00 NAVIS</b> — both still ✉️ invitations pending. <b>🍽️ Dinner with Tomi that evening is CONFIRMED</b>, so the day runs from Alpha Point in the morning right through to dinner",class:"Distributor / Channel Partner",domain:"Mixed",subdomain:"—",company_status:"ProActive",
+  goal:"Core ProActive channel review with three live threads: CAPA55R recurring order, SHB160 CPU preference, NAVIS DNV eBOX100A. Two end customers joining if they accept — 14:00 Advenica (CAPA55R — prep the LTB/forecast and EUCC/CRA angle; Elaine handed the account to TC on Aug 28, so this is TC's direct customer now, not just a T2 via Suomen), 16:00 NAVIS (DNV project must start Q3 2026 to hit the Q2 2027 rollout — this is the kick-off in person). Kuori intro: Tomi doesn't know them personally, will ask his office — delayed, not dead."},
+ {company:"Savox",country:"Finland",city:"Tampere",date:"Fri 18 Sep",slot:"11:00",
+  address:"Hatanpään Valtatie 30, Tampere",airport:"HEL → Tampere by train, ~1h25–1h40 each way",
+  contact:"Olli-Pertti PERASTO — Product Manager (visit host) · Yani Mustapha + Saku Räsänen, sourcing · Timo Kivinen",email:"olli-pertti.perasto@savox.com",
+  meeting_status:"✅ CONFIRMED — 11:00 AM, Tampere, not Espoo (O-P is Tampere-based). O-P invited TC to their Tampere office directly (Aug 10 reply). Kept on Fri 18 Sep, Sat 19 stays a true free/buffer day",class:"VAR / Equipment Maker",domain:"Defense",subdomain:"Communication",company_status:"Active",
+  goal:"Successor design-in already lost (Savox picked a non-Axiomtek platform — needed more M.2 slots + Atom x7835RE). NANO840 LTB has runway to the Oct 30 deadline, no rush. Visit is now relationship-maintenance for future needs — keep the door open, understand their roadmap."},
+ {company:"Alpha Point",country:"Finland",city:"Helsinki",date:"Thu 17 Sep",slot:"9:30",
+  address:"Maatullinaukio 10 B, 00750 Helsinki",airport:"HEL ~20 min",
+  contact:"Henry HIRVONEN — Owner / Director",email:"henry.hirvonen@alpha.fi",
+  meeting_status:"✅ LOCKED — Henry confirmed 9:30 (Aug 17). Not planning InnoTrans, open to it though",class:"Channel",domain:"Transportation",subdomain:"Retail and Display",company_status:"Active",
+  goal:"Re-engagement already in motion — the Jul 16 email covered InnoTrans attendance and a post-show Finland visit. This meeting confirms the channel relationship and sets 2027 direction."},
+ {company:"Kuori",country:"Finland",city:"Espoo",date:"⏳ Waiting list — no fixed day",slot:"Pending",
+  address:"Espoo, Finland",airport:"HEL ~25 min",
+  contact:"Jarkko JOKELAINEN — Co-Founder & CEO",email:"jarkko@kuori.tech",
+  meeting_status:"🔄 BACKUP, on the waiting list — not committed on the calendar, TC keeps working the contact separately. Fri 18 Sep is now Savox/Tampere; Kuori would need a different day if it converts",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Kiosk",company_status:"Developing",
+  goal:"Re-engage on a formal partnership angle for the 2026/27 terminal line, not just the SDM pitch. Parallel track: Tomi (Suomen Addon) is separately asking his office for a warm intro. Waiting-list — Savox/Tampere now has priority on the trip itself, but Kuori stays open as an active BD thread."},
+ {company:"StrongPoint ASA",country:"Norway",city:"Oslo",date:"Mon 28 Sep",slot:"AM",
+  address:"Oslo, Norway (no street address in vault) — ⚠ Tomas is Lithuania-based, not Norway, Oslo framing may not fit him",airport:"OSL ~25 min",
+  contact:"Tomas MONTVILA — Engineering Mgr + C&C Product Dir · Gytis JUREVICIUS — Strategic Purchaser",email:"both @strongpoint.com hard-bounced Jul 27 — LinkedIn only for now",
+  meeting_status:"✉ LinkedIn InMail sent to both Jul 27 (email bounced, domain/tenant issue) — awaiting reply, release slot if silent by Sep 1",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Kiosk",company_status:"Developing",
+  goal:"Cold BD into retail kiosk. Tomas Montvila has ignored LinkedIn since May 19 — switch person AND channel, approach Gytis by email. The opportunity is AI self-checkout and Click&Collect lockers, both IPC-hungry."},
+ {company:"Autic",country:"Norway",city:"Tønsberg",date:"Mon 28 Sep",slot:"14:00",
+  address:"Tønsberg, Norway",airport:"TRF ~20 min",
+  contact:"Ketil NOVY — IT & Quality Manager",email:"ketil@autic.no",
+  meeting_status:"✅ LOCKED — Tron confirmed 14:00 (Aug 17). Ketil, Henrik + Eirik joining",class:"Distributor / Channel Partner",domain:"Mixed",subdomain:"—",company_status:"ProActive",
+  goal:"⚠ Visited WITHOUT Recab present — Autic competes with Recab, and Recab escorts the next day's Kongsberg visit, so the two are deliberately on separate days. Core channel review — SIX open opportunities, the densest account on the trip. Priorities: 2U i7 rackmount quote (20d overdue, Ketil), Canada ICO230 500+ pcs (Eirik), 110VDC Box PC for a Norwegian energy customer (Tron), ABB tunnel monitor, eBOX100 SSD RMA (25 of ~100 repaired, Nov 30 deadline)."},
+ {company:"Kongsberg Discovery",country:"Norway",city:"Horten",date:"Tue 29 Sep",slot:"AM",
+  address:"Horten, Norway (Recab-hosted; exact site via Recab)",airport:"15 km from Tønsberg · Horten is the Moss ferry port",
+  contact:"via Recab — Eirik Gudim NIELSEN, Senior Key Account Manager",email:"eirik.nielsen@recab.com",
+  meeting_status:"✉ Office confirmed as Horten (JFK, Jul 21), but visit itself now uncertain — Eirik (Aug 18): Kongsberg Discovery has the info but hasn't responded yet; Recab's monthly meeting with them is mid next week, will raise it there and report back whether a Sep 29 visit makes sense",class:"End customer (via Recab channel)",domain:"Transportation",subdomain:"Marine",company_status:"Following Up",
+  goal:"eBOX560 is EOL; get eBOX570 accepted as the replacement. Follow-up due Aug 11. Recab (JFK/Eirik) is hosting — JFK confirmed the office is in Horten, so the visit flows straight onto the Horten–Moss ferry into Sweden. Kongsberg Maritime is NOT part of this (Arttu Lehtonen is in Finland). Kongsberg Defence dropped (no channel)."},
+ {company:"Frost Unmanned",country:"Sweden",city:"Stora Höga",date:"Wed 30 Sep",slot:"9:30",
+  address:"Brålandsvägen 10, 444 60 Stora Höga",airport:"GOT ~35 min",
+  contact:"Kris MOELL — CEO · Nitin CHRISTY — Program Manager (Arrow 600)",email:"kris.moell@frostunmanned.com / nitin.christy@frostunmanned.com",
+  meeting_status:"✅ CONFIRMED — 9:30 AM Sep 30 (Nitin replied Aug 22, \"this time is perfect for us\"). TC assumes ~2h meeting, leaves by 12:00 regardless of exact start, for a Grab &amp; Go lunch before the drive to Flintab",class:"VAR / Equipment Maker",domain:"Defense",subdomain:"Unmanned Systems",company_status:"Active",
+  goal:"The most advanced opportunity on the trip. AIE810-ONX production sample ships Aug 28 — by the visit they will have a month of evaluation data. Need updated NVIDIA/AIE810 pricing from PM before refreshing the quotation. Objective is to convert sampling into a committed programme."},
+ {company:"Flintab",country:"Sweden",city:"Jönköping",date:"Wed 30 Sep",slot:"14:00",
+  address:"Kabelvägen 4, 553 02 Jönköping",airport:"JKG ~10 min",
+  contact:"Johan RYTKONEN — Strategic Purchaser (cc Per Johansson)",email:"johan.rytkonen@flintab.se",
+  meeting_status:"✅ LOCKED at 14:00 (Johan confirmed Aug 18) — moved from the original 15:00 so the Stockholm arrival lands ~19:00 instead of ~20:00",class:"VAR / Equipment Maker",domain:"Industrial",subdomain:"Weighing Systems",company_status:"Active",
+  goal:"BD target: understand Flintab's R&D cycle, sourcing process and markets — build toward being their default IPC/display supplier, not a one-quote vendor. (GOT5103→GOT110A LTB is a minor side item, not the reason to meet.) Zero detour: Jönköping sits directly on the E4 between Gothenburg and Stockholm."},
+ {company:"Recab AB",country:"Sweden",city:"Hägersten, Stockholm",date:"Thu 1 Oct",slot:"14:00",
+  address:"Vretensborgsvägen 28, 126 30 Hägersten",airport:"ARN ~30 min",
+  contact:"Jan-Fredric KARLSSON — Head of Sales",email:"jan-fredric.karlsson@recab.com",
+  meeting_status:"✅ CONFIRMED — Jan-Fredric replied Aug 18: 14:00 Oct 1 works. He's not 100% sure he'll be in the office himself but confirmed \"you will get proper attention.\" Denmark (Tue 15, Alfa Laval) is a separate, already-locked visit",class:"Channel",domain:"Mixed",subdomain:"—",company_status:"ProActive",
+  goal:"Highest-leverage meeting of the Swedish leg. Core channel review and 2027 planning — the tBOX810 maritime sample discussion now happens with Alfa Laval directly in Denmark instead. Recab is also the gateway to Kongsberg Discovery."},
+ {company:"Cat AB",country:"Sweden",city:"Sundbyberg",date:"Thu 1 Oct",slot:"AM 9:30",
+  address:"Sundbyberg, Stockholm (no street address in vault)",airport:"ARN ~25 min",
+  contact:"Pontus LUNDIN — direct contact via ATEA channel since Jun 9",email:"pontus@catab.se",
+  meeting_status:"✅ LOCKED — Pontus replied Aug 14 (\"morning is also ok, you are welcome any time\"), TC set 9:30",class:"Aggregator",domain:"Mixed",subdomain:"Display / Signage",company_status:"Active",
+  goal:"BD target: Cat AB has real transportation-sector depth — previously worked with Moxa on a major project. Discuss the transportation/rail vertical specifically: their role vs Moxa, what a display/signage aggregator needs from an IPC partner, and whether Axiomtek can be positioned alongside or in place of Moxa on future transport work. Direct outreach to Pontus after Aug 10 — the ATEA case closed lost Jul 3, but he said he'd revert if the situation changes."},
+ {company:"Alstom Group (Sweden office)",country:"Sweden",city:"Stockholm",date:"Fri 2 Oct",slot:"AM (alt)",
+  address:"Buteljgatan 4, 117 60 Stockholm (new office, opened Aug 2025)",airport:"ARN ~40 min",
+  contact:"Magnus ENGDAHL — Commodity Manager",email:"— see Alstom Group note",
+  meeting_status:"✉ Invited Aug 13 — offered as an alternative to InnoTrans booth meeting. Awaiting reply. NOTE: same AM slot as Telac Elektronik AB below — not both, pick one once a reply lands",class:"Rail OEM",domain:"Rolling Stock",subdomain:"Signalling / TCMS",company_status:"Re-Engage",
+  goal:"Was ghosting since May — fresh outreach Aug 13 revived the thread with two options (InnoTrans Hall 4.1/755 or this Sweden office visit). Territory: Europe ex DACH/Italy/UK. Pre-position tBOX600 (EN50155/Jetson, 27Q2 rollout)."},
+ {company:"Telac Elektronik AB",country:"Sweden",city:"Lidingö",date:"Fri 2 Oct",slot:"AM",
+  address:"Hustegavägen 1, 181 22 Lidingö",airport:"ARN ~25 min",
+  contact:"Albin FELDT + Christoffer BIHAGEN — Sales / Product Managers",email:"albin@telac.se",
+  meeting_status:"✉ Invited Jul 23 (both together) — awaiting reply. Moved to AM — Friday PM is tight against the 15:30 ARN departure. Holding follow-up until 2026-08-18, pending Alstom's reply on the same slot",class:"VAR / Equipment Maker",domain:"Mixed",subdomain:"Electronics Distribution",company_status:"Re-Engage",
+  goal:"BD target: diagnose why order volume is thin despite an apparent fit — Christoffer's 2025 Congatec Q7 thread (1K/yr potential) died on a product gap, not a relationship problem. Reset conversation: their R&D cycle, sourcing process, end-markets, and how Axiomtek becomes the default rather than a one-off quote."},
+ {company:"Qmatic",country:"Sweden",city:"Molnbo",date:"Fri 2 Oct",slot:"FLEX — no confirmed slot",
+  address:"Molnbo, Sweden (~50 km SW of Stockholm)",airport:"ARN ~55 min",
+  contact:"Dasha LEIJON — Head of Product Management  (⚠ no email held)",email:"— not in vault",
+  meeting_status:"⚠ OVERFLOW ONLY — 11th Swedish company against 10 slots",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Kiosk",company_status:"Developing",
+  goal:"Queue-management and kiosk compute. Both contacts were InMailed Apr 24 with no reply and no email addresses are held, making this the coldest target on the trip. Ask them to come into Stockholm rather than driving to Molnbo — otherwise this is the natural one to drop."}
+];
+
+/* Map coordinates, keyed to the curated company names */
+var COORD={
+ 'Milestone Systems':[55.65,12.41],'Novicom':[55.68,12.45],'DANBIT':[55.46,12.18],'Alfa Laval (via Recab)':[57.0488,9.9217],
+ 'Suomen Addon':[60.29,25.04],'Savox':[61.4978,23.7610],'Alpha Point':[60.17,24.94],'Kuori':[60.205,24.655],
+ 'StrongPoint ASA':[59.91,10.75],'Kongsberg Discovery':[59.42,10.48],'Autic':[59.27,10.41],
+ 'Frost Unmanned':[57.99,11.94],'Flintab':[57.78,14.16],'Recab AB':[59.33,18.07],'Cat AB':[59.36,17.97],
+ 'Telac Elektronik AB':[59.37,18.14],'Qmatic':[59.05,17.36],'Alstom Group (Sweden office)':[59.30,18.07]
+};
+var FLAG={Denmark:'🇩🇰',Finland:'🇫🇮',Germany:'🇩🇪',Norway:'🇳🇴',Sweden:'🇸🇪'};
+var CC={Denmark:'DK',Finland:'FI',Germany:'DE',Norway:'NO',Sweden:'SE'};
+/* Per-country identity colour (flag-based). Finland uses its flag-blue so the marker stays visible. */
+var CHD={Denmark:'#C8102E',Finland:'#002F6C',Germany:'#FFCE00',Norway:'#00205B',Sweden:'#4E95D9'};
+var AIR='#7B1FA2',ROAD='#F57C00';
+var BY={};DETAIL.forEach(function(d){BY[d.company]=d});
+
+/* Meeting-invite status — explicit 4-level scale (TC, 22 Jul).
+   red = not yet invited · yellow = invited, pending reply ·
+   lgreen = confirmed to meet, time/details adjusting · dgreen = date+time+location all locked */
+var MSTATUS={
+  'Milestone Systems':'yellow','Novicom':'yellow','DANBIT':'dgreen',
+  'Suomen Addon':'dgreen','Savox':'dgreen','Alpha Point':'dgreen','Kuori':'yellow',
+  'StrongPoint ASA':'yellow','Autic':'dgreen','Kongsberg Discovery':'yellow',
+  'Frost Unmanned':'dgreen','Flintab':'dgreen','Recab AB':'dgreen',
+  'Cat AB':'dgreen','Telac Elektronik AB':'yellow','Qmatic':'red','Alstom Group (Sweden office)':'yellow',
+  'Alfa Laval (via Recab)':'dgreen'
+};
+var MSLABEL={red:'Not yet invited',yellow:'Invited — pending reply',
+  lgreen:'Confirmed to meet — time adjusting',dgreen:'Date · time · location locked'};
+DETAIL.forEach(function(d){d.ms=MSTATUS[d.company]||'red';});
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* Status state → colour. ⚠ outranks everything else. */
+function statusClass(s){
+  if(s.indexOf('⚠')>-1) return 'red';
+  if(s.indexOf('✅')>-1) return 'green';
+  if(s.indexOf('✉')>-1) return 'amber';
+  return 'grey';
+}
+
+/* ── Detail drawer ────────────────────────────────────── */
+function openDetail(name){
+  var d=BY[name]; if(!d) return;
+  var mailMissing=/^—/.test(d.email);
+  var h='';
+  h+='<div class="d-head c-'+CC[d.country]+'"><button class="d-close" onclick="closeDetail()" aria-label="Close">✕</button>'
+    +'<div class="d-name">'+esc(d.company)+'</div>'
+    +'<div class="d-where">'+FLAG[d.country]+' '+esc(d.city)+', '+esc(d.country)+'</div></div>';
+  h+='<div class="d-body">';
+
+  h+='<div class="d-sec"><div class="d-lbl">Date · Time slot · Address</div>'
+    +'<div class="d-when"><span class="d-chip date">'+esc(d.date)+'</span><span class="d-chip">'+esc(d.slot)+'</span></div>'
+    +'<div class="d-row"><div class="d-addr">'+esc(d.address)+'<span class="apt">✈ '+esc(d.airport)+'</span></div></div></div>';
+
+  h+='<div class="d-sec"><div class="d-lbl">Main contact</div><div class="d-row"><b>'+esc(d.contact)+'</b><br>'
+    +(mailMissing?'<span class="d-mail missing">'+esc(d.email)+'</span>'
+                 :'<a class="d-mail" href="mailto:'+esc(d.email)+'">'+esc(d.email)+'</a>')
+    +'</div></div>';
+
+  h+='<div class="d-sec"><div class="d-lbl">Meeting status</div>'
+    +'<div class="d-status ms-'+d.ms+'"><span class="ms-tag">'+MSLABEL[d.ms]+'</span>'+esc(d.meeting_status)+'</div></div>';
+
+  h+='<div class="d-sec"><div class="d-lbl">Class · Domain · Subdomain</div><div class="d-taxo">'
+    +'<div class="d-tx"><div class="d-tx-k">Class</div><div class="d-tx-v">'+esc(d.class)+'</div></div>'
+    +'<div class="d-tx"><div class="d-tx-k">Domain</div><div class="d-tx-v">'+esc(d.domain)+'</div></div>'
+    +'<div class="d-tx"><div class="d-tx-k">Subdomain</div><div class="d-tx-v">'+esc(d.subdomain)+'</div></div>'
+    +'<div class="d-tx"><div class="d-tx-k">Account</div><div class="d-tx-v">'+esc(d.company_status)+'</div></div>'
+    +'</div></div>';
+
+  h+='<div class="d-sec"><div class="d-lbl">Reason to meet — goal of the meeting</div>'
+    +'<div class="d-goal">'+esc(d.goal)+'</div></div>';
+
+  h+='<div class="d-hint">Esc or click outside to close</div></div>';
+
+  document.getElementById('detail-inner').innerHTML=h;
+  document.getElementById('detail').classList.add('on');
+  document.getElementById('scrim').classList.add('on');
+}
+function closeDetail(){
+  document.getElementById('detail').classList.remove('on');
+  document.getElementById('scrim').classList.remove('on');
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeDetail();});
+
+/* ── Map ──────────────────────────────────────────────── */
+var map=L.map('map',{center:[58.6,14.5],zoom:5});
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {attribution:'© OpenStreetMap contributors',maxZoom:18}).addTo(map);
+
+function mkIcon(d){
+  var col=CHD[d.country], lab=FLAG[d.country];
+  var flex=/FLEX/i.test(d.slot);
+  var dash=flex?' stroke-dasharray="4,3"':'';
+  var op=flex?'.6':'1';
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40" opacity="'+op+'">'
+    +'<path d="M15 0C6.7 0 0 6.7 0 15c0 10.5 15 25 15 25S30 25.5 30 15C30 6.7 23.3 0 15 0z" fill="'+col+'" stroke="white" stroke-width="2"'+dash+'/>'
+    +'<circle cx="15" cy="14.5" r="8" fill="white" opacity=".93"/>'
+    +'<text x="15" y="18.5" font-size="9" text-anchor="middle">'+lab+'</text>'
+    +'</svg>';
+  return L.divIcon({html:svg,className:'',iconSize:[30,40],iconAnchor:[15,40],popupAnchor:[0,-40]});
+}
+
+var markers={};
+DETAIL.forEach(function(d){
+  var c=COORD[d.company]; if(!c) return;
+  var m=L.marker(c,{icon:mkIcon(d)}).addTo(map);
+  m.bindTooltip('<b>'+esc(d.company)+'</b><br>'+esc(d.date)+' · '+esc(d.slot)+'<br><i>click for detail</i>',
+                {direction:'top',offset:[0,-38]});
+  m.on('click',function(){openDetail(d.company);});
+  markers[d.company]=m;
+});
+
+/* InnoTrans + Elkjøp — events, not customer meetings */
+[{n:'InnoTrans 2026',ll:[52.50,13.27],c:CHD['Germany'],t:'<b>InnoTrans 2026</b><br>Messe Berlin — hall 4.1, booth #755<br>Tue 22 – Fri 25 Sep · 22 meetings'},
+ {n:'Elkjøp (social)',ll:[59.91,10.75],c:CHD['Norway'],t:'<b>Elkjøp — social evening</b><br>Oslo · Sun 27 Sep<br>Not a business meeting'}
+].forEach(function(e){
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">'
+    +'<circle cx="13" cy="13" r="10" fill="'+e.c+'" stroke="white" stroke-width="2" stroke-dasharray="3,2"/></svg>';
+  L.marker(e.ll,{icon:L.divIcon({html:svg,className:'',iconSize:[26,26],iconAnchor:[13,13]})})
+   .addTo(map).bindTooltip(e.t,{direction:'top',offset:[0,-12]});
+});
+
+/* Week-3 drive + ferry — road green (ferry counts as road) */
+L.polyline([[59.91,10.75],[59.27,10.41],[59.42,10.48]],
+  {color:ROAD,weight:4.5,opacity:.95}).addTo(map)
+  .bindTooltip('🚗 Oslo → Tønsberg → Horten · 110 km');
+L.polyline([[59.42,10.48],[59.43,10.66]],
+  {color:ROAD,weight:4.5,opacity:.95,dashArray:'8,7'}).addTo(map)
+  .bindTooltip('⛴ Bastø Fosen ferry · Horten → Moss · 35 min (counts as road)');
+L.polyline([[59.43,10.66],[57.99,11.94],[57.71,11.97],[57.78,14.16],[59.33,18.07]],
+  {color:ROAD,weight:4.5,opacity:.95}).addTo(map)
+  .bindTooltip('🚗 Moss → Stora Höga → Jönköping → Stockholm · 725 km');
+
+/* Flights — dark green arcs */
+function arc(from,to,label){
+  var pts=[];
+  for(var i=0;i<=48;i++){
+    var t=i/48;
+    pts.push([from[0]+(to[0]-from[0])*t+Math.sin(t*Math.PI)*1.6, from[1]+(to[1]-from[1])*t]);
+  }
+  L.polyline(pts,{color:AIR,weight:3.5,dashArray:'9,7',opacity:.95}).addTo(map).bindTooltip(label);
+}
+arc([55.68,12.57],[60.17,24.94],'✈️ Wed 16 Sep · CPH → HEL · 1h35');
+arc([60.17,24.94],[52.52,13.40],'✈️ Sun 20 Sep · HEL → BER · 2h00');
+arc([52.52,13.40],[59.91,10.75],'✈️ Sat 26 Sep · BER → OSL · 1h40 · 🔴 BOOK FIRST');
+
+/* ── Sidebar company list ─────────────────────────────── */
+(function(){
+  var order=['Denmark','Finland','Norway','Sweden'];
+  var html='';
+  order.forEach(function(k){
+    var list=DETAIL.filter(function(d){return d.country===k});
+    if(!list.length)return;
+    var col=CHD[k];
+    html+='<div class="grp-hd" style="color:'+(k==='Finland'?'#6f8fd0':col)+'">'+FLAG[k]+' '+k+'</div>';
+    list.forEach(function(d){
+      var flex=/FLEX/i.test(d.slot);
+      html+='<div class="co-item'+(flex?' flexslot':'')+'" style="border-left-color:'+col+'"'
+        +' onclick="focusCo(\''+d.company.replace(/'/g,"\\'")+'\')">'
+        +'<div class="co-dot" style="background:'+col+'"></div><div class="co-info">'
+        +'<div class="co-name">'+esc(d.company)+'</div>'
+        +'<div class="co-meta">'+esc(d.city)+' · '+esc(d.date)+'</div>'
+        +'</div></div>';
+    });
+  });
+  document.getElementById('co-items').innerHTML=html;
+})();
+
+function focusCo(name){
+  openDetail(name);
+  if(curView==='map'&&COORD[name]) map.flyTo(COORD[name],9,{duration:.8});
+}
+
+/* ── Calendar ─────────────────────────────────────────── */
+function coSlot(name,label){
+  var d=BY[name]; if(!d) return '';
+  var flex=/FLEX/i.test(d.slot);
+  var lbl=label||d.slot; /* label param is now an optional override — default is DETAIL.slot, single source of truth */
+  return '<div class="slot'+(flex?' flexslot':'')+'" onclick="openDetail(\''+name.replace(/'/g,"\\'")+'\')" title="'+MSLABEL[d.ms]+' — click for detail">'
+    +'<span class="ms-dot ms-'+d.ms+'" title="'+MSLABEL[d.ms]+'"></span>'
+    +'<div class="slot-l">'+lbl+'</div><div class="slot-n">'+esc(d.company)+'</div>'
+    +'<div class="slot-c">'+esc(d.city)+'</div></div>';
+}
+function noteSlot(label,name,sub,cls){
+  return '<div class="slot noclick '+(cls||'')+'"><div class="slot-l">'+label+'</div>'
+    +'<div class="slot-n">'+name+'</div>'+(sub?'<div class="slot-c">'+sub+'</div>':'')+'</div>';
+}
+/* hop = transport BETWEEN two meetings on the same day. mode: 'road' | 'air' | 'sea' */
+function hop(txt,mode){
+  return '<div class="hop '+(mode||'road')+'"><span>'+txt+'</span></div>';
+}
+/* flight/ferry occupying a slot in its own right (replaces the old "Travel" placeholder) */
+function moveSlot(label,name,sub,mode){
+  return '<div class="slot noclick move '+(mode||'air')+'"><div class="slot-l">'+label+'</div>'
+    +'<div class="slot-n">'+name+'</div>'+(sub?'<div class="slot-c">'+sub+'</div>':'')+'</div>';
+}
+
+var weeks=[
+ {n:1,title:'Week 1 — Denmark + Finland',meta:'Sun 13 Sep – Sun 20 Sep',count:'6 meetings + 1 waiting + 1 backup · 2 countries',days:[
+  {d:'Mon 14 Sep',mode:'air',flag:'🇩🇰',
+   body:moveSlot('07:40','✈️ arrive AMS','CI73 dep TPE Sun 13 · 23:10','air')
+   +hop('5h00 connection at Schiphol','air')
+   +moveSlot('12:40','✈️ AMS → CPH','KL1271 · 12:40 → 14:00','air')
+   +hop('🚇 M2 to hotel, drop bags','road')
+   +noteSlot('PM','🅱 OPEN','Henrik is out of office this day — Novicom moved to the 15th, contingent','flexslot'),
+   leg:'Afternoon free again — Novicom cannot do the 14th. Land 14:00, bags ~14:40, hotel by 15:05. Recovery day after the long-haul, or a slot to fill if something else converts',legMode:'none',stay:'Copenhagen'},
+  {d:'Tue 15 Sep',flag:'🇩🇰',body:hop('🚗 AM: travel to Aalborg','road')+coSlot('Alfa Laval (via Recab)'),
+   leg:'AM travel to Aalborg, PM Alfa Laval (via Recab) — locked',legMode:'road',stay:'Copenhagen'},
+  {d:'Wed 16 Sep',flag:'🇩🇰→🇫🇮',body:coSlot('DANBIT')+hop('🚕 Køge → CPH 40 min','road')
+   +moveSlot('PM','✈️ CPH → HEL','AY958 13:55 → 16:20 · 1h35','air'),
+   leg:'+1h timezone · land 16:20',legMode:'air',stay:'Helsinki'},
+  {d:'Thu 17 Sep',flag:'🇫🇮',body:coSlot('Alpha Point')+hop('🚕 Helsinki → Vantaa 20 min','road')+coSlot('Suomen Addon')
+   +noteSlot('evening','🍽️ Dinner with Tomi','✅ Confirmed — hotel is in Vantaa, no travel needed'),
+   leg:'Fullest day of the Finnish leg — Alpha Point AM, Suomen Addon 14:00 + 16:00, dinner with Tomi in the evening. Hotel 5 min away in Vantaa',legMode:'road',stay:'Vantaa'},
+  {d:'Fri 18 Sep',flag:'🇫🇮',body:coSlot('Savox'),
+   leg:'Helsinki → Tampere by train, ~1h25–1h40 each way — day trip, back to Helsinki same evening',legMode:'road',stay:'Helsinki'},
+  {d:'Sat 19 Sep',flag:'🇫🇮',body:noteSlot('all day','Free day','Helsinki — Kuori on the waiting list, not here'),
+   leg:'True buffer day — Kuori is on the waiting list above, not slotted here',legMode:'none',stay:'Helsinki'},
+  {d:'Sun 20 Sep',mode:'air',flag:'✈️',body:moveSlot('12:05','✈️ HEL → BER','AY1433 Finnair · 12:05 → 13:05','air')
+   +noteSlot('PM','Arrive Berlin','Unhurried — Monday is setup, not show day'),
+   leg:'−1h timezone · Mon AM flights exist as backup if this slips',legMode:'air',stay:'Berlin'}
+ ]},
+ {n:2,title:'Week 2 — Berlin / InnoTrans',meta:'Mon 21 Sep – Sun 27 Sep',count:'4 meetings scheduled · goal 10 · 1 social',days:[
+  {d:'Mon 21 Sep',flag:'🇩🇪',body:noteSlot('all day','Free / prep','Booth setup is marketing\'s job — not TC','innotrans'),
+   leg:'Day is open · also the backup landing day if Sunday\'s flight slips',legMode:'none',stay:'Berlin'},
+  {d:'Tue 22 Sep',flag:'🇩🇪',body:noteSlot('AM','Our booth','Hall 4.1 #755','innotrans')
+   +noteSlot('PM · scout T1','See what they bring','DA Group · Axentia · GMV (all 2.1) · Alstom (3.2, key)','booth-walk')
+   +noteSlot('14:00–15:00','🇹🇼 Taiwan Pavilion','Opening + Rail Resilience · Hall 11.2/310 · Lars invited (either event)','social')
+   +noteSlot('PM · Tier 2','Most-engaged','OTIV (7.1a/500) · Mobile Locker (7.1c/410) · PantoInspect (11.2, by pavilion)','booth-walk')
+   +noteSlot('evening','Dinner with Lars','Techon7 partnership','social'),
+   leg:'Day 1 — scout stands + Alstom + top T2. Taiwan Pavilion 14:00 (PantoInspect next door in 11.2). Dinner with Lars evening',legMode:'none',stay:'Berlin'},
+  {d:'Wed 23 Sep',flag:'🇩🇪',body:noteSlot('10:30–11:30','🇹🇼 Taiwan Pavilion','Breakfast · 11.2/310 · Lars invited (either event)','social')
+   +noteSlot('14:00','Axentia ✅','Johan · locked','innotrans mtg-conf')
+   +noteSlot('16:00','DA-Group ✅','Timo · moved from 10:00','innotrans mtg-conf')
+   +noteSlot('between','Hall 4.1 walk-ups','ACTIA · Teldat · ACKSYS · RideOnTrack','booth-walk'),
+   leg:'Event 2 at 11.2 (10:30, Lars invited) → back to booth · Axentia 14:00 · DA-Group 16:00 (moved from 10:00)',legMode:'none',stay:'Berlin'},
+  {d:'Thu 24 Sep',flag:'🇩🇪',body:noteSlot('11:00','GMV 📨','Daniel + Rail Dir · proposed','innotrans mtg-pend')
+   +noteSlot('PM','Booth Visit','Hall 1.1: Rolen · Vending Automater  |  NW pair: Icomera (22) · Latronix (23)','booth-walk'),
+   leg:'PM: Hall 1.1 stops + NW pair (22 & 23 are neighbours)',legMode:'none',stay:'Berlin'},
+  {d:'Fri 25 Sep',flag:'🇩🇪',body:noteSlot('AM','Booth + follow-ups','close the week','innotrans')
+   +noteSlot('pocket · if time','Far singles','EKE (hub27, far SW) · PantoInspect (11.2, east)','booth-walk'),
+   leg:'Pocket targets are far-flung — visit only if time allows',legMode:'none',stay:'Berlin'},
+  {d:'Sat 26 Sep',mode:'air',flag:'🇳🇴',body:moveSlot('09:45','✈️ BER → OSL','DY1103 Norwegian · 09:45 → 11:25','air')
+   +noteSlot('evening','Elkjøp social','Not a business meeting','social'),
+   leg:'🔴 the ONLY direct flight that Saturday — book first',legMode:'air',stay:'Oslo'},
+  {d:'Sun 27 Sep',flag:'🇳🇴',body:noteSlot('all day','Personal time','Oslo — nothing scheduled')
+   +noteSlot('evening','🚗 Collect car at OSL','✅ Avis at Gardermoen open Sun to 23:00'),
+   leg:'✅ Evening pickup works — at the AIRPORT, not the city (city desks shut 16:30 Sun)',legMode:'road',stay:'Oslo'}
+ ]},
+ {n:3,title:'Week 3 — Norway + Sweden',meta:'Mon 28 Sep – Sat 3 Oct',count:'9 meetings incl. 1 flex · ~830 km driving',days:[
+  {d:'Mon 28 Sep',flag:'🇳🇴',body:coSlot('StrongPoint ASA')+hop('🚗 Oslo → Tønsberg 90 km · 1h10','road')+coSlot('Autic'),
+   leg:'Autic visited without Recab present',legMode:'road',stay:'Tønsberg'},
+  {d:'Tue 29 Sep',flag:'🇳🇴→🇸🇪',body:hop('🚗 Tønsberg → Horten 15 km · 15 min','road')+coSlot('Kongsberg Discovery')
+   +moveSlot('PM','⛴ Horten → Moss','Bastø Fosen 35 min, then E6 south','sea')
+   +hop('🚗 Moss → Stenungsund ≈275 km · ~3h','road'),
+   leg:'Recab-hosted in Horten · ferry departs from Horten itself · Stenungsund is ~30 min past Gothenburg on the E6, closer to Frost Unmanned',legMode:'road',stay:'Stenungsund'},
+  {d:'Wed 30 Sep',flag:'🇸🇪',warn:true,body:coSlot('Frost Unmanned')+hop('🚗 Stora Höga → Jönköping 186 km · ~2h','road')+coSlot('Flintab')
+   +hop('🚗 evening → Stockholm 290 km · 3h','road'),
+   leg:'⚠️ ~5h driving — TC assumes 2h for Frost Unmanned, leaves by 12:00 regardless of exact start; Flintab confirmed 14:00 (moved from 15:00) so Stockholm arrival is ~19:00 (Avis key-drop) instead of ~20:00',legMode:'road',stay:'Stockholm'},
+  {d:'Thu 1 Oct',flag:'🇸🇪',body:coSlot('Cat AB')+hop('🚕 Sundbyberg → Hägersten 20 min','road')+coSlot('Recab AB'),
+   leg:'Cat AB locked 9:30 AM — Recab (day confirmed, no time ever fixed) asked to take the afternoon instead, awaiting reply',legMode:'road',stay:'Stockholm'},
+  {d:'Fri 2 Oct',flag:'🇸🇪',body:coSlot('Telac Elektronik AB')+coSlot('Alstom Group (Sweden office)')+noteSlot('PM','Free','Before the evening flight')
+   +hop('🚗 leave by ~15:30 · car back by 16:15','road')
+   +moveSlot('18:25','✈️ ARN → AMS','SK1557 · 18:25 → 20:35','air'),
+   leg:'⚠️ Two AM candidates for one slot — Telac (invited Jul 23, follow-up held until Aug 18) and Alstom Sweden office (invited Aug 13, alt to InnoTrans) — pick whichever confirms first. Car return is OFF-SITE at ARN — 25–40 min via shuttle',legMode:'air',stay:'Sloterdijk (friend)'},
+  {d:'Sat 3 Oct',mode:'air',flag:'✈️',
+   body:noteSlot('AM','Rested at Schiphol','10-min walk to the terminal')
+   +moveSlot('11:00','✈️ AMS → TPE','CI74 · 11:00 → 06:15+1 Sun','air'),
+   leg:'Fallback if Friday evening fails: KL1214 ARN 06:30 same morning',legMode:'air'},
+  {d:'',mode:'empty',flag:'',body:'',leg:'',legMode:'none'}
+ ]}
+];
+
+/* Primary country of a calendar day, from its leading flag emoji */
+function ccOfDay(day){
+  var f=day.flag||'';
+  if(f.indexOf('🇩🇰')===0)return'DK';
+  if(f.indexOf('🇫🇮')===0)return'FI';
+  if(f.indexOf('🇩🇪')===0)return'DE';
+  if(f.indexOf('🇳🇴')===0)return'NO';
+  if(f.indexOf('🇸🇪')===0)return'SE';
+  return'DK';
+}
+(function(){
+  var dows=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var html='';
+  html+='<div class="callout info" style="margin-bottom:14px"><b>Proposed schedule.</b> '
+    +'Week-level commitments are being secured now; <b>exact days and AM/PM slots lock at the end of August</b>. '
+    +'Click any company for its contact, meeting status and the reason to meet.</div>';
+  html+='<div class="callout warn" style="margin-bottom:14px"><b>⏳ Waiting list — no fixed day yet:</b><br>'
+    +'<span class="wait-chip" onclick="openDetail(\'Kuori\')"><span class="ms-dot ms-yellow" style="position:static"></span>Kuori</span>'
+    +'<div style="margin-top:6px">Novicom is off the waiting list — Henrik replied Aug 31 and Mon 14 Sep 16:00 is proposed. Milestone Systems skipped this trip (day given to Recab/Alfa Laval — see Milestone detail for follow-up plan). Kuori is backup-only — Fri 18 Sep is now Savox/Tampere, so it needs a different day if it converts.</div></div>';
+  weeks.forEach(function(w){
+    html+='<div class="wk"><div class="wk-hd h'+w.n+'"><div class="wk-title">'+w.title+'</div>'
+      +'<div class="wk-meta">'+w.meta+'</div><div class="wk-count">'+w.count+'</div></div>'
+      +'<div class="wk-grid-wrap"><div class="wk-grid g'+w.n+'">';
+    dows.forEach(function(d){html+='<div class="dow">'+d+'</div>'});
+    w.days.forEach(function(day){
+      if(day.mode==='empty'){html+='<div class="cell empty"></div>';return;}
+      var cls='cell '+(day.mode==='air'?'air':'f-'+ccOfDay(day));
+      html+='<div class="'+cls+'">'
+        +'<div class="c-date">'+day.d+'<span class="c-flag">'+(day.warn?'⚠️ ':'')+day.flag+'</span></div>'
+        +day.body
+        +(day.leg?'<div class="travel-leg '+day.legMode+'">'+day.leg+'</div>':'')
+        +(day.stay?'<div class="stay-in">🛏 '+day.stay+'</div>':'')
+        +'</div>';
+    });
+    html+='</div></div></div>';
+  });
+  html+='<div class="cal-legend">'
+    +'<span class="li"><span class="sw" style="background:#FBE0E4;border-color:#C8102E"></span>🇩🇰 Denmark</span>'
+    +'<span class="li"><span class="sw" style="background:#FFFFFF;border-color:#B8B8B8"></span>🇫🇮 Finland</span>'
+    +'<span class="li"><span class="sw" style="background:#FFF4C2;border-color:#FFCE00"></span>🇩🇪 Germany · InnoTrans</span>'
+    +'<span class="li"><span class="sw" style="background:#D6DCEA;border-color:#00205B"></span>🇳🇴 Norway</span>'
+    +'<span class="li"><span class="sw" style="background:#E3F0FA;border-color:#4E95D9"></span>🇸🇪 Sweden</span>'
+    +'<span class="li"><span class="sw" style="background:#7B1FA2"></span>Flight</span>'
+    +'<span class="li"><span class="sw" style="background:#F57C00"></span>Road &amp; ferry</span>'
+    +'</div>';
+  html+='<div class="cal-legend" style="margin-top:8px"><b style="color:#c8d3e6;margin-right:2px">Meeting status</b>'
+    +'<span class="li"><span class="ms-dot ms-red" style="position:static"></span>Not yet invited</span>'
+    +'<span class="li"><span class="ms-dot ms-yellow" style="position:static"></span>Invited — pending</span>'
+    +'<span class="li"><span class="ms-dot ms-lgreen" style="position:static"></span>Confirmed — time adjusting</span>'
+    +'<span class="li"><span class="ms-dot ms-dgreen" style="position:static"></span>Date · time · location locked</span>'
+    +'</div>';
+  document.getElementById('calendar').innerHTML=html;
+})();
+
+/* ── Transportation view ──────────────────────────────── */
+/* [date, airline, flight#, dep, depTime, arr, arrTime, checkedBag, carryOn, price, change, refund] — all legs booked & paid */
+var FLIGHTS=[
+ ['Sun 13 Sep','China Airlines','CI73','TPE','23:10','AMS','07:40+1','23kg ×2 free','7kg','NT$61,700 RT (combo w/ CI74)','✓','✗'],
+ ['Mon 14 Sep','KLM','KL1271','AMS','12:40','CPH','14:00','23kg','12kg','NT$17,885 (multi-city combo w/ KL1218)','✓','✗'],
+ ['Wed 16 Sep','Finnair','AY958','CPH','13:55','HEL','16:20','23kg','8kg','€409.77 (combo w/ AY1433)','✓','✗'],
+ ['Sun 20 Sep','Finnair','AY1433','HEL','12:05','BER','13:05','23kg','8kg','incl. (combo w/ AY958)','✓','✗'],
+ ['Sat 26 Sep','Norwegian','DY1103','BER','09:45','OSL','11:25','23kg','10kg','NT$4,765','✓','✗'],
+ ['Fri 2 Oct','KLM','KL1218','ARN','11:30','AMS','13:30','23kg','12kg','incl. (combo w/ KL1271)','✓','✗'],
+ ['Sat 3 Oct','China Airlines','CI74','AMS','11:00','TPE','06:15+1','23kg ×2 free','7kg','incl. (combo w/ CI73)','✓','✗']
+];
+function flightTable(rows){
+  var h='<div class="tbl-wrap"><table class="dt t-flights" style="min-width:920px"><thead><tr>'
+   +'<th>Date</th><th>Airline</th><th>Flight</th><th>Dept.</th><th>D-Time</th><th>Arrv.</th><th>A-Time</th>'
+   +'<th>Checked Bag</th><th>Carry-On</th><th>Price</th><th>Change</th><th>Refund</th>'
+   +'</tr></thead><tbody>';
+  rows.forEach(function(r){
+    h+='<tr class="accent"><td class="num">'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td>'
+     +'<td>'+r[3]+'</td><td class="num">'+r[4]+'</td><td>'+r[5]+'</td><td class="num">'+r[6]+'</td>'
+     +'<td class="num">'+r[7]+'</td><td class="num">'+r[8]+'</td><td class="num">'+r[9]+'</td>'
+     +'<td class="num">'+r[10]+'</td><td class="num">'+r[11]+'</td></tr>';
+  });
+  return h+'</tbody></table></div>';
+}
+
+(function(){
+  var road=[
+   ['Mon 28 Sep','Oslo → Tønsberg','~95 km','~1h15',0],
+   ['Tue 29 Sep','Tønsberg → Horten','15 km','~15m',0],
+   ['Tue 29 Sep','Horten → Moss <span class="sub">(Bastø Fosen <b>ferry</b> — counts as road)</span>','—','~35m',1],
+   ['Tue 29 Sep','Moss → Stora Höga','240 km','~2h30',0],
+   ['Wed 30 Sep','Stora Höga → Jönköping','186 km','~2h',0],
+   ['Wed 30 Sep','Jönköping → Stockholm <span class="sub">(evening)</span>','290 km','~3h',0]
+  ];
+  var h='';
+  h+='<div class="panel"><div class="panel-hd hd-flights"><div class="panel-title">✈️ Flights</div>'
+   +'<div class="panel-meta">7 legs · all booked &amp; paid</div>'
+   +'<div class="panel-tag">Detail in BizTripPlan.xlsx → Transportation</div></div>'
+   +flightTable(FLIGHTS)
+   +'</div>';
+
+  /* ── Baggage ── */
+  h+='<div class="callout ok"><b>🧳 ✅ SETTLED: one checked bag at 23 kg — this costs nothing, anywhere.</b> '
+   +'23 kg is exactly the free economy limit on every carrier on this itinerary, so <b>all excess fees disappear</b> '
+   +'(they would have run ≈ €260–380 at 25–30 kg) and <b>KLM stops being a blocker</b>. '
+   +'If more capacity is needed later, China Airlines economy gives <b>2 × 23 kg free</b> on the long-haul — a second bag can be added at no cost, '
+   +'but it would then need paying for on each EU leg (€20–70 per sector). <b>Keep it to one bag if possible.</b></div>';
+  /* ── Car rental ── */
+  h+='<div class="callout risk"><b>🚗 ARN HAS NO FAST CAR RETURN — budget 25–40 min, and return by 16:15 not 17:00.</b> '
+   +'All nine rental brands at Arlanda sit at the same <b>off-site Hyrbilscenter (P2 Long Term Beta, Vingvägen 4)</b>, ~2 km out, reachable only by the free P2 Beta shuttle. '
+   +'There is no terminal-adjacent return and no company is faster than another. '
+   +'⚠️ <b>Terminal 5 is under renovation</b> — the shuttle currently runs from <b>T4 (stop 7)</b> only; if the flight departs T5, add the T4→T5 transfer.</div>';
+  h+='<div class="panel"><div class="panel-hd hd-road"><div class="panel-title">🚗 Car rental — Oslo → Stockholm ARN, one way</div>'
+   +'<div class="panel-meta">Cross-border NO→SE · Sun 27 Sep – Fri 2 Oct · ~830 km</div>'
+   +'<div class="panel-tag">✅ Booked — Avis direct</div></div>'
+   +'<div class="mini" style="margin-top:8px"><b>✅ Pick up at OSL Gardermoen, not Oslo city — this solves the Sunday problem.</b> '
+   +'<b>Avis at OSL is open Sunday 08:00–23:00</b>, so an evening collection works there even though the city desks shut at 16:30. '
+   +'Cross-border one-way inventory also sits at the airport. Trade-off: OSL is north of Oslo while Tønsberg is south, costing one toll-ring passage.</div>'
+   +'<div class="mini"><b>Indicative cost</b> (KAYAK live search, OSL→ARN 27 Sep–2 Oct, seen 21 Jul 2026): intermediate SUV ≈ <b>$1,604</b>; cheapest Avis with free cancellation ≈ <b>$1,634</b>. '
+   +'One-way component is already inside these. <b>95 cars were available</b> on the exact dates, so no panic — but cross-border inventory is a small slice of the fleet.</div>'
+   +'<div class="mini"><b>Extras to expect:</b> CDW + theft protection are <b>mandatory in Norway</b> (excess buy-down 320–480 NOK/day; Enterprise excess 20,000 NOK). Full-to-full fuel — Avis penalty is +20% plus a 250 NOK charge, so refuel near Arlanda and keep the receipt. Winter tyres not needed in September (surcharge window is 1 Nov – 30 Apr).</div>'
+   +'<div class="mini"><b>⛴ Ferry:</b> permitted by rental terms, protection stays valid. Bastø Fosen Horten–Moss = <b>291 NOK</b> for a car up to 6 m, passengers free. AutoPASS route, bills through the rental.<br>'
+   +'<b>🛣 Tolls:</b> both countries bill automatically by plate and recharge via the rental company — Oslo ring 38–47 NOK per passage, Gothenburg max 60 SEK/day, Stockholm max 135 SEK/day. Expect a card charge weeks after the trip.</div>'
+   +'<div class="mini"><b>≈ Ground total (rental + CDW + fuel + ferry + tolls): NT$65,000–70,000</b> — rough planning estimate with buffer, see Budget tab for the line-by-line breakdown.</div>'
+   +'<div class="mini" style="color:#c00"><b>⚠️ At booking, declare the Norway→Sweden crossing explicitly and get authorisation in writing.</b> '
+   +'Enterprise penalises an undeclared crossing at 10,000 NOK with coverage voided; Avis warns of repatriation charges plus loss of all damage waivers. '
+   +'Book <b>direct with Avis or Hertz</b>, not through a broker that hides the supplier until after payment — the legality of this rental depends entirely on which supplier it is.</div>'
+   +'</div>';
+
+  h+='<div class="panel"><div class="panel-hd hd-road"><div class="panel-title">🚗 Road &amp; Ferry — Week 3</div>'
+   +'<div class="panel-meta">One continuous drive, Oslo → Stockholm, no backtrack</div>'
+   +'<div class="panel-tag">~830 km · ~9h30 over 3 days</div></div>'
+   +'<div class="tbl-wrap"><table class="dt t-road" style="min-width:520px"><thead><tr>'
+   +'<th>Date</th><th>Segment</th><th>Distance</th><th>Time</th></tr></thead><tbody>';
+  road.forEach(function(r){
+    h+='<tr class="accent'+(r[4]?' ferry-row':'')+'"><td class="num">'+r[0]+'</td><td>'+r[1]+'</td>'
+     +'<td class="num">'+r[2]+'</td><td class="num">'+r[3]+'</td></tr>';
+  });
+  h+='<tr class="totalrow"><td>Total</td><td>Oslo → Stockholm</td><td class="num">~830 km</td><td class="num">~9h30</td></tr>';
+  h+='</tbody></table></div>';
+  h+='<div class="callout warn" style="margin-top:12px"><b>⚠️ Car rental — cross-border Norway → Sweden one-way.</b> '
+   +'Pickup Oslo, drop-off Stockholm ARN. One-way cross-border drop fees are often <b>€300–800</b> and some firms refuse the movement outright. '
+   +'<b>Must be verified by 1 August</b>, before the drive is committed. Fallback: two separate rentals with the handover at Gothenburg.</div>';
+  h+='</div>';
+  document.getElementById('transport').innerHTML=h;
+})();
+
+/* ── Accommodation view ───────────────────────────────── */
+(function(){
+  var rows=[
+   [1,'Copenhagen','Mon 14 Sep','Wed 16 Sep',2,'Milestone (Brøndby), Novicom (Rødovre) and DANBIT (Køge) are all suburban'],
+   [1,'Vantaa','Wed 16 Sep','Sun 20 Sep',4,'✅ <b>BOOKED</b> · Original Sokos Hotel Vantaa · Hotels.com · €645.00 total · pay at check-in — covers the free day (19th) and the night before flying to Berlin'],
+   [2,'Berlin','Sun 20 Sep','Sat 26 Sep',6,'<b>⚠️ LONGEST STAY, InnoTrans week</b> — the city sells out and rates surge. <b>BOOK FIRST</b>'],
+   [3,'Oslo','Sat 26 Sep','Mon 28 Sep',2,'Elkjøp social Sat 26 evening · Sun 27 personal, car collected that evening'],
+   [3,'Tønsberg','Mon 28 Sep','Tue 29 Sep',1,'Overnight after Autic (Mon PM); Kongsberg/Horten is the next morning'],
+   [3,'Stenungsund','Tue 29 Sep','Wed 30 Sep',1,'✅ <b>BOOKED</b> · Stenungsbaden Yacht Club · SEK 1,881.00 · pay at property — right on the E6, closer to Frost Unmanned than Gothenburg'],
+   [3,'Stockholm','Wed 30 Sep','Fri 2 Oct',2,'Recab, Cat AB, Telac'],
+   [3,'Amsterdam — Sloterdijk','Fri 2 Oct','Sat 3 Oct',1,'✅ <b>Staying with a friend — no hotel needed.</b> Sloterdijk is ~15 min by train to Schiphol']
+  ];
+  var h='<div class="callout ok"><b>19 nights booked across 8 cities — only Stockholm still open.</b></div>';
+  var ACCOM=[
+   ['Mon 14 Sep','Wed 16 Sep','Copenhagen','Hotel Maritime',2,256.28,512.55,true,'Peder Skrams Gade 19, 1054 Copenhagen, Denmark'],
+   ['Wed 16 Sep','Sun 20 Sep','Vantaa','Original Sokos Hotel Vantaa',4,161.25,645.00,true,'Hertaksentie 2, 01300 Vantaa, Finland'],
+   ['Sun 20 Sep','Sat 26 Sep','Berlin','Astrid Hotel am Kurfürstendamm',6,236.87,1421.19,true,'Bleibtreustr. 20, 10623 Berlin, Germany'],
+   ['Sat 26 Sep','Mon 28 Sep','Oslo','Airbnb — Tollbugata 13',2,189.41,378.81,true,'Tollbugata 13, 0152 Oslo, Norway'],
+   ['Mon 28 Sep','Tue 29 Sep','Tønsberg','Quality Hotel Tønsberg',1,141.08,141.08,true,'Ollebukta 3, Tønsberg, Norway'],
+   ['Tue 29 Sep','Wed 30 Sep','Stenungsund','Stenungsbaden Yacht Club',1,166.29,166.29,true,'Södra Stenungsön 106, 444 48 Stenungsund, Sweden'],
+   ['Wed 30 Sep','Fri 2 Oct','Stockholm','Hotel C Stockholm',2,178.63,357.25,true,'Vasaplan 4, 111 20 Stockholm, Sweden'],
+   ['Fri 2 Oct','Sat 3 Oct','Amsterdam','Staying with a friend — Sloterdijk',1,0,0,true,'Sloterdijk, Amsterdam, Netherlands']
+  ];
+  h+='<div class="panel"><div class="panel-hd" style="border-left-color:#3b82f6"><div class="panel-title">🏨 Accommodation</div>'
+   +'<div class="panel-meta">8 of 8 booked · all prices in EUR</div>'
+   +'<div class="panel-tag">19 nights · 8 cities</div></div>'
+   +'<div class="tbl-wrap"><table class="dt" style="min-width:760px"><thead><tr>'
+   +'<th>Check-in</th><th>Check-out</th><th>City</th><th>Property</th><th>Nights</th><th>Price/Night</th><th>Total</th><th>Map</th>'
+   +'</tr></thead><tbody>';
+  var sumTotal=0, sumNights=0;
+  ACCOM.forEach(function(r){
+    var gmapUrl='https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(r[8]);
+    var ppn = r[5]===null ? 'SEK 1,300–1,900' : '€'+r[5].toFixed(2);
+    var tot = r[6]===null ? '—' : '€'+r[6].toFixed(2);
+    if(r[6]!==null) sumTotal += r[6];
+    sumNights += r[4];
+    h+='<tr'+(r[7]?'':' style="background:#332813"')+'><td class="num">'+r[0]+'</td><td class="num">'+r[1]+'</td>'
+     +'<td class="city">'+r[2]+'</td><td>'+(r[7]?'✅ ':'')+r[3]+'</td>'
+     +'<td class="num"><b>'+r[4]+'</b></td><td class="num">'+ppn+'</td><td class="num">'+tot+'</td>'
+     +'<td><a href="'+gmapUrl+'" target="_blank" rel="noopener">📍 Map</a></td></tr>';
+  });
+  var avgPerNight = sumTotal/sumNights;
+  h+='<tr class="totalrow"><td colspan="4">Sum — all 8 booked</td><td class="num">'+sumNights+'</td>'
+   +'<td class="num">€'+avgPerNight.toFixed(2)+'</td><td class="num">€'+sumTotal.toFixed(2)+'</td><td></td></tr>';
+  h+='</tbody></table></div>';
+  h+='</div>';
+
+  document.getElementById('hotels').innerHTML=h;
+})();
+
+/* ── Budget view — Planned vs Actual, foldable groups ─── */
+(function(){
+  /* row = [name, detail, plannedLabel, plannedTWD|null, actualLabel, actualTWD|null] — TWD null = not summed (still open) */
+  function nf(n){return 'NT$'+Math.round(n).toLocaleString('en-US');}
+  function row(name,detail,pLabel,pTWD,aLabel,aTWD){return {name:name,detail:detail,pLabel:pLabel,pTWD:pTWD,aLabel:aLabel,aTWD:aTWD};}
+
+  var FLIGHT_ROWS=[
+   row('China Airlines CI73 + CI74','TPE⇄AMS round trip · 13 Sep out / 3 Oct back','≈NT$53,000',53000,'NT$61,700 <span class="pill ok">✅ paid</span>',61700),
+   row('KLM KL1271 + KL1218','AMS→CPH 14 Sep + ARN→AMS 2 Oct · multi-city combo, one ticket','≈NT$11,100–19,450',15300,'NT$17,885 <span class="pill ok">✅ paid</span>',17885),
+   row('Finnair AY958 + AY1433','CPH→HEL 16 Sep + HEL→BER 20 Sep · combo','≈NT$10,400–15,000',12700,'€409.77 ≈NT$14,137 <span class="pill ok">✅ paid</span>',14137),
+   row('Norwegian DY1103','BER→OSL 26 Sep · only direct flight that day','≈€100 (≈NT$3,450)',3450,'NT$4,765 <span class="pill ok">✅ paid</span>',4765)
+  ];
+  var CAR_ROWS=[
+   row('Avis rental Oslo → ARN','5 days · incl. NOK 8,500 cross-border one-way fee','≈$1,604 (≈NT$50,500)',50500,'NOK 15,761.60 ≈NT$47,285 <span class="pill ok">✅ paid</span>',47285),
+   row('CDW / theft buy-down','Mandatory in Norway · 320–480 NOK/day × 5','≈NOK 1,600–2,400 (≈NT$4,800–7,200)',6000,'—',null),
+   row('Fuel','~830 km · full-to-full','≈NT$3,500–5,200',4350,'—',null),
+   row('Horten–Moss ferry','Bastø Fosen · car ≤6 m, passengers free','NOK 291 (≈NT$870)',870,'—',null),
+   row('Tolls','Oslo ring · Gothenburg ≤60 SEK/day · Stockholm ≤135 SEK/day','≈NT$900–1,700',1300,'—',null)
+  ];
+  var LOCAL_ROWS=[
+   row('Airport transfers','Flytoget to OSL for car pickup · Sloterdijk→Schiphol','—',null,'—',null)
+  ];
+  var ACC_ROWS=[
+   row('🇩🇪 Berlin — 6 nights','Astrid Hotel am Kurfürstendamm · 20–26 Sep · Hotels.com','€200/night cap (≈NT$41,400)',41400,'NT$49,031 <span class="pill ok">✅ paid</span>',49031),
+   row('🇩🇰 Copenhagen — 2 nights','Hotel Maritime · 14–16 Sep · Hotels.com','€200/night cap (≈NT$13,800)',13800,'NT$17,683 <span class="pill ok">✅ paid</span>',17683),
+   row('🇫🇮 Vantaa — 4 nights','Original Sokos Hotel Vantaa · 16–20 Sep · Hotels.com · pay at check-in','€200/night cap (≈NT$27,600)',27600,'€645.00 ≈NT$22,253 <span class="pill ok">✅ booked</span>',22253),
+   row('🇳🇴 Oslo — 2 nights','Airbnb, Tollbugata 13 Sentrum · 26–28 Sep · charges 17 Sep','€200/night cap (≈NT$13,800)',13800,'NT$13,068.75 <span class="pill ok">✅ booked</span>',13068.75),
+   row('🇳🇴 Tønsberg — 1 night','Quality Hotel Tønsberg · 28–29 Sep · pay at property','€200/night cap (≈NT$6,900)',6900,'NOK 1,622.40 ≈NT$4,867 <span class="pill ok">✅ booked</span>',4867),
+   row('🇸🇪 Stenungsund — 1 night','Stenungsbaden Yacht Club · 29–30 Sep · pay at property — replaces Gothenburg','€200/night cap (≈NT$6,900)',6900,'SEK 1,881.00 ≈NT$5,737 <span class="pill ok">✅ booked</span>',5737),
+   row('🇸🇪 Stockholm — 2 nights','Hotel C Stockholm · 30 Sep–2 Oct · Hotels.com · pay at property','€200/night cap (≈NT$13,800)',13800,'SEK 4,041.01 ≈NT$12,325 <span class="pill ok">✅ booked</span>',12325),
+   row('🇳🇱 Amsterdam — 1 night','Staying with a friend in Sloterdijk','€0',0,'€0 <span class="pill ok">✅</span>',0)
+  ];
+  var MEAL_ROWS=[
+   row('Per diem — 21 days','13 Sep–3 Oct · 2HR002 €70/day ceiling, before dinner-night deductions','€1,470 (≈NT$50,700)',50700,'—',null),
+   row('Client dinners / PR entertainment','3–5 dinners — Recab, Suomen Addon, Autic, DANBIT etc. · receipted 交際費','€600–1,000 (≈NT$20,700–34,500)',27600,'—',null)
+  ];
+  var INNO_ROWS=[
+   row('Booth costs','Hall 4.1 · #755 · setup is marketing\'s, not covered by this trip budget','—',null,'—',null)
+  ];
+  var OTHER_ROWS=[
+   row('Baggage','1 × 23 kg — no excess fee on any carrier','€0',0,'€0 <span class="pill ok">✅ confirmed</span>',0),
+   row('Small business gifts','pineapple cake / cookies / tea · NT$300 × 30 customers (incl. InnoTrans accounts)','NT$9,000',9000,'—',null),
+   row('Insurance / roaming / misc','CDW priced under Car rental · this is phone/roaming + incidentals','—',null,'—',null),
+   row('Contingency','10% of subtotal','—',null,'—',null)
+  ];
+
+  function sum(rows,key){return rows.reduce(function(a,r){return a+(r[key]||0);},0);}
+  function count(rows,key){return rows.filter(function(r){return r[key]!=null;}).length;}
+  function subLabel(rows){
+    var p=sum(rows,'pTWD'), a=sum(rows,'aTWD'), an=count(rows,'aTWD');
+    return 'Planned '+nf(p)+(an?' · Actual '+nf(a)+' ('+an+'/'+rows.length+' paid)':'');
+  }
+  function rowsTable(rows){
+    var h='<div class="tbl-wrap"><table class="dt" style="min-width:520px"><thead><tr>'
+     +'<th>Item</th><th>Detail</th><th style="text-align:right">Planned</th><th style="text-align:right">Actual</th>'
+     +'</tr></thead><tbody>';
+    rows.forEach(function(r){
+      h+='<tr class="accent"><td><b>'+r.name+'</b></td><td class="sub">'+r.detail+'</td>'
+       +'<td class="cost-cell">'+r.pLabel+'</td><td class="cost-cell" style="color:'+(r.aTWD!=null?'#4ade80':'#5d6b80')+'">'+r.aLabel+'</td></tr>';
+    });
+    return h+'</tbody></table></div>';
+  }
+  function nestedFold(title,rows,openAttr){
+    return '<details class="fold nested"'+(openAttr?' open':'')+'><summary>'+title+'<span class="fold-sub">'+subLabel(rows)+'</span></summary>'
+     +'<div class="fold-body">'+rowsTable(rows)+'</div></details>';
+  }
+  function topFold(title,bodyHtml,plannedTWD,actualTWD,actualPaidCount,rowCount,openAttr){
+    var sub='Planned '+nf(plannedTWD)+(actualPaidCount?' · Actual '+nf(actualTWD)+' ('+actualPaidCount+'/'+rowCount+' paid)':'');
+    return '<details class="fold"'+(openAttr?' open':'')+'><summary>'+title+'<span class="fold-sub">'+sub+'</span></summary>'
+     +'<div class="fold-body">'+bodyHtml+'</div></details>';
+  }
+
+  var h='<div class="callout info"><b>Planned vs Actual —</b> Planned = original rough estimate/budget cap. Actual = confirmed booked/paid amount from the Expense Ledger. '
+   +'TWD conversions use ≈34.5/EUR, ≈31.5/USD, ≈3.0/NOK, ≈3.05/SEK for comparability only. '
+   +'Master copy: <b>2609BizTrip Expense Ledger.xlsx</b>.</div>';
+
+  h+='<div class="panel"><div class="panel-hd" style="border-left-color:#3b82f6"><div class="panel-title">💰 Budget — click a group to expand</div>'
+   +'<div class="panel-meta">Groups fold closed by default — click to see line items</div>'
+   +'<div class="panel-tag">Source: Expense Ledger + BizTripPlan.xlsx</div></div>';
+
+  var transBody=nestedFold('✈️ Flights <span class="sub">(4 bookings / 7 legs — all booked &amp; paid)</span>',FLIGHT_ROWS,true)
+   +nestedFold('🚗 Car rental (Oslo → ARN)',CAR_ROWS,false)
+   +nestedFold('🚕 Local transit / transfers',LOCAL_ROWS,false);
+  var transP=sum(FLIGHT_ROWS,'pTWD')+sum(CAR_ROWS,'pTWD')+sum(LOCAL_ROWS,'pTWD');
+  var transA=sum(FLIGHT_ROWS,'aTWD')+sum(CAR_ROWS,'aTWD')+sum(LOCAL_ROWS,'aTWD');
+  var transAn=count(FLIGHT_ROWS,'aTWD')+count(CAR_ROWS,'aTWD')+count(LOCAL_ROWS,'aTWD');
+  var transN=FLIGHT_ROWS.length+CAR_ROWS.length+LOCAL_ROWS.length;
+  h+=topFold('✈️🚗 Transportation',transBody,transP,transA,transAn,transN,true);
+
+  h+=topFold('🏨 Accommodation <span class="sub">(18 paid nights — Amsterdam free)</span>',rowsTable(ACC_ROWS),sum(ACC_ROWS,'pTWD'),sum(ACC_ROWS,'aTWD'),count(ACC_ROWS,'aTWD'),ACC_ROWS.length,false);
+  h+=topFold('🍽️ Meals <span class="sub">(2HR002 Europe Tier 1)</span>',rowsTable(MEAL_ROWS),sum(MEAL_ROWS,'pTWD'),sum(MEAL_ROWS,'aTWD'),count(MEAL_ROWS,'aTWD'),MEAL_ROWS.length,false);
+  h+=topFold('🎪 InnoTrans',rowsTable(INNO_ROWS),sum(INNO_ROWS,'pTWD'),sum(INNO_ROWS,'aTWD'),count(INNO_ROWS,'aTWD'),INNO_ROWS.length,false);
+  h+=topFold('🎁 Other',rowsTable(OTHER_ROWS),sum(OTHER_ROWS,'pTWD'),sum(OTHER_ROWS,'aTWD'),count(OTHER_ROWS,'aTWD'),OTHER_ROWS.length,false);
+
+  var grandP=transP+sum(ACC_ROWS,'pTWD')+sum(MEAL_ROWS,'pTWD')+sum(INNO_ROWS,'pTWD')+sum(OTHER_ROWS,'pTWD');
+  var grandA=transA+sum(ACC_ROWS,'aTWD')+sum(MEAL_ROWS,'aTWD')+sum(INNO_ROWS,'aTWD')+sum(OTHER_ROWS,'aTWD');
+  h+='<div class="tbl-wrap" style="margin-top:10px"><table class="dt" style="min-width:380px"><tbody>'
+   +'<tr class="totalrow"><td>Grand total</td><td class="sub">Planned (full trip estimate) vs Actual (paid so far)</td>'
+   +'<td class="cost-cell" style="color:#7aa2f7">'+nf(grandP)+'</td><td class="cost-cell" style="color:#4ade80">'+nf(grandA)+' paid</td></tr>'
+   +'</tbody></table></div>';
+  h+='</div>';
+
+  h+='<div class="grid2" style="margin-top:12px">'
+   +'<div class="callout ok" style="margin:0"><b>✅ Accommodation average check — under €200/night</b><br>'
+   +'Weighted across all 18 paid nights (all 7 hotel bookings now confirmed): actuals are running close to the €200/night cap TC set, and under the 2HR002 <b>€260/night cap</b> on every city. Copenhagen (≈€256/night actual) is the highest single-night cost of the trip, just under the cap.</div>'
+   +'<div class="callout warn" style="margin:0"><b>⚠️ What is still open</b><br>'
+   +'All accommodation is now booked. Per diem, client dinners, gifts, InnoTrans booth and contingency remain planned figures only — no actuals until incurred during the trip.</div>'
+   +'</div>';
+  h+='<div class="callout info" style="margin-top:12px"><b>💱 Four currencies</b><br>'
+   +'<b>DKK</b> (Denmark) · <b>EUR</b> (Finland, Germany) · <b>NOK</b> (Norway) · <b>SEK</b> (Sweden). '
+   +'TWD shown throughout for comparability at the rough rates above — fix the real invoicing currency and rate before final reconciliation. '
+   +'<span class="sub">Confirm the invoicing currency when quoting — Danish suppliers bill in either DKK or EUR.</span></div>';
+  document.getElementById('budget').innerHTML=h;
+})();
+
+/* ── SF Codes view — Item codes for Salesforce Biz Trip Plan entries ───── */
+(function(){
+  var NORDIC=[
+   ['DK-01','Alfa Laval (via Recab)','Denmark','Tue 15 Sep PM','Heidi Hansen (Recab) · via Jan-Fredric Karlsson','Visit Alfa Laval\'s Aalborg site with the Recab team (tBOX810 sample project) — see the evaluation in person, discuss volume','dgreen','None — locked','2026-09-15','Locked','AM is travel to Aalborg — no separate Recab DK office visit'],
+   ['DK-02','DANBIT','Denmark','Wed 16 Sep 9:00','Peter Grubb (cc Leif Olesen)','Knowing the scale of DANBIT, setup 2027 framework and target.','dgreen','None — confirmed','2026-09-16','Confirmed Aug 18, 9:00 AM','ICO310→ICO150 quote due Jul 26; Leif\'s P6171PR-DC-U-V3'],
+   ['FI-01','Suomen Addon','Finland','Thu 17 Sep','Tomi Lehtonen — Managing Director','Opportunity and business review — CAPA55R, SHB160, NAVIS DNV eBOX100A.','dgreen','None — confirmed','2026-09-17','Confirmed','Also asking his office about a Kuori intro'],
+   ['FI-02','Alpha Point','Finland','Thu 17 Sep','Henry Hirvonen — Owner/Director','Confirm channel relationship, set 2027 direction','lgreen','None — confirmed','2026-09-17','Confirmed Aug 6','Not attending InnoTrans "at the moment," open to it'],
+   ['FI-03','Savox','Finland','Fri 18 Sep (Tampere)','Olli-Pertti Perasto (+ Yani Mustapha, Saku Räsänen)','Relationship maintenance for future needs — successor design-in lost, LTB has runway to Oct 30, no rush.','lgreen','None — confirmed','2026-09-18','Confirmed Aug 10, moved to Tampere','O-P invited TC to their Tampere office directly'],
+   ['NO-01','Kongsberg Discovery','Norway','Tue 29 Sep (tentative)','via Recab — Eirik Gudim Nielsen','Knowing the R&D/purchasing team, understand how the project and procurement cycle goes. Learning the project in development and the stage.','yellow','Await Recab\'s monthly meeting mid next week','2026-09-29','Office confirmed (Horten), visit itself pending customer response','Hosted by Recab in Horten — Eirik reports back after their meeting'],
+   ['NO-02','Autic','Norway','Mon 28 Sep','Ketil Novy (+ Tron Saastad, Henrik, Eirik)','Opportunity overview and enhance the business relationship.','lgreen','None — confirmed','2026-09-28','Confirmed','Visited without Recab present (competing channel)'],
+   ['SE-01','Frost Unmanned','Sweden','Wed 30 Sep AM','Kris Moell — CEO','Convert AIE810-ONX sampling into committed programme','yellow','Get updated NVIDIA/AIE810 pricing pre-visit','2026-09-30','Proposed Aug 12, awaiting Carlos\'s reply','Production sample shipped Aug 28; not yet confirmed by Carlos'],
+   ['SE-02','Flintab','Sweden','Wed 30 Sep 14:00','Johan Rytkonen (cc Per Johansson)','Understand R&D cycle/sourcing; become default IPC supplier','dgreen','None — confirmed','2026-09-30','Confirmed Aug 18, moved 15:00→14:00','GOT5103→GOT110A LTB is minor side item only'],
+   ['SE-03','Recab AB','Sweden','Thu 1 Oct 14:00','Jan-Fredric Karlsson — Head of Sales','Core channel review, 2027 planning — Sweden office visit, separate from the Denmark/Alfa Laval visit','dgreen','None — confirmed','2026-10-01','Confirmed Aug 18 by Jan-Fredric','Hägersten, Stockholm'],
+   ['SE-04','Cat AB','Sweden','Thu 1 Oct 9:30','Pontus Lundin','Discuss transportation/rail vertical, position vs Moxa','dgreen','None — locked','2026-10-01','Locked','Direct contact; ATEA case closed-lost Jul 3']
+  ];
+  var INNO=[
+   ['Inno-01','DA-Group','Finland','Confirmed','Timo (confirm surname)','Finding opportunity of transportation. Knowing the business model and the design-in cycle.','dgreen','None — confirmed','2026-09-23','Confirmed','Tue 23 Sep 10:00 @ booth — only hard-scheduled InnoTrans slot'],
+   ['Inno-02','Techon7','Denmark','Confirmed','Lars Nordberg-Hansen','Push on CAPA332 new product confirmation. Setup business framework. Grab information and ecosystem of ITxPT.','lgreen','None — confirmed','2026-09-22','Confirmed','Skipping the Denmark leg in favour of this'],
+   ['Inno-03','Axentia','Sweden','Confirmed','Johan Lindén','Review the PIS/audio line opportunity and confirm next steps on the CFM engagement.','lgreen','None — confirmed','2026-09-22','Confirmed','—'],
+   ['Inno-04','GMV','Spain','Confirmed','Daniel Sánchez Llorente','Progress the SI/engineering-services opportunity and identify next steps.','lgreen','None — confirmed','2026-09-22','Confirmed','Proper meeting, not a booth drop-in']
+  ];
+  var BOOTH=[
+   ['Inno-16','OTIV','Belgium','◆ Booth stop','Geoffroy Sion','Drop by while at the show — Geoffroy\'s own schedule is fully packed. tBOX600 offer still open.','booth','Catch at booth','2026-09-22–25','Booth stop — no meeting needed','Niels Van Damme (OTIV CTO) is the separate warm path into Futurail — pursued as its own priority thread'],
+   ['Inno-17','RideOnTrack','Belgium','◆ Booth stop','—','Via Telerex (NL channel) — rEdge is EN50155 12th-gen Intel i7/32GB DDR5/5G, a direct tBOX socket.','booth','Catch at booth','2026-09-22–25','Booth stop — no meeting needed','—'],
+   ['Inno-18','Vending Automater','Denmark','◆ Booth stop','Ryan Mejlstrup','Contacts exist but email isn\'t landing — catch Ryan in person at the booth.','booth','Catch at booth','2026-09-22–25','Booth stop — no meeting needed','—'],
+   ['Inno-19','ACKSYS','France','◆ Booth stop','—','Verify the study — ask which SIs and rolling-stock OEMs they ship RailBox into.','booth','Catch at booth','2026-09-22–25','Booth stop — no meeting needed','—'],
+   ['Inno-20','Latronix','Sweden','◆ Booth stop','—','Understand the real business — laser metrology for track geometry, not wireless/IoT (don\'t confuse with US Lantronix).','booth','Catch at booth','2026-09-22–25','Booth stop — no meeting needed','—'],
+   ['Inno-21','Rolen Technologies','Spain','◆ Booth stop','—','Probe the EN50155 vending machine (controller + display) — not a distributor despite the exhibitor label.','booth','Catch at booth','2026-09-22–25','Booth stop — no meeting needed','—']
+  ];
+  function tbl(title,meta,rows){
+    var h='<div class="panel"><div class="panel-hd" style="border-left-color:#7B1FA2"><div class="panel-title">'+title+'</div>'
+      +'<div class="panel-meta">'+meta+'</div></div>'
+      +'<div class="tbl-wrap"><table class="dt" style="min-width:640px"><thead><tr>'
+      +'<th>Item Code</th><th>Customer</th><th>Attendee</th><th>Objective</th>'
+      +'</tr></thead><tbody>';
+    rows.forEach(function(r){
+      h+='<tr class="accent"><td><b>'+r[0]+'</b></td><td>'+r[1]+'</td>'
+       +'<td>'+r[4]+'</td><td>'+r[5]+'</td></tr>';
+    });
+    h+='</tbody></table></div></div>';
+    return h;
+  }
+  var h='<div class="callout info"><b>Item codes for the Salesforce Biz Trip Plan.</b> '
+   +'Copy row-by-row into Salesforce — <b>Item</b> = the code in the first column, <b>Report Header</b> auto-generates per entry (leave as Salesforce assigns it). '
+   +'<b>Responsible Person</b> is TC Lee for every row.</div>';
+  h+=tbl('🇩🇰🇫🇮🇳🇴🇸🇪 Nordic customer visits — confirmed / locked','11 of 17 trip companies · Frost Unmanned (SE-01) still pending Carlos\'s reply, tracked here as a planned visit',NORDIC,false);
+  h+=tbl('🚂 InnoTrans Berlin — confirmed meetings','Inno-01…04 · the 4 hard-confirmed slots — Priority and To-work-on targets not yet locked are excluded',INNO,true);
+  h+=tbl('◆ InnoTrans Berlin — booth-stop walk-ups','Inno-16…21 · no meeting scheduled, catch in person at Hall 4.1 · #755 during the show (22–25 Sep) · does not count toward the 10-meeting goal',BOOTH,true);
+  document.getElementById('sfcodes').innerHTML=h;
+})();
+
+/* ── InnoTrans Matrix (Domain × Country) ──────────────── */
+(function(){
+  var COUNTRIES=['DK','FI','SE','BE','FR','ES','EE'];
+  var CNAME={DK:'Denmark',FI:'Finland',SE:'Sweden',BE:'Belgium',FR:'France',ES:'Spain',EE:'Estonia'};
+  /* st: conf ✅ | prio 🔥 | booth ◆ | work (plain) */
+  var M=[
+   ['Autonomy / Onboard Compute', {BE:[['OTIV','booth','7.1a/500'],['RideOnTrack','booth','4.1/700']], FR:[['Futurail','prio','7.1a/140']]}],
+   ['Rail Electronics / TCMS',    {FI:[['EKE-Electronics','work','hub27/471']], FR:[['ACTIA','work','4.1/310']]}],
+   ['PIS / Passenger Info & Audio',{SE:[['Axentia','conf','2.1/225']], BE:[['Televic Rail','work','2.1/505']], ES:[['AUDIOBUS','prio','2.1/640']]}],
+   ['Vision / Inspection / Measurement',{DK:[['PantoInspect','prio','11.2/210']], FI:[['Teleste','prio','2.1/520']], SE:[['Latronix','booth','23/310']]}],
+   ['Onboard Connectivity',       {SE:[['Oxyfi','prio','no booth'],['Icomera','work','22/340']], FR:[['ACKSYS','booth','4.1/480']], ES:[['Teldat','work','4.1/840']]}],
+   ['Ticketing / Fare Collection',{EE:[['Ridango','prio','2.1/650']]}],
+   ['Kiosk / Retail HMI',         {DK:[['Vending Automater','booth','1.1/590']], BE:[['Mobile Locker','prio','7.1c/410']], ES:[['Rolen','booth','1.1/580']]}],
+   ['Telematics / Transport IT',  {DK:[['Techon7','conf','no booth']]}],
+   ['Defense / Rugged',           {FI:[['DA-Group','conf','2.1/110']]}],
+   ['Rail OEM',                   {BE:[['Alstom BE','work','3.2/450']], FR:[['Alstom Group','work','3.2/450']]}],
+   ['SI / Engineering Services',  {FR:[['SYSTRA','work','5.2/265']], ES:[['GMV','conf','2.1/340']]}]
+  ];
+  var MK={conf:' ✅',prio:' 🔥',booth:' ◆',work:''};
+  var n={conf:0,prio:0,booth:0,work:0};
+  M.forEach(function(row){COUNTRIES.forEach(function(c){(row[1][c]||[]).forEach(function(x){n[x[1]]++;});});});
+
+  var h='';
+  h+='<div class="panel-hd"><div class="panel-title">InnoTrans 2026 — Target Matrix</div>'
+    +'<div class="panel-meta">Domain × Country · what each exhibitor builds</div>'
+    +'<div class="panel-tag">'+(n.conf+n.prio+n.booth+n.work)+' targets</div></div>';
+  h+='<div class="dh-stats" style="margin-bottom:12px">'
+    +'<div class="stat itc"><div class="stat-v">'+n.conf+'</div><div class="stat-l">Confirmed</div></div>'
+    +'<div class="stat itp"><div class="stat-v">'+n.prio+'</div><div class="stat-l">Priority</div></div>'
+    +'<div class="stat"><div class="stat-v">'+n.work+'</div><div class="stat-l">To work on</div></div>'
+    +'<div class="stat"><div class="stat-v">'+n.booth+'</div><div class="stat-l">Booth stops</div></div></div>';
+  h+='<div class="itm-legend">'
+    +'<span class="li"><span class="sw conf" style="background:#14311f;border-color:#2c6b3f"></span>✅ Confirmed</span>'
+    +'<span class="li"><span class="sw prio" style="background:#3a2a12;border-color:#d3901e"></span>🔥 Priority — approach first</span>'
+    +'<span class="li"><span class="sw work" style="background:#161f2e;border-color:#33507f"></span>To work on</span>'
+    +'<span class="li"><span class="sw booth" style="background:#222b3e;border-color:#5a6883"></span>◆ Booth stop (not a meeting)</span>'
+    +'</div>';
+  h+='<div class="tbl-wrap"><table class="itm-tbl"><thead><tr><th class="dom-h">Domain / Function</th>';
+  COUNTRIES.forEach(function(c){h+='<th title="'+CNAME[c]+'">'+c+'</th>';});
+  h+='</tr></thead><tbody>';
+  M.forEach(function(row){
+    h+='<tr><td class="dom">'+row[0]+'</td>';
+    COUNTRIES.forEach(function(c){
+      var cell=row[1][c]||[];
+      h+='<td>';
+      cell.forEach(function(x){h+='<div class="co-chip '+x[1]+'">'+esc(x[0])+MK[x[1]]+(x[2]?'<span class="co-hall">'+esc(x[2])+'</span>':'')+'</div>';});
+      h+='</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+  h+='<div class="mini">France &amp; Belgium carry the most targets but the least commitment (both Alstom stalled, SYSTRA contact-less). Sweden is the healthiest column. The Autonomy / Onboard Compute row is the most valuable and is entirely unapproached. Booth stops are walk-ups and do not count toward the 10-meeting goal.</div>';
+  document.getElementById('itmatrix').innerHTML=h;
+})();
+
+/* ── InnoTrans 4-Day Schedule ─────────────────────────── */
+(function(){
+  var DAYS=['Tue 22 Sep','Wed 23 Sep','Thu 24 Sep','Fri 25 Sep'];
+  var SLOTS=[];
+  for(var hh=9;hh<18;hh++){SLOTS.push((hh<10?'0':'')+hh+':00');SLOTS.push((hh<10?'0':'')+hh+':30');}
+  /* st: conf = locked · pend = time proposed, awaiting reply (23rd = Wednesday, 24th = Thursday) */
+  var PLACED={
+    /* Tue 22 — Day 1 scout + top targets, central cluster route 2.1 → 3.2 → 5.2 → 7.1 */
+    'Tue 22 Sep|10:00':{t:'DA-Group<span class="sch-sub">scout · 2.1/110</span>',st:'prio'},
+    'Tue 22 Sep|10:30':{t:'Axentia<span class="sch-sub">scout · 2.1/225</span>',st:'prio'},
+    'Tue 22 Sep|11:00':{t:'GMV<span class="sch-sub">scout · 2.1/340</span>',st:'prio'},
+    'Tue 22 Sep|11:30':{t:'Teleste<span class="sch-sub">2.1/520</span>',st:'prio'},
+    'Tue 22 Sep|12:00':{t:'AUDIOBUS<span class="sch-sub">2.1/640</span>',st:'prio'},
+    'Tue 22 Sep|13:00':{t:'Ridango<span class="sch-sub">2.1/650</span>',st:'prio'},
+    'Tue 22 Sep|13:30':{t:'Alstom · key<span class="sch-sub">3.2/450</span>',st:'prio'},
+    'Tue 22 Sep|14:00':{t:'🇹🇼 Taiwan Pavilion<span class="sch-sub">Opening 14:00–15:00 · 11.2/310 · Lars invited (either event)</span>',st:'event'},
+    'Tue 22 Sep|15:00':{t:'PantoInspect<span class="sch-sub">11.2/210 · same hall as pavilion ✦</span>',st:'prio'},
+    'Tue 22 Sep|15:30':{t:'Futurail<span class="sch-sub">7.1a/140</span>',st:'prio'},
+    'Tue 22 Sep|16:00':{t:'OTIV<span class="sch-sub">7.1a/500</span>',st:'prio'},
+    'Tue 22 Sep|16:30':{t:'Mobile Locker<span class="sch-sub">7.1c/410</span>',st:'prio'},
+    /* Wed 23 — Event 2 (Lars invited) → walk-ups → Axentia → DA-Group 16:00 (moved) + dinner */
+    'Wed 23 Sep|10:30':{t:'🇹🇼 Taiwan Pavilion<span class="sch-sub">Breakfast 10:30–11:30 · 11.2/310 · Lars invited (either event)</span>',st:'event'},
+    'Wed 23 Sep|12:00':{t:'ACTIA<span class="sch-sub">4.1/310 · back from 11.2</span>',st:'walk'},
+    'Wed 23 Sep|13:30':{t:'Teldat<span class="sch-sub">4.1/840</span>',st:'walk'},
+    'Wed 23 Sep|14:00':{t:'Axentia ✅<span class="sch-sub">meeting · our booth</span>',st:'conf'},
+    'Wed 23 Sep|14:30':{t:'ACKSYS<span class="sch-sub">4.1/480</span>',st:'walk'},
+    'Wed 23 Sep|15:00':{t:'RideOnTrack<span class="sch-sub">4.1/700</span>',st:'walk'},
+    'Wed 23 Sep|16:00':{t:'DA-Group ✅<span class="sch-sub">Timo · moved from 10:00 · our booth</span>',st:'conf'},
+    /* Thu 24 — GMV meeting + Hall 1.1 & NW pair */
+    'Thu 24 Sep|11:00':{t:'GMV<span class="sch-sub">meeting · our booth</span>',st:'pend'},
+    'Thu 24 Sep|13:00':{t:'Rolen<span class="sch-sub">1.1/580</span>',st:'walk'},
+    'Thu 24 Sep|13:30':{t:'Vending Automater<span class="sch-sub">1.1/590</span>',st:'walk'},
+    'Thu 24 Sep|14:30':{t:'Icomera<span class="sch-sub">22/340</span>',st:'walk'},
+    'Thu 24 Sep|15:00':{t:'Latronix<span class="sch-sub">23/310</span>',st:'walk'},
+    /* Fri 25 — pocket (if time) + follow-ups */
+    'Fri 25 Sep|10:00':{t:'EKE · pocket<span class="sch-sub">hub27/471</span>',st:'walk'}
+  };
+
+  var h='';
+  h+='<div class="panel-hd"><div class="panel-title">InnoTrans 2026 — 4-Day Schedule</div>'
+    +'<div class="panel-meta">Messe Berlin · Axiomtek booth Hall 4.1 #755 · Tue 22 – Fri 25 Sep</div>'
+    +'<div class="panel-tag">Goal: 10 meetings</div></div>';
+  h+='<div class="callout info"><b>The plan:</b> Tue = scout the meeting customers\' stands + top targets (central cluster). Wed/Thu = meetings at our booth, gaps filled with nearby booths. Fri = pocket + follow-ups. Every block shows the booth (hall/stand).</div>';
+  h+='<div class="itm-legend" style="margin-top:0">'
+    +'<span class="li"><span class="sw" style="background:#14311f;border:1px solid #2c6b3f"></span>✅ Meeting — confirmed</span>'
+    +'<span class="li"><span class="sw" style="background:#332813;border:1px dashed #c99a1e"></span>📨 Meeting — proposed</span>'
+    +'<span class="li"><span class="sw" style="background:#1c2c4a;border:1px solid #33507f"></span>Priority booth visit</span>'
+    +'<span class="li"><span class="sw" style="background:#20262f;border:1px dashed #4d5a6b"></span>Opportunistic / walk-up</span>'
+    +'<span class="li"><span class="sw" style="background:#3a1030;border:1px solid #a02a6a"></span>🇹🇼 Taiwan Pavilion event</span>'
+    +'</div>';
+  h+='<div class="callout warn" style="margin-top:0"><b>Note:</b> Registered for both Taiwan Pavilion events (Hall 11.2/310). <b>DA-Group moved to Wed 16:00</b> (Timo confirmed), freeing the morning for Event 2. <b>Lars invited to either Taiwan event</b> (Tue 14:00 or Wed 10:30) + <b>dinner Tue 22 evening</b>. PantoInspect (11.2) paired with Event 1 Tue. Axentia 14:00 locked; GMV proposed.</div>';
+  h+='<div class="tbl-wrap"><table class="sch-tbl"><thead><tr><th>Time</th>';
+  DAYS.forEach(function(d){h+='<th>'+d+'</th>';});
+  h+='</tr></thead><tbody>';
+  SLOTS.forEach(function(s){
+    var lunch=(s==='12:30'||s==='13:00');
+    h+='<tr'+(lunch?' class="lunch"':'')+'><td class="tm">'+s+'</td>';
+    DAYS.forEach(function(d){
+      var v=PLACED[d+'|'+s];
+      h+='<td>'+(v?'<div class="sch-slot '+v.st+'">'+v.t+'</div>':(lunch?'lunch':''))+'</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody></table></div>';
+
+  var book=[
+   ['Oxyfi — Filip Rosenbaum (CTO) · no booth','prio'],['Futurail — Vivek Soni / Dendorfer · 7.1a/140','prio'],
+   ['PantoInspect — Søren Holstebroe · 11.2/210','prio'],['Ridango — Jaanus Erlemann · 2.1/650','prio'],
+   ['AUDIOBUS — 2.1/640','prio'],['Teleste — Harri Heikkilä · 2.1/520','prio'],['Mobile Locker — Koen Mortelmans · 7.1c/410','prio'],
+   ['GMV — Thu 24 11:00 proposed · 2.1/340','pend'],
+   ['Techon7 — Wed 23 16:00 + dinner, awaiting Lars · no booth','pend'],
+   ['Televic Rail — Bert Aelter · 2.1/505','work'],['EKE-Electronics — hub27/471','work'],['ACTIA — 4.1/310','work'],
+   ['Teldat — Leonor · 4.1/840','work'],['Alstom BE — Dominique Gailly · 3.2/450','work'],
+   ['Alstom Group — Magnus (ghosting) · 3.2/450','work'],['Icomera — finding contact · 22/340','work'],['SYSTRA — finding contact · 5.2/265','work']
+  ];
+  h+='<div class="panel-hd" style="margin-top:18px"><div class="panel-title">Contacts &amp; booth reference</div>'
+    +'<div class="panel-meta">who to ask for · booth (hall/stand)</div></div>';
+  h+='<div class="sch-book">';
+  var BKMK={prio:'🔥 ',conf:'✅ ',pend:'📨 ',work:''};
+  book.forEach(function(b){h+='<div class="bk '+b[1]+'">'+(BKMK[b[1]]||'')+'<b>'+esc(b[0].split(' — ')[0])+'</b>'+(b[0].indexOf(' — ')>-1?' — '+esc(b[0].split(' — ').slice(1).join(' — ')):'')+'</div>';});
+  h+='</div>';
+  h+='<div class="mini">◆ Booth walk-ups (no fixed slots): OTIV (7.1a/500) · RideOnTrack (4.1/700) · Vending Automater (1.1/590) · ACKSYS (4.1/480) · Latronix (23/310) · Rolen (1.1/580). These do not count toward the 10-meeting target.</div>';
+  document.getElementById('itschedule').innerHTML=h;
+})();
+
+/* ── Floor plan (official InnoTrans hall plan PDF) ─────── */
+(function(){
+  var pdf='../InnoTrans%20Official%20Resource/hall-plan-innotrans-2026.pdf';
+  var halls=[
+    ['1.1','Interiors','Rolen · Vending Automater',false],
+    ['2.1','Public Transport / PIS','DA-Group · Axentia · GMV · Teleste · AUDIOBUS · Ridango · Televic · Systrans',false],
+    ['3.2','Railway Technology','Alstom',false],
+    ['4.1','Public Transport — OUR BOOTH #755','ACTIA · ACKSYS · RideOnTrack · Teldat',true],
+    ['5.2','Railway Infrastructure','SYSTRA',false],
+    ['7.1a','AI Mobility Lab','Futurail · OTIV',false],
+    ['7.1c','Public Transport / Mobility+','Mobile Locker',false],
+    ['11.2','Railway Technology','🇹🇼 Taiwan Pavilion #310 · PantoInspect',false],
+    ['22','Rail Infra + Tech','Icomera',false],
+    ['23','Rail Infra + Tech','Latronix',false],
+    ['hub27','Railway Technology','EKE-Electronics',false]
+  ];
+  var h='';
+  h+='<div class="panel-hd"><div class="panel-title">InnoTrans 2026 — Official Hall Plan</div>'
+    +'<div class="panel-meta">Messe Berlin · Berlin ExpoCenter</div>'
+    +'<a class="panel-tag" href="'+pdf+'" target="_blank" style="text-decoration:none">Open full PDF ↗</a></div>';
+  h+='<div class="floor-embed"><object data="'+pdf+'" type="application/pdf">'
+    +'<embed src="'+pdf+'" type="application/pdf"/>'
+    +'<div class="floor-fallback">The map needs a browser PDF viewer — <a href="'+pdf+'" target="_blank">open the hall plan ↗</a></div>'
+    +'</object></div>';
+  h+='<div class="panel-hd" style="margin-top:16px"><div class="panel-title">Your halls — where your targets sit</div>'
+    +'<div class="panel-meta">cross-reference against the map above</div></div>';
+  h+='<div class="tbl-wrap"><table class="dt"><thead><tr><th>Hall</th><th>Focus</th><th>Your targets</th></tr></thead><tbody>';
+  halls.forEach(function(x){h+='<tr'+(x[3]?' class="ourhall"':'')+'><td class="num"><b>'+x[0]+'</b></td><td>'+x[1]+'</td><td>'+x[2]+'</td></tr>';});
+  h+='</tbody></table></div>';
+  h+='<div class="mini">Central cluster = Halls 1–7 (booth + most targets, short walks). Hall 11.2 (Taiwan Pavilion + PantoInspect) = moderate walk east by the Funkturm. Halls 22/23 = NW strip. hub27 = far SW corner.</div>';
+  document.getElementById('floorplan').innerHTML=h;
+})();
+
+/* ── View toggle — Calendar is the landing view ───────── */
+var VIEWS={cal:['vb-cal','calendar'],itm:['vb-itm','itmatrix'],its:['vb-its','itschedule'],
+           floor:['vb-floor','floorplan'],
+           map:['vb-map','map'],trn:['vb-trn','transport'],
+           htl:['vb-htl','hotels'],bud:['vb-bud','budget'],sf:['vb-sf','sfcodes']};
+var curView='cal';
+function setView(v){
+  if(!VIEWS[v])return;
+  curView=v;
+  Object.keys(VIEWS).forEach(function(k){
+    var on=(k===v);
+    document.getElementById(VIEWS[k][0]).classList.toggle('active',on);
+    document.getElementById(VIEWS[k][1]).style.display=on?'block':'none';
+  });
+  if(v==='map') setTimeout(function(){map.invalidateSize()},30);
+}
+setView('cal');
+
+/* ── Foldable side panel ──────────────────────────────── */
+function toggleSidebar(){
+  var sb=document.getElementById('sidebar');
+  var collapsed=sb.classList.toggle('collapsed');
+  var b=document.getElementById('sbToggle');
+  b.textContent=collapsed?'›':'‹';
+  b.setAttribute('aria-expanded',collapsed?'false':'true');
+  b.setAttribute('aria-label',collapsed?'Expand side panel':'Collapse side panel');
+  b.title=collapsed?'Show panel':'Hide panel';
+  if(curView==='map') setTimeout(function(){map.invalidateSize()},240);
+}
+</script>
+</div><!-- #app-root -->
+</body>
+</html>
