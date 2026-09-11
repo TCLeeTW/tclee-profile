@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="robots" content="noindex, nofollow, noarchive, nosnippet"/>
-<meta name="referrer" content="no-referrer"/>
 <title>Nordic Business Trip — Sun 13 Sep – Sat 3 Oct 2026</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -26,8 +24,7 @@
   --bg:#0f1420; --panel:#1a1f2e; --line:#2a3044; --dim:#7a899e; --txt:#dde2ee;
 }
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;height:100vh;overflow:hidden;background:var(--bg);color:var(--txt);margin:0}
-#app-root{display:flex;height:100vh;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;display:flex;height:100vh;overflow:hidden;background:var(--bg);color:var(--txt)}
 
 /* ── Sidebar ─────────────────────────────────────────── */
 #sidebar{width:300px;background:var(--panel);color:var(--txt);overflow-y:auto;display:flex;flex-direction:column;flex-shrink:0;transition:width .22s ease}
@@ -326,44 +323,87 @@ tr.ourhall td:first-child{border-left:3px solid #4ade80}
 .sch-book .bk.conf{border-color:#2c6b3f;background:#132a1c}
 .sch-book .bk.pend{border-color:#c99a1e;background:#241f10}
 .sch-book .bk b{color:#fff}
-#pw-gate{position:fixed;inset:0;z-index:9999;background:var(--bg,#0f1420);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
-#pw-gate .pw-box{background:var(--panel,#1a1f2e);border:1px solid var(--line,#2a3044);border-radius:10px;padding:32px 36px;max-width:380px;width:90%;text-align:center}
-#pw-gate h2{color:#fff;font-size:18px;margin-bottom:6px}
-#pw-gate p{color:var(--dim,#7a899e);font-size:13px;margin-bottom:20px}
-#pw-gate input{width:100%;padding:10px 14px;border-radius:6px;border:1px solid var(--line,#2a3044);background:#141926;color:#fff;font-size:14px;outline:none}
-#pw-gate input:focus{border-color:#3b82f6}
-#pw-gate button{margin-top:12px;padding:9px 28px;border-radius:6px;border:none;background:#3b82f6;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
-#pw-gate button:hover{background:#2563eb}
-#pw-gate .pw-err{color:#fca5a5;font-size:12px;margin-top:10px;min-height:18px}
-#app-root{display:none}
+
+/* ── Mobile: hamburger tab menu ─────────────────────── */
+#navHamburger{display:none;width:34px;height:34px;border-radius:6px;border:1px solid var(--line);background:#1f2637;color:#cfdaea;cursor:pointer;font-size:18px;line-height:1;align-items:center;justify-content:center;padding:0;flex-shrink:0}
+#navHamburger:hover{background:#2a3550;color:#fff}
+#navDrop{display:contents}
+#activeViewLabel{display:none;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+
+/* ── Flight card (mobile) ───────────────────────────── */
+.flight-card{display:none}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media(max-width:768px){
+  body{flex-direction:column;height:100dvh}
+  #sidebar{width:100%;max-height:40vh;flex-shrink:0}
+  #sidebar.collapsed{max-height:0}
+  #dochead{padding:10px 12px 8px}
+  .dh-title{font-size:14px}
+  .dh-stats{gap:5px}
+  .stat{min-width:56px;padding:4px 6px}
+  .stat-v{font-size:12px}
+  .stat-l{font-size:8px}
+
+  /* Hamburger tab menu */
+  #navHamburger{display:flex}
+  #activeViewLabel{display:block}
+  #navDrop{display:none;position:absolute;top:100%;left:0;right:0;background:#141926;border-bottom:1px solid var(--line);padding:8px 12px;flex-wrap:wrap;gap:6px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  #navDrop.open{display:flex}
+  #topbar{position:relative;padding:6px 10px;gap:6px}
+  #topbar .tb-note{display:none}
+  .view-btn{padding:5px 10px;font-size:11px}
+
+  /* Calendar grid: 1-col stacked on portrait mobile */
+  .wk-grid{grid-template-columns:1fr;min-width:0;gap:4px;padding:4px}
+  .dow{display:none}
+  .cell{min-height:0}
+
+  /* Flight table → card layout */
+  table.dt.t-flights thead{display:none}
+  table.dt.t-flights{min-width:0}
+  table.dt.t-flights tr.accent{display:block;border:1px solid var(--line);border-radius:6px;margin-bottom:8px;padding:10px 12px;border-left:3px solid var(--air)}
+  table.dt.t-flights tr.accent td{display:block;border:none;padding:2px 0;font-size:11.5px}
+  table.dt.t-flights tr.accent td:first-child{border-left:none;font-weight:700;font-size:12px;color:#c58af0;margin-bottom:4px}
+  table.dt.t-flights tr.accent td::before{content:attr(data-label);display:inline-block;width:80px;color:var(--dim);font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+  table.dt.t-flights tr.accent td:first-child::before{display:none}
+
+  /* Detail drawer full-width */
+  #detail{width:100vw}
+
+  /* Content views padding */
+  #calendar,#transport,#hotels,#budget,#sfcodes,#itmatrix,#itschedule,#floorplan{padding:10px}
+}
+
+/* Landscape phones */
+@media(max-height:500px) and (orientation:landscape){
+  #sidebar{display:none}
+  #dochead{display:none}
+  #topbar{min-height:36px;padding:4px 10px}
+  .view-btn{padding:4px 8px;font-size:10.5px}
+  #navHamburger{display:flex;width:28px;height:28px;font-size:14px}
+  #activeViewLabel{display:block;font-size:11px}
+  #navDrop{display:none;position:absolute;top:100%;left:0;right:0;background:#141926;border-bottom:1px solid var(--line);padding:6px 10px;flex-wrap:wrap;gap:5px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+  #navDrop.open{display:flex}
+  #topbar .tb-note{display:none}
+
+  /* Calendar: horizontal scroll, 7-col grid stays */
+  .wk-grid{min-width:840px}
+
+  /* Content fills viewport */
+  #calendar,#transport,#hotels,#budget,#sfcodes,#itmatrix,#itschedule,#floorplan{padding:8px}
+  #detail{width:min(400px,80vw)}
+}
+
+/* Tablets (portrait) */
+@media(min-width:769px) and (max-width:1024px){
+  #sidebar{width:220px}
+  .stat{min-width:60px}
+}
 </style>
 </head>
 <body>
 
-<div id="pw-gate">
-  <div class="pw-box">
-    <h2>🔒 This page is password-protected</h2>
-    <p>Enter the password to view the trip plan.</p>
-    <input type="password" id="pw-input" placeholder="Password" autocomplete="off"/>
-    <button onclick="tryUnlock()">Unlock</button>
-    <div class="pw-err" id="pw-err"></div>
-  </div>
-</div>
-<script>
-var _k=atob('ZnVqdTAzMTJAZ21haWwuY29t');
-function tryUnlock(){
-  var v=document.getElementById('pw-input').value;
-  if(!v){document.getElementById('pw-err').textContent='Please enter a password.';return;}
-  if(v===_k){
-    document.getElementById('pw-gate').style.display='none';
-    document.getElementById('app-root').style.display='flex';
-    if(typeof map!=='undefined')setTimeout(function(){map.invalidateSize()},100);
-  }else{document.getElementById('pw-err').textContent='Incorrect password. Please try again.';}
-}
-document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.key==='Enter')tryUnlock();});
-</script>
-
-<div id="app-root">
 <div id="sidebar" class="collapsed">
   <div class="sb-head">
     <div class="sb-title">Nordic Business Trip 2026</div>
@@ -387,16 +427,17 @@ document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.
     <h3>Transport</h3>
     <div class="leg"><div class="line-key" style="border-color:#7B1FA2"></div>Flight</div>
     <div class="leg"><div class="line-key" style="border-color:#F57C00"></div>Road &amp; ferry</div>
+    <div class="leg" style="margin-top:6px"><div class="dot" style="background:#3b82f6;border-radius:4px;border-color:rgba(255,255,255,.5)"></div>🛏 Accommodation</div>
   </div>
 
   <div class="sb-section">
     <h3>Week 3 Driving</h3>
-    <div class="rs"><span class="rs-l">Oslo → Tønsberg</span><span class="rs-v">~95 km · 1h15</span></div>
+    <div class="rs"><span class="rs-l">Oslo → Tønsberg</span><span class="rs-v">~110 km · 1h30</span></div>
     <div class="rs"><span class="rs-l">Tønsberg → Horten ⛴ Moss</span><span class="rs-v">15 km · ~50 min</span></div>
     <div class="rs"><span class="rs-l">Moss → Stora Höga</span><span class="rs-v">240 km · 2h30</span></div>
     <div class="rs"><span class="rs-l">Stora Höga → Jönköping</span><span class="rs-v">186 km · ~2h</span></div>
     <div class="rs"><span class="rs-l">Jönköping → Stockholm</span><span class="rs-v">290 km · 3h</span></div>
-    <div class="rs total"><span class="rs-l">Total</span><span class="rs-v">~830 km · ~9h30</span></div>
+    <div class="rs total"><span class="rs-l">Total</span><span class="rs-v">~840 km · ~10h00</span></div>
   </div>
 
   <div class="sb-section" style="border-bottom:none">
@@ -413,25 +454,29 @@ document.getElementById('pw-input').addEventListener('keydown',function(e){if(e.
       <div class="dh-anchor">Anchored on InnoTrans Berlin, Tue 22 – Fri 25 Sep · Denmark · Finland · Germany · Norway · Sweden</div>
     </div>
     <div class="dh-stats">
-      <div class="stat s1"><div class="stat-v">17</div><div class="stat-l">Nordic mtgs</div></div>
+      <div class="stat s1"><div class="stat-v">16</div><div class="stat-l">Nordic mtgs</div></div>
       <div class="stat s2"><div class="stat-v">22</div><div class="stat-l">InnoTrans mtgs</div></div>
       <div class="stat s3"><div class="stat-v">19</div><div class="stat-l">Hotel nights</div></div>
-      <div class="stat s4"><div class="stat-v">~830</div><div class="stat-l">km driving</div></div>
-      <div class="stat flights" title="TPE→AMS · AMS→CPH · CPH→HEL · HEL→BER · BER→OSL · ARN→TPE"><div class="stat-v">6</div><div class="stat-l">Flights</div></div>
+      <div class="stat s4"><div class="stat-v">~840</div><div class="stat-l">km driving</div></div>
+      <div class="stat flights" title="TPE→AMS · AMS→CPH · CPH→HEL · HEL→BER · BER→OSL · ARN→AMS · AMS→TPE"><div class="stat-v">7</div><div class="stat-l">Flights</div></div>
       <div class="stat ferry" title="Horten→Moss (Bastø Fosen)"><div class="stat-v">1</div><div class="stat-l">Ferry</div></div>
     </div>
   </div>
   <div id="topbar">
     <button class="sb-toggle" id="sbToggle" onclick="toggleSidebar()" aria-label="Expand side panel" aria-expanded="false" title="Show panel">›</button>
-    <div class="view-btn active" id="vb-cal" onclick="setView('cal')">📅 Calendar</div>
-    <div class="view-btn" id="vb-itm" onclick="setView('itm')">🎯 IT Matrix</div>
-    <div class="view-btn" id="vb-its" onclick="setView('its')">🗓️ IT Schedule</div>
-    <div class="view-btn" id="vb-floor" onclick="setView('floor')">🧭 Hall Plan</div>
-    <div class="view-btn" id="vb-map" onclick="setView('map')">🗺️ Map</div>
-    <div class="view-btn" id="vb-trn" onclick="setView('trn')">✈️ Transportation</div>
-    <div class="view-btn" id="vb-htl" onclick="setView('htl')">🏨 Accommodation</div>
-    <div class="view-btn" id="vb-bud" onclick="setView('bud')">💰 Budget</div>
-    <div class="view-btn" id="vb-sf" onclick="setView('sf')">🏷️ SF Codes</div>
+    <button id="navHamburger" onclick="toggleNav()" aria-label="Toggle navigation" title="Views">☰</button>
+    <span id="activeViewLabel">📅 Calendar</span>
+    <div id="navDrop">
+      <div class="view-btn active" id="vb-cal" onclick="setView('cal')">📅 Calendar</div>
+      <div class="view-btn" id="vb-itm" onclick="setView('itm')">🎯 IT Matrix</div>
+      <div class="view-btn" id="vb-its" onclick="setView('its')">🗓️ IT Schedule</div>
+      <div class="view-btn" id="vb-floor" onclick="setView('floor')">🧭 Hall Plan</div>
+      <div class="view-btn" id="vb-map" onclick="setView('map')">🗺️ Map</div>
+      <div class="view-btn" id="vb-trn" onclick="setView('trn')">✈️ Transportation</div>
+      <div class="view-btn" id="vb-htl" onclick="setView('htl')">🏨 Accommodation</div>
+      <div class="view-btn" id="vb-bud" onclick="setView('bud')">💰 Budget</div>
+      <div class="view-btn" id="vb-sf" onclick="setView('sf')">🏷️ SF Codes</div>
+    </div>
     <div class="tb-note">Dates provisional — exact days lock end of August</div>
   </div>
   <div id="calendar"></div>
@@ -456,15 +501,15 @@ var DETAIL=[
   contact:"Timme WATSON — Lead Sourcing & Supply Chain Advisor · Patricia PEDRO — Program Ops, Tech Partner Program",email:"timme@watson.dk / pped@milestone.dk",
   meeting_status:"⏸️ SKIPPED for this trip (TC, Aug 18) — invited Jul 29, Timme (coffee, personal) + Patricia (Case #00103700), no reply. Tue 15 Sep is now fully given to Recab/Heidi's Alfa Laval visit. Follow up separately, outside this itinerary",class:"ISV",domain:"Surveillance",subdomain:"—",company_status:"Developing",
   goal:"BD target: land the tBOX210 hardware verification, then use it to become a listed/recommended hardware base for Milestone XProtect deployments — recurring design-in, not a one-off cert. Verification is currently blocked internally (RD not yet assigned by Kirk Lo, see Milestone Technology Partner Program)."},
- {company:"Novicom",country:"Denmark",city:"Rødovre",date:"⏸️ Tue 15 Sep only — contingent",slot:"—",
+ {company:"Novicom",country:"Denmark",city:"Rødovre",date:"Tue 15 Sep",slot:"10:00",
   address:"Fjeldhammervej 19, 2610 Rødovre",airport:"CPH ~20 min",
   contact:"Henrik RASMUSSEN — CEO and Partner",email:"hr@novicom.dk",
-  meeting_status:"🔗 <b>COUPLED TO THE ALFA LAVAL ANSWER.</b> Henrik re-opened the thread himself (Aug 31) after two unanswered mails — but he is <b>out of the office Mon 14 Sep</b>, so the arrival-day slot is dead. He will only meet on <b>Tue 15 Sep</b>, which is currently Aalborg. If Recab comes back saying Alfa Laval is not set, switch to Novicom on the 15th <b>immediately</b> — Rødovre is 20 min from the hotel. <b>⏳ Cutoff Wed 2 Sep</b>: if Recab is still silent, thank Henrik and move him to an online call. (He offered ISE Barcelona, but TC may not attend, so the call is the real fallback)",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Display",company_status:"Re-Engage",
-  goal:"BD target: re-engage a lapsed account. Two mails, no reply. Meeting goal is to establish whether live business exists here, understand Novicom's direction, and decide continue vs downgrade."},
- {company:"Alfa Laval (via Recab)",country:"Denmark",city:"Aalborg",date:"Tue 15 Sep",slot:"PM",
+  meeting_status:"✅ Confirmed 10:00 — Henrik confirmed. Rødovre is 20 min from CPH hotel. PM 14:00 → Recab CPH confirmed",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Display",company_status:"Re-Engage",
+  goal:"BD target: re-engage a lapsed account. Meeting goal is to establish whether live business exists here, understand Novicom's direction, and decide continue vs downgrade."},
+ {company:"Alfa Laval (via Recab)",country:"Denmark",city:"Aalborg",date:"⏸️ Cancelled",slot:"—",
   address:"Aalborg, Denmark",airport:"CPH, then travel to Aalborg AM",
   contact:"Heidi HANSEN (Recab) · via Jan-Fredric KARLSSON",email:"jan-fredric.karlsson@recab.com",
-  meeting_status:"✅ LOCKED — Tue 15 Sep PM, Alfa Laval's Aalborg site, with the Recab team. No separate Recab DK office visit — the whole day is travel (AM) + this meeting (PM). Update Aug 18 (Jan-Fredric): Alfa Laval has started testing the tBOX810 unit; Heidi will reach out to book the on-site visit directly with them",class:"End customer (via Recab channel)",domain:"Transportation",subdomain:"Marine",company_status:"ProActive",
+  meeting_status:"⏸️ CANCELLED — Recab could not bridge the meeting. Alfa Laval visit dropped. tBOX810 evaluation continues remotely. Tue 15 Sep → Novicom 10:00 + Recab CPH 14:00 (both confirmed)",class:"End customer (via Recab channel)",domain:"Transportation",subdomain:"Marine",company_status:"ProActive",
   goal:"Visit Alfa Laval's Aalborg site together with the Recab team (tBOX810 sample project) — see the evaluation in person and discuss volume/recurring potential."},
  {company:"DANBIT",country:"Denmark",city:"Køge",date:"Wed 16 Sep",slot:"9:00",
   address:"Værkstedsvej 39, 4600 Køge",airport:"CPH ~40 min",
@@ -491,21 +536,26 @@ var DETAIL=[
   contact:"Jarkko JOKELAINEN — Co-Founder & CEO",email:"jarkko@kuori.tech",
   meeting_status:"🔄 BACKUP, on the waiting list — not committed on the calendar, TC keeps working the contact separately. Fri 18 Sep is now Savox/Tampere; Kuori would need a different day if it converts",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Kiosk",company_status:"Developing",
   goal:"Re-engage on a formal partnership angle for the 2026/27 terminal line, not just the SDM pitch. Parallel track: Tomi (Suomen Addon) is separately asking his office for a warm intro. Waiting-list — Savox/Tampere now has priority on the trip itself, but Kuori stays open as an active BD thread."},
- {company:"StrongPoint ASA",country:"Norway",city:"Oslo",date:"Mon 28 Sep",slot:"AM",
-  address:"Oslo, Norway (no street address in vault) — ⚠ Tomas is Lithuania-based, not Norway, Oslo framing may not fit him",airport:"OSL ~25 min",
+ {company:"StrongPoint ASA",country:"Norway",city:"Oslo",date:"⏸️ Cancelled",slot:"—",
+  address:"Oslo, Norway (no street address in vault)",airport:"OSL ~25 min",
   contact:"Tomas MONTVILA — Engineering Mgr + C&C Product Dir · Gytis JUREVICIUS — Strategic Purchaser",email:"both @strongpoint.com hard-bounced Jul 27 — LinkedIn only for now",
-  meeting_status:"✉ LinkedIn InMail sent to both Jul 27 (email bounced, domain/tenant issue) — awaiting reply, release slot if silent by Sep 1",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Kiosk",company_status:"Developing",
+  meeting_status:"⏸️ CANCELLED — no reply to LinkedIn InMail (Jul 27). Emails hard-bounced. Slot released",class:"VAR / Equipment Maker",domain:"Retail and Display",subdomain:"Kiosk",company_status:"Developing",
   goal:"Cold BD into retail kiosk. Tomas Montvila has ignored LinkedIn since May 19 — switch person AND channel, approach Gytis by email. The opportunity is AI self-checkout and Click&Collect lockers, both IPC-hungry."},
- {company:"Autic",country:"Norway",city:"Tønsberg",date:"Mon 28 Sep",slot:"14:00",
+ {company:"Autic",country:"Norway",city:"Tønsberg",date:"Tue 29 Sep",slot:"AM",
   address:"Tønsberg, Norway",airport:"TRF ~20 min",
   contact:"Ketil NOVY — IT & Quality Manager",email:"ketil@autic.no",
-  meeting_status:"✅ LOCKED — Tron confirmed 14:00 (Aug 17). Ketil, Henrik + Eirik joining",class:"Distributor / Channel Partner",domain:"Mixed",subdomain:"—",company_status:"ProActive",
-  goal:"⚠ Visited WITHOUT Recab present — Autic competes with Recab, and Recab escorts the next day's Kongsberg visit, so the two are deliberately on separate days. Core channel review — SIX open opportunities, the densest account on the trip. Priorities: 2U i7 rackmount quote (20d overdue, Ketil), Canada ICO230 500+ pcs (Eirik), 110VDC Box PC for a Norwegian energy customer (Tron), ABB tunnel monitor, eBOX100 SSD RMA (25 of ~100 repaired, Nov 30 deadline)."},
- {company:"Kongsberg Discovery",country:"Norway",city:"Horten",date:"Tue 29 Sep",slot:"AM",
+  meeting_status:"✅ CONFIRMED — moved from Mon 28 PM to Tue 29 AM. Tron confirmed the change. Ketil, Henrik + Eirik joining. Lunch together after the meeting, then drive to Stenungsund",class:"Distributor / Channel Partner",domain:"Mixed",subdomain:"—",company_status:"ProActive",
+  goal:"⚠ Visited WITHOUT Recab present — Autic competes with Recab, keep on separate days. Core channel review — SIX open opportunities, the densest account on the trip. Priorities: 2U i7 rackmount quote (20d overdue, Ketil), Canada ICO230 500+ pcs (Eirik), 110VDC Box PC for a Norwegian energy customer (Tron), ABB tunnel monitor, eBOX100 SSD RMA (25 of ~100 repaired, Nov 30 deadline)."},
+ {company:"Kongsberg Discovery",country:"Norway",city:"Horten",date:"⏸️ Cancelled",slot:"—",
   address:"Horten, Norway (Recab-hosted; exact site via Recab)",airport:"15 km from Tønsberg · Horten is the Moss ferry port",
   contact:"via Recab — Eirik Gudim NIELSEN, Senior Key Account Manager",email:"eirik.nielsen@recab.com",
-  meeting_status:"✉ Office confirmed as Horten (JFK, Jul 21), but visit itself now uncertain — Eirik (Aug 18): Kongsberg Discovery has the info but hasn't responded yet; Recab's monthly meeting with them is mid next week, will raise it there and report back whether a Sep 29 visit makes sense",class:"End customer (via Recab channel)",domain:"Transportation",subdomain:"Marine",company_status:"Following Up",
-  goal:"eBOX560 is EOL; get eBOX570 accepted as the replacement. Follow-up due Aug 11. Recab (JFK/Eirik) is hosting — JFK confirmed the office is in Horten, so the visit flows straight onto the Horten–Moss ferry into Sweden. Kongsberg Maritime is NOT part of this (Arttu Lehtonen is in Finland). Kongsberg Defence dropped (no channel)."},
+  meeting_status:"⏸️ CANCELLED — Kongsberg Discovery never responded to Recab's outreach. Visit dropped. eBOX560→570 replacement discussion continues remotely via Recab",class:"End customer (via Recab channel)",domain:"Transportation",subdomain:"Marine",company_status:"Following Up",
+  goal:"eBOX560 is EOL; get eBOX570 accepted as the replacement. Kongsberg Maritime is NOT part of this (Arttu Lehtonen is in Finland). Kongsberg Defence dropped (no channel)."},
+ {company:"Recab Hamar",country:"Norway",city:"Hamar",date:"⏸️ Cancelled",slot:"—",
+  address:"Parkgata 36, 2317 Hamar, Norway",airport:"OSL ~1h30",
+  contact:"via Jan-Fredric KARLSSON — Head of Sales",email:"jan-fredric.karlsson@recab.com",
+  meeting_status:"⏸️ CANCELLED — Norway leg dropped. Recab CPH Tue 15 14:00 confirmed instead",class:"Channel",domain:"Mixed",subdomain:"—",company_status:"ProActive",
+  goal:"Visit Recab's Norwegian branch office in Hamar. Relationship-building with the local team. Previously declined (Aug 7) because a rushed stop wouldn't do justice — now there is a proper morning slot."},
  {company:"Frost Unmanned",country:"Sweden",city:"Stora Höga",date:"Wed 30 Sep",slot:"9:30",
   address:"Brålandsvägen 10, 444 60 Stora Höga",airport:"GOT ~35 min",
   contact:"Kris MOELL — CEO · Nitin CHRISTY — Program Manager (Arrow 600)",email:"kris.moell@frostunmanned.com / nitin.christy@frostunmanned.com",
@@ -519,7 +569,7 @@ var DETAIL=[
  {company:"Recab AB",country:"Sweden",city:"Hägersten, Stockholm",date:"Thu 1 Oct",slot:"14:00",
   address:"Vretensborgsvägen 28, 126 30 Hägersten",airport:"ARN ~30 min",
   contact:"Jan-Fredric KARLSSON — Head of Sales",email:"jan-fredric.karlsson@recab.com",
-  meeting_status:"✅ CONFIRMED — Jan-Fredric replied Aug 18: 14:00 Oct 1 works. He's not 100% sure he'll be in the office himself but confirmed \"you will get proper attention.\" Denmark (Tue 15, Alfa Laval) is a separate, already-locked visit",class:"Channel",domain:"Mixed",subdomain:"—",company_status:"ProActive",
+  meeting_status:"✅ CONFIRMED — Jan-Fredric replied Aug 18: 14:00 Oct 1 works. He's not 100% sure he'll be in the office himself but confirmed \"you will get proper attention.\" Alfa Laval visit cancelled; Hamar office visit also cancelled",class:"Channel",domain:"Mixed",subdomain:"—",company_status:"ProActive",
   goal:"Highest-leverage meeting of the Swedish leg. Core channel review and 2027 planning — the tBOX810 maritime sample discussion now happens with Alfa Laval directly in Denmark instead. Recab is also the gateway to Kongsberg Discovery."},
  {company:"Cat AB",country:"Sweden",city:"Sundbyberg",date:"Thu 1 Oct",slot:"AM 9:30",
   address:"Sundbyberg, Stockholm (no street address in vault)",airport:"ARN ~25 min",
@@ -529,12 +579,12 @@ var DETAIL=[
  {company:"Alstom Group (Sweden office)",country:"Sweden",city:"Stockholm",date:"Fri 2 Oct",slot:"AM (alt)",
   address:"Buteljgatan 4, 117 60 Stockholm (new office, opened Aug 2025)",airport:"ARN ~40 min",
   contact:"Magnus ENGDAHL — Commodity Manager",email:"— see Alstom Group note",
-  meeting_status:"✉ Invited Aug 13 — offered as an alternative to InnoTrans booth meeting. Awaiting reply. NOTE: same AM slot as Telac Elektronik AB below — not both, pick one once a reply lands",class:"Rail OEM",domain:"Rolling Stock",subdomain:"Signalling / TCMS",company_status:"Re-Engage",
+  meeting_status:"⚠️ BLOCKED — KL1218 departs ARN 11:30, no time for a Fri AM meeting. Must move to Thu 1 Oct or drop. Originally invited Aug 13 as alt to InnoTrans",class:"Rail OEM",domain:"Rolling Stock",subdomain:"Signalling / TCMS",company_status:"Re-Engage",
   goal:"Was ghosting since May — fresh outreach Aug 13 revived the thread with two options (InnoTrans Hall 4.1/755 or this Sweden office visit). Territory: Europe ex DACH/Italy/UK. Pre-position tBOX600 (EN50155/Jetson, 27Q2 rollout)."},
  {company:"Telac Elektronik AB",country:"Sweden",city:"Lidingö",date:"Fri 2 Oct",slot:"AM",
   address:"Hustegavägen 1, 181 22 Lidingö",airport:"ARN ~25 min",
   contact:"Albin FELDT + Christoffer BIHAGEN — Sales / Product Managers",email:"albin@telac.se",
-  meeting_status:"✉ Invited Jul 23 (both together) — awaiting reply. Moved to AM — Friday PM is tight against the 15:30 ARN departure. Holding follow-up until 2026-08-18, pending Alstom's reply on the same slot",class:"VAR / Equipment Maker",domain:"Mixed",subdomain:"Electronics Distribution",company_status:"Re-Engage",
+  meeting_status:"⚠️ BLOCKED — KL1218 departs ARN 11:30, no time for a Fri AM meeting. Must move to Thu 1 Oct or drop. Originally invited Jul 23",class:"VAR / Equipment Maker",domain:"Mixed",subdomain:"Electronics Distribution",company_status:"Re-Engage",
   goal:"BD target: diagnose why order volume is thin despite an apparent fit — Christoffer's 2025 Congatec Q7 thread (1K/yr potential) died on a product gap, not a relationship problem. Reset conversation: their R&D cycle, sourcing process, end-markets, and how Axiomtek becomes the default rather than a one-off quote."},
  {company:"Qmatic",country:"Sweden",city:"Molnbo",date:"Fri 2 Oct",slot:"FLEX — no confirmed slot",
   address:"Molnbo, Sweden (~50 km SW of Stockholm)",airport:"ARN ~55 min",
@@ -547,7 +597,7 @@ var DETAIL=[
 var COORD={
  'Milestone Systems':[55.65,12.41],'Novicom':[55.68,12.45],'DANBIT':[55.46,12.18],'Alfa Laval (via Recab)':[57.0488,9.9217],
  'Suomen Addon':[60.29,25.04],'Savox':[61.4978,23.7610],'Alpha Point':[60.17,24.94],'Kuori':[60.205,24.655],
- 'StrongPoint ASA':[59.91,10.75],'Kongsberg Discovery':[59.42,10.48],'Autic':[59.27,10.41],
+ 'StrongPoint ASA':[59.91,10.75],'Kongsberg Discovery':[59.42,10.48],'Autic':[59.27,10.41],'Recab Hamar':[60.795,11.068],
  'Frost Unmanned':[57.99,11.94],'Flintab':[57.78,14.16],'Recab AB':[59.33,18.07],'Cat AB':[59.36,17.97],
  'Telac Elektronik AB':[59.37,18.14],'Qmatic':[59.05,17.36],'Alstom Group (Sweden office)':[59.30,18.07]
 };
@@ -562,9 +612,10 @@ var BY={};DETAIL.forEach(function(d){BY[d.company]=d});
    red = not yet invited · yellow = invited, pending reply ·
    lgreen = confirmed to meet, time/details adjusting · dgreen = date+time+location all locked */
 var MSTATUS={
-  'Milestone Systems':'yellow','Novicom':'yellow','DANBIT':'dgreen',
+  'Milestone Systems':'yellow','Novicom':'green','DANBIT':'dgreen',
   'Suomen Addon':'dgreen','Savox':'dgreen','Alpha Point':'dgreen','Kuori':'yellow',
-  'StrongPoint ASA':'yellow','Autic':'dgreen','Kongsberg Discovery':'yellow',
+  'StrongPoint ASA':'red','Autic':'dgreen','Kongsberg Discovery':'red',
+  'Recab Hamar':'red','Alfa Laval (via Recab)':'red',
   'Frost Unmanned':'dgreen','Flintab':'dgreen','Recab AB':'dgreen',
   'Cat AB':'dgreen','Telac Elektronik AB':'yellow','Qmatic':'red','Alstom Group (Sweden office)':'yellow',
   'Alfa Laval (via Recab)':'dgreen'
@@ -655,6 +706,35 @@ DETAIL.forEach(function(d){
   markers[d.company]=m;
 });
 
+/* ── Accommodation markers ────────────────────────────── */
+var HOTELS=[
+  {city:'Copenhagen',name:'Hotel Maritime',dates:'14–16 Sep',nights:2,addr:'Peder Skrams Gade 19',ll:[55.676,12.588],cc:'DK'},
+  {city:'Vantaa',name:'Original Sokos Hotel Vantaa',dates:'16–20 Sep',nights:4,addr:'Hertaksentie 2',ll:[60.293,25.040],cc:'FI'},
+  {city:'Berlin',name:'Astrid Hotel am Kurfürstendamm',dates:'20–26 Sep',nights:6,addr:'Bleibtreustr. 20',ll:[52.504,13.324],cc:'DE'},
+  {city:'Oslo',name:'Airbnb — Tollbugata 13',dates:'26–28 Sep',nights:2,addr:'Tollbugata 13, Sentrum',ll:[59.912,10.745],cc:'NO'},
+  {city:'Tønsberg',name:'Quality Hotel Tønsberg',dates:'28–29 Sep',nights:1,addr:'Ollebukta 3',ll:[59.267,10.407],cc:'NO'},
+  {city:'Stenungsund',name:'Stenungsbaden Yacht Club',dates:'29–30 Sep',nights:1,addr:'Södra Stenungsön 106',ll:[58.074,11.798],cc:'SE'},
+  {city:'Stockholm',name:'Hotel C Stockholm',dates:'30 Sep–2 Oct',nights:2,addr:'Vasaplan 4',ll:[59.332,18.059],cc:'SE'},
+  {city:'Amsterdam',name:'Friend — Sloterdijk',dates:'2–3 Oct',nights:1,addr:'Sloterdijk',ll:[52.389,4.836],cc:'NL'}
+];
+var HFLAG={DK:'🇩🇰',FI:'🇫🇮',DE:'🇩🇪',NO:'🇳🇴',SE:'🇸🇪',NL:'🇳🇱'};
+var HCOL={DK:'#C8102E',FI:'#002F6C',DE:'#FFCE00',NO:'#00205B',SE:'#4E95D9',NL:'#FF6600'};
+
+var hotelLayer=L.layerGroup().addTo(map);
+HOTELS.forEach(function(h){
+  var col=HCOL[h.cc]||'#888';
+  /* Offset hotel marker slightly east so it doesn't sit directly on the company pin */
+  var ll=[h.ll[0]+0.012, h.ll[1]+0.025];
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 26 26">'
+    +'<rect x="1" y="1" width="24" height="24" rx="5" fill="'+col+'" stroke="white" stroke-width="2.5"/>'
+    +'<text x="13" y="18" font-size="13" text-anchor="middle" fill="white" font-weight="bold">H</text>'
+    +'</svg>';
+  var icon=L.divIcon({html:svg,className:'',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-13]});
+  var tip='<b>🛏 '+esc(h.name)+'</b><br>'+HFLAG[h.cc]+' '+esc(h.city)+' · '+h.nights+' night'+(h.nights>1?'s':'')
+    +'<br>'+esc(h.dates)+'<br><i>'+esc(h.addr)+'</i>';
+  L.marker(ll,{icon:icon,zIndexOffset:500}).addTo(hotelLayer).bindTooltip(tip,{direction:'top',offset:[0,-13]});
+});
+
 /* InnoTrans + Elkjøp — events, not customer meetings */
 [{n:'InnoTrans 2026',ll:[52.50,13.27],c:CHD['Germany'],t:'<b>InnoTrans 2026</b><br>Messe Berlin — hall 4.1, booth #755<br>Tue 22 – Fri 25 Sep · 22 meetings'},
  {n:'Elkjøp (social)',ll:[59.91,10.75],c:CHD['Norway'],t:'<b>Elkjøp — social evening</b><br>Oslo · Sun 27 Sep<br>Not a business meeting'}
@@ -665,10 +745,26 @@ DETAIL.forEach(function(d){
    .addTo(map).bindTooltip(e.t,{direction:'top',offset:[0,-12]});
 });
 
+/* Sightseeing POIs — personal/weekend activities */
+[{n:'🏛 Civil Defence Museum',ll:[60.175,24.96],t:'<b>Helsinki Civil Defence Museum</b><br>Siltavuorenranta 14 · Sat 10–14 · €5<br>Real WWII bomb shelter'},
+ {n:'⚓ Suomenlinna',ll:[60.145,24.988],t:'<b>Suomenlinna Fortress</b><br>UNESCO · ferry 15 min · Vesikko submarine<br>Sat 19 Sep'},
+ {n:'🧖 Löyly',ll:[60.153,24.928],t:'<b>Löyly Sauna</b><br>Hernesaarenranta 4 · €29/2h<br>⚠️ Book online'},
+ {n:'🏚 Berliner Unterwelten',ll:[52.549,13.382],t:'<b>Berliner Unterwelten</b><br>Cold War nuclear bunker tour<br>U Pankstraße · Sun 20 Sep ~16:00'},
+ {n:'🧱 Berlin Wall Memorial',ll:[52.535,13.390],t:'<b>Berlin Wall Memorial</b><br>Bernauer Straße · free'},
+ {n:'🎨 Munch Museum',ll:[59.906,10.756],t:'<b>MUNCH</b><br>Bjørvika · Sat 10–21<br>⚠️ Buy timed ticket online'},
+ {n:'🏰 Akershus Fortress',ll:[59.907,10.737],t:'<b>Akershus Fortress</b><br>Free grounds · Forsvarsmuseet 150 NOK<br>Norwegian Armed Forces Museum + Resistance Museum'}
+].forEach(function(e){
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22">'
+    +'<rect x="2" y="2" width="18" height="18" rx="4" fill="#6366f1" stroke="white" stroke-width="2"/>'
+    +'<text x="11" y="15" text-anchor="middle" fill="white" font-size="10" font-weight="bold">★</text></svg>';
+  L.marker(e.ll,{icon:L.divIcon({html:svg,className:'',iconSize:[22,22],iconAnchor:[11,11]})})
+   .addTo(map).bindTooltip(e.t,{direction:'top',offset:[0,-10]});
+});
+
 /* Week-3 drive + ferry — road green (ferry counts as road) */
-L.polyline([[59.91,10.75],[59.27,10.41],[59.42,10.48]],
+L.polyline([[59.91,10.75],[59.27,10.41]],
   {color:ROAD,weight:4.5,opacity:.95}).addTo(map)
-  .bindTooltip('🚗 Oslo → Tønsberg → Horten · 110 km');
+  .bindTooltip('🚗 Oslo → Tønsberg · 110 km');
 L.polyline([[59.42,10.48],[59.43,10.66]],
   {color:ROAD,weight:4.5,opacity:.95,dashArray:'8,7'}).addTo(map)
   .bindTooltip('⛴ Bastø Fosen ferry · Horten → Moss · 35 min (counts as road)');
@@ -688,6 +784,7 @@ function arc(from,to,label){
 arc([55.68,12.57],[60.17,24.94],'✈️ Wed 16 Sep · CPH → HEL · 1h35');
 arc([60.17,24.94],[52.52,13.40],'✈️ Sun 20 Sep · HEL → BER · 2h00');
 arc([52.52,13.40],[59.91,10.75],'✈️ Sat 26 Sep · BER → OSL · 1h40 · 🔴 BOOK FIRST');
+arc([59.65,17.95],[52.31,4.76],'✈️ Fri 2 Oct · ARN → AMS · KL1218 · 2h00');
 
 /* ── Sidebar company list ─────────────────────────────── */
 (function(){
@@ -749,8 +846,8 @@ var weeks=[
    +hop('🚇 M2 to hotel, drop bags','road')
    +noteSlot('PM','🅱 OPEN','Henrik is out of office this day — Novicom moved to the 15th, contingent','flexslot'),
    leg:'Afternoon free again — Novicom cannot do the 14th. Land 14:00, bags ~14:40, hotel by 15:05. Recovery day after the long-haul, or a slot to fill if something else converts',legMode:'none',stay:'Copenhagen'},
-  {d:'Tue 15 Sep',flag:'🇩🇰',body:hop('🚗 AM: travel to Aalborg','road')+coSlot('Alfa Laval (via Recab)'),
-   leg:'AM travel to Aalborg, PM Alfa Laval (via Recab) — locked',legMode:'road',stay:'Copenhagen'},
+  {d:'Tue 15 Sep',flag:'🇩🇰',body:coSlot('Novicom')+noteSlot('14:00','Recab CPH','✅ Confirmed 14:00 — JFK Copenhagen area','mtg-conf'),
+   leg:'AM Novicom 10:00 (Rødovre) · PM Recab 14:00 (CPH) · Alfa Laval cancelled',legMode:'road',stay:'Copenhagen'},
   {d:'Wed 16 Sep',flag:'🇩🇰→🇫🇮',body:coSlot('DANBIT')+hop('🚕 Køge → CPH 40 min','road')
    +moveSlot('PM','✈️ CPH → HEL','AY958 13:55 → 16:20 · 1h35','air'),
    leg:'+1h timezone · land 16:20',legMode:'air',stay:'Helsinki'},
@@ -759,16 +856,20 @@ var weeks=[
    leg:'Fullest day of the Finnish leg — Alpha Point AM, Suomen Addon 14:00 + 16:00, dinner with Tomi in the evening. Hotel 5 min away in Vantaa',legMode:'road',stay:'Vantaa'},
   {d:'Fri 18 Sep',flag:'🇫🇮',body:coSlot('Savox'),
    leg:'Helsinki → Tampere by train, ~1h25–1h40 each way — day trip, back to Helsinki same evening',legMode:'road',stay:'Helsinki'},
-  {d:'Sat 19 Sep',flag:'🇫🇮',body:noteSlot('all day','Free day','Helsinki — Kuori on the waiting list, not here'),
-   leg:'True buffer day — Kuori is on the waiting list above, not slotted here',legMode:'none',stay:'Helsinki'},
+  {d:'Sat 19 Sep',flag:'🇫🇮',body:noteSlot('10:00–12:00','🏛 Civil Defence Museum','Siltavuorenranta 14 — real WWII bomb shelter, €5')
+   +noteSlot('12:30–16:00','⚓ Suomenlinna','Ferry from Market Square · Vesikko submarine + fortress · €10')
+   +noteSlot('16:30','⛪ Rock Church','Temppeliaukion kirkko')
+   +noteSlot('evening','🧖 Löyly Sauna','Hernesaarenranta 4 · €29/2h · ⚠️ BOOK ONLINE','social'),
+   leg:'Personal day — civil defence museum + Suomenlinna + sauna',legMode:'none',stay:'Helsinki'},
   {d:'Sun 20 Sep',mode:'air',flag:'✈️',body:moveSlot('12:05','✈️ HEL → BER','AY1433 Finnair · 12:05 → 13:05','air')
-   +noteSlot('PM','Arrive Berlin','Unhurried — Monday is setup, not show day'),
-   leg:'−1h timezone · Mon AM flights exist as backup if this slips',legMode:'air',stay:'Berlin'}
+   +noteSlot('~16:00','🏚 Berliner Unterwelten','Tour M — Cold War nuclear bunker · U Pankstraße · ⚠️ BOOK ONLINE')
+   +noteSlot('after','🧱 Berlin Wall Memorial','Bernauer Straße — walk from Pankstraße'),
+   leg:'−1h timezone · PM: bunker tour + Wall Memorial',legMode:'air',stay:'Berlin'}
  ]},
  {n:2,title:'Week 2 — Berlin / InnoTrans',meta:'Mon 21 Sep – Sun 27 Sep',count:'4 meetings scheduled · goal 10 · 1 social',days:[
   {d:'Mon 21 Sep',flag:'🇩🇪',body:noteSlot('all day','Free / prep','Booth setup is marketing\'s job — not TC','innotrans'),
    leg:'Day is open · also the backup landing day if Sunday\'s flight slips',legMode:'none',stay:'Berlin'},
-  {d:'Tue 22 Sep',flag:'🇩🇪',body:noteSlot('AM','Our booth','Hall 4.1 #755','innotrans')
+  {d:'Tue 22 Sep',flag:'🇩🇪',body:noteSlot('08:30–18:00','Our booth','Hall 4.1 #755 · 08:30 arrive, show open 09:00–18:00','innotrans')
    +noteSlot('PM · scout T1','See what they bring','DA Group · Axentia · GMV (all 2.1) · Alstom (3.2, key)','booth-walk')
    +noteSlot('14:00–15:00','🇹🇼 Taiwan Pavilion','Opening + Rail Resilience · Hall 11.2/310 · Lars invited (either event)','social')
    +noteSlot('PM · Tier 2','Most-engaged','OTIV (7.1a/500) · Mobile Locker (7.1c/410) · PantoInspect (11.2, by pavilion)','booth-walk')
@@ -786,32 +887,38 @@ var weeks=[
    +noteSlot('pocket · if time','Far singles','EKE (hub27, far SW) · PantoInspect (11.2, east)','booth-walk'),
    leg:'Pocket targets are far-flung — visit only if time allows',legMode:'none',stay:'Berlin'},
   {d:'Sat 26 Sep',mode:'air',flag:'🇳🇴',body:moveSlot('09:45','✈️ BER → OSL','DY1103 Norwegian · 09:45 → 11:25','air')
+   +noteSlot('~14:00','🎨 Munch Museum','Bjørvika · Sat 10–21 · ⚠️ BUY TIMED TICKET')
+   +noteSlot('~16:00','🏰 Akershus Fortress','Free · walk from Munch · 國防博物館 if time')
    +noteSlot('evening','Elkjøp social','Not a business meeting','social'),
-   leg:'🔴 the ONLY direct flight that Saturday — book first',legMode:'air',stay:'Oslo'},
-  {d:'Sun 27 Sep',flag:'🇳🇴',body:noteSlot('all day','Personal time','Oslo — nothing scheduled')
+   leg:'🔴 the ONLY direct flight that Saturday — book first · PM: Munch + fortress',legMode:'air',stay:'Oslo'},
+  {d:'Sun 27 Sep',flag:'🇳🇴',body:noteSlot('AM','🏰 Akershus + 國防博物館','Forsvarsmuseet + Resistance Museum · 150 NOK')
+   +noteSlot('PM','🎭 Operahuset + Vigeland','Opera rooftop (free) · sculpture park (free)')
    +noteSlot('evening','🚗 Collect car at OSL','✅ Avis at Gardermoen open Sun to 23:00'),
-   leg:'✅ Evening pickup works — at the AIRPORT, not the city (city desks shut 16:30 Sun)',legMode:'road',stay:'Oslo'}
+   leg:'Personal day — fortress + museums + car pickup evening',legMode:'road',stay:'Oslo'}
  ]},
- {n:3,title:'Week 3 — Norway + Sweden',meta:'Mon 28 Sep – Sat 3 Oct',count:'9 meetings incl. 1 flex · ~830 km driving',days:[
-  {d:'Mon 28 Sep',flag:'🇳🇴',body:coSlot('StrongPoint ASA')+hop('🚗 Oslo → Tønsberg 90 km · 1h10','road')+coSlot('Autic'),
-   leg:'Autic visited without Recab present',legMode:'road',stay:'Tønsberg'},
-  {d:'Tue 29 Sep',flag:'🇳🇴→🇸🇪',body:hop('🚗 Tønsberg → Horten 15 km · 15 min','road')+coSlot('Kongsberg Discovery')
+ {n:3,title:'Week 3 — Norway + Sweden',meta:'Mon 28 Sep – Sat 3 Oct',count:'6 meetings incl. 1 flex · ~840 km driving',days:[
+  {d:'Mon 28 Sep',flag:'🇳🇴',body:noteSlot('AM','💻 Catch-up work','Progress reports, emails, prep')
+   +hop('🚗 Oslo → Tønsberg ~110 km · ~1h30','road')
+   +noteSlot('PM','Drive + settle in','Arrive Tønsberg, check in'),
+   leg:'AM work catch-up · PM drive to Tønsberg · Recab Hamar cancelled',legMode:'road',stay:'Tønsberg'},
+  {d:'Tue 29 Sep',flag:'🇳🇴→🇸🇪',body:coSlot('Autic')+noteSlot('noon','🍽️ Lunch with Autic','Then depart for Sweden')
+   +hop('🚗 Tønsberg → Horten 15 km','road')
    +moveSlot('PM','⛴ Horten → Moss','Bastø Fosen 35 min, then E6 south','sea')
    +hop('🚗 Moss → Stenungsund ≈275 km · ~3h','road'),
-   leg:'Recab-hosted in Horten · ferry departs from Horten itself · Stenungsund is ~30 min past Gothenburg on the E6, closer to Frost Unmanned',legMode:'road',stay:'Stenungsund'},
+   leg:'AM Autic + lunch · PM ferry + drive to Stenungsund · Kongsberg cancelled',legMode:'road',stay:'Stenungsund'},
   {d:'Wed 30 Sep',flag:'🇸🇪',warn:true,body:coSlot('Frost Unmanned')+hop('🚗 Stora Höga → Jönköping 186 km · ~2h','road')+coSlot('Flintab')
    +hop('🚗 evening → Stockholm 290 km · 3h','road'),
    leg:'⚠️ ~5h driving — TC assumes 2h for Frost Unmanned, leaves by 12:00 regardless of exact start; Flintab confirmed 14:00 (moved from 15:00) so Stockholm arrival is ~19:00 (Avis key-drop) instead of ~20:00',legMode:'road',stay:'Stockholm'},
   {d:'Thu 1 Oct',flag:'🇸🇪',body:coSlot('Cat AB')+hop('🚕 Sundbyberg → Hägersten 20 min','road')+coSlot('Recab AB'),
    leg:'Cat AB locked 9:30 AM — Recab (day confirmed, no time ever fixed) asked to take the afternoon instead, awaiting reply',legMode:'road',stay:'Stockholm'},
-  {d:'Fri 2 Oct',flag:'🇸🇪',body:coSlot('Telac Elektronik AB')+coSlot('Alstom Group (Sweden office)')+noteSlot('PM','Free','Before the evening flight')
-   +hop('🚗 leave by ~15:30 · car back by 16:15','road')
-   +moveSlot('18:25','✈️ ARN → AMS','SK1557 · 18:25 → 20:35','air'),
-   leg:'⚠️ Two AM candidates for one slot — Telac (invited Jul 23, follow-up held until Aug 18) and Alstom Sweden office (invited Aug 13, alt to InnoTrans) — pick whichever confirms first. Car return is OFF-SITE at ARN — 25–40 min via shuttle',legMode:'air',stay:'Sloterdijk (friend)'},
+  {d:'Fri 2 Oct',mode:'air',flag:'✈️',body:hop('🚗 leave Stockholm ~07:30 · car return Hyrbilscenter ~08:15','road')
+   +moveSlot('11:30','✈️ ARN → AMS','KL1218 KLM · 11:30 → 13:30','air')
+   +noteSlot('PM','Arrive AMS','Train to Sloterdijk ~20 min'),
+   leg:'Travel day only — 11:30 flight means no AM meetings. Car return is OFF-SITE (25–40 min shuttle). Telac / Alstom must move to Thu or drop',legMode:'air',stay:'Sloterdijk (friend)'},
   {d:'Sat 3 Oct',mode:'air',flag:'✈️',
    body:noteSlot('AM','Rested at Schiphol','10-min walk to the terminal')
    +moveSlot('11:00','✈️ AMS → TPE','CI74 · 11:00 → 06:15+1 Sun','air'),
-   leg:'Fallback if Friday evening fails: KL1214 ARN 06:30 same morning',legMode:'air'},
+   leg:'Arrive AMS 13:30 Fri, overnight at friend\'s in Sloterdijk, walk to Schiphol Sat AM',legMode:'air'},
   {d:'',mode:'empty',flag:'',body:'',leg:'',legMode:'none'}
  ]}
 ];
@@ -882,22 +989,24 @@ var FLIGHTS=[
  ['Sat 3 Oct','China Airlines','CI74','AMS','11:00','TPE','06:15+1','23kg ×2 free','7kg','incl. (combo w/ CI73)','✓','✗']
 ];
 function flightTable(rows){
+  var labels=['Date','Airline','Flight','Dept.','D-Time','Arrv.','A-Time','Checked','Carry-On','Price','Change','Refund'];
   var h='<div class="tbl-wrap"><table class="dt t-flights" style="min-width:920px"><thead><tr>'
    +'<th>Date</th><th>Airline</th><th>Flight</th><th>Dept.</th><th>D-Time</th><th>Arrv.</th><th>A-Time</th>'
    +'<th>Checked Bag</th><th>Carry-On</th><th>Price</th><th>Change</th><th>Refund</th>'
    +'</tr></thead><tbody>';
   rows.forEach(function(r){
-    h+='<tr class="accent"><td class="num">'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td>'
-     +'<td>'+r[3]+'</td><td class="num">'+r[4]+'</td><td>'+r[5]+'</td><td class="num">'+r[6]+'</td>'
-     +'<td class="num">'+r[7]+'</td><td class="num">'+r[8]+'</td><td class="num">'+r[9]+'</td>'
-     +'<td class="num">'+r[10]+'</td><td class="num">'+r[11]+'</td></tr>';
+    h+='<tr class="accent"><td class="num" data-label="'+labels[0]+'">'+r[0]+'</td>';
+    for(var i=1;i<r.length;i++){
+      h+='<td'+(i!==1&&i!==2?' class="num"':'')+' data-label="'+labels[i]+'">'+r[i]+'</td>';
+    }
+    h+='</tr>';
   });
   return h+'</tbody></table></div>';
 }
 
 (function(){
   var road=[
-   ['Mon 28 Sep','Oslo → Tønsberg','~95 km','~1h15',0],
+   ['Mon 28 Sep','Oslo → Tønsberg','~110 km','~1h30',0],
    ['Tue 29 Sep','Tønsberg → Horten','15 km','~15m',0],
    ['Tue 29 Sep','Horten → Moss <span class="sub">(Bastø Fosen <b>ferry</b> — counts as road)</span>','—','~35m',1],
    ['Tue 29 Sep','Moss → Stora Höga','240 km','~2h30',0],
@@ -918,7 +1027,7 @@ function flightTable(rows){
    +'If more capacity is needed later, China Airlines economy gives <b>2 × 23 kg free</b> on the long-haul — a second bag can be added at no cost, '
    +'but it would then need paying for on each EU leg (€20–70 per sector). <b>Keep it to one bag if possible.</b></div>';
   /* ── Car rental ── */
-  h+='<div class="callout risk"><b>🚗 ARN HAS NO FAST CAR RETURN — budget 25–40 min, and return by 16:15 not 17:00.</b> '
+  h+='<div class="callout risk"><b>🚗 ARN HAS NO FAST CAR RETURN — budget 25–40 min. KL1218 departs 11:30 → car return by ~08:15, leave Stockholm ~07:30.</b> '
    +'All nine rental brands at Arlanda sit at the same <b>off-site Hyrbilscenter (P2 Long Term Beta, Vingvägen 4)</b>, ~2 km out, reachable only by the free P2 Beta shuttle. '
    +'There is no terminal-adjacent return and no company is faster than another. '
    +'⚠️ <b>Terminal 5 is under renovation</b> — the shuttle currently runs from <b>T4 (stop 7)</b> only; if the flight departs T5, add the T4→T5 transfer.</div>';
@@ -948,7 +1057,7 @@ function flightTable(rows){
     h+='<tr class="accent'+(r[4]?' ferry-row':'')+'"><td class="num">'+r[0]+'</td><td>'+r[1]+'</td>'
      +'<td class="num">'+r[2]+'</td><td class="num">'+r[3]+'</td></tr>';
   });
-  h+='<tr class="totalrow"><td>Total</td><td>Oslo → Stockholm</td><td class="num">~830 km</td><td class="num">~9h30</td></tr>';
+  h+='<tr class="totalrow"><td>Total</td><td>Oslo → Tønsberg → Stockholm</td><td class="num">~840 km</td><td class="num">~10h00</td></tr>';
   h+='</tbody></table></div>';
   h+='<div class="callout warn" style="margin-top:12px"><b>⚠️ Car rental — cross-border Norway → Sweden one-way.</b> '
    +'Pickup Oslo, drop-off Stockholm ARN. One-way cross-border drop fees are often <b>€300–800</b> and some firms refuse the movement outright. '
@@ -963,8 +1072,8 @@ function flightTable(rows){
    [1,'Copenhagen','Mon 14 Sep','Wed 16 Sep',2,'Milestone (Brøndby), Novicom (Rødovre) and DANBIT (Køge) are all suburban'],
    [1,'Vantaa','Wed 16 Sep','Sun 20 Sep',4,'✅ <b>BOOKED</b> · Original Sokos Hotel Vantaa · Hotels.com · €645.00 total · pay at check-in — covers the free day (19th) and the night before flying to Berlin'],
    [2,'Berlin','Sun 20 Sep','Sat 26 Sep',6,'<b>⚠️ LONGEST STAY, InnoTrans week</b> — the city sells out and rates surge. <b>BOOK FIRST</b>'],
-   [3,'Oslo','Sat 26 Sep','Mon 28 Sep',2,'Elkjøp social Sat 26 evening · Sun 27 personal, car collected that evening'],
-   [3,'Tønsberg','Mon 28 Sep','Tue 29 Sep',1,'Overnight after Autic (Mon PM); Kongsberg/Horten is the next morning'],
+   [3,'Oslo','Sat 26 Sep','Mon 28 Sep',2,'Sat PM: Munch + Akershus · Elkjøp social evening · Sun: fortress + sightseeing · car pickup evening'],
+   [3,'Tønsberg','Mon 28 Sep','Tue 29 Sep',1,'Drive from Oslo Mon PM; Autic Tue AM + lunch; Horten ferry after'],
    [3,'Stenungsund','Tue 29 Sep','Wed 30 Sep',1,'✅ <b>BOOKED</b> · Stenungsbaden Yacht Club · SEK 1,881.00 · pay at property — right on the E6, closer to Frost Unmanned than Gothenburg'],
    [3,'Stockholm','Wed 30 Sep','Fri 2 Oct',2,'Recab, Cat AB, Telac'],
    [3,'Amsterdam — Sloterdijk','Fri 2 Oct','Sat 3 Oct',1,'✅ <b>Staying with a friend — no hotel needed.</b> Sloterdijk is ~15 min by train to Schiphol']
@@ -1351,6 +1460,8 @@ var VIEWS={cal:['vb-cal','calendar'],itm:['vb-itm','itmatrix'],its:['vb-its','it
            floor:['vb-floor','floorplan'],
            map:['vb-map','map'],trn:['vb-trn','transport'],
            htl:['vb-htl','hotels'],bud:['vb-bud','budget'],sf:['vb-sf','sfcodes']};
+var VIEW_LABELS={cal:'📅 Calendar',itm:'🎯 IT Matrix',its:'🗓️ IT Schedule',floor:'🧭 Hall Plan',
+                 map:'🗺️ Map',trn:'✈️ Transportation',htl:'🏨 Accommodation',bud:'💰 Budget',sf:'🏷️ SF Codes'};
 var curView='cal';
 function setView(v){
   if(!VIEWS[v])return;
@@ -1360,7 +1471,15 @@ function setView(v){
     document.getElementById(VIEWS[k][0]).classList.toggle('active',on);
     document.getElementById(VIEWS[k][1]).style.display=on?'block':'none';
   });
+  var lbl=document.getElementById('activeViewLabel');
+  if(lbl) lbl.textContent=VIEW_LABELS[v]||v;
+  var drop=document.getElementById('navDrop');
+  if(drop) drop.classList.remove('open');
   if(v==='map') setTimeout(function(){map.invalidateSize()},30);
+}
+function toggleNav(){
+  var drop=document.getElementById('navDrop');
+  if(drop) drop.classList.toggle('open');
 }
 setView('cal');
 
@@ -1376,6 +1495,5 @@ function toggleSidebar(){
   if(curView==='map') setTimeout(function(){map.invalidateSize()},240);
 }
 </script>
-</div><!-- #app-root -->
 </body>
 </html>
