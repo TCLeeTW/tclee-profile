@@ -1,7 +1,7 @@
 ---
 title: "什麼是全社會韌性"
 description: "從國家、企業、社區、家庭到個人，韌性是被打一拳之後恢復的速度。"
-date: 2026-08-21
+date: 2026-09-12
 category: "Civil Defense"
 lang: zh
 is_published: true

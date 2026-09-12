@@ -1,7 +1,7 @@
 ---
 title: "不要成為民防的巨嬰"
 description: "政府動員民力的挑戰，以及民防團體可以怎麼回應。"
-date: 2026-08-21
+date: 2026-08-28
 category: "Civil Defense"
 lang: zh
 is_published: true
