@@ -42,7 +42,7 @@ const tags = [...new Set(articles.flatMap((a) => a.data.tags))].sort((a, b) => a
         <p class="empty">{t.thoughtsPage.empty}</p>
       ) : articles.map(a => (
         <a class="thought" data-c={catKey(a.data.category)} data-t={a.data.tags.map(catKey).join(',')} href={withLocale(`/thoughts/${a.slug}`)}>
-          <div class="trow"><h3>{a.data.title}</h3><span class="tmeta">{a.data.lang === 'zh' ? '中文' : 'EN'} · {a.data.category} · {a.data.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></div>
+          <div class="trow"><h3>{a.data.title}</h3><span class="tmeta">{a.data.lang === 'zh' ? '中文' : 'EN'} · {a.data.category} · {a.data.date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
           <p>{a.data.description}</p>
         </a>
       ))}

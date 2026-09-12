@@ -105,7 +105,7 @@ const articles = (await getCollection('articles', ({ data }) => data.is_publishe
       </div>
       {articles.map(a => (
         <a class="thought" href={withLocale(`/thoughts/${a.slug}`)}>
-          <div class="trow"><h3>{a.data.title}</h3><span class="tmeta">{a.data.category} · {a.data.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span></div>
+          <div class="trow"><h3>{a.data.title}</h3><span class="tmeta">{a.data.category} · {a.data.date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
           <p>{a.data.description}</p>
         </a>
       ))}
