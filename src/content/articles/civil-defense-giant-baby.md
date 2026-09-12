@@ -4,7 +4,7 @@ description: "政府動員民力的挑戰，以及民防團體可以怎麼回應
 date: 2026-08-21
 category: "Civil Defense"
 lang: zh
-is_published: false
+is_published: true
 ---
 
 花蓮馬太鞍堰塞湖潰堤的時候，港湖不少人也去了現場。
