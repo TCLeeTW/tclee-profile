@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import type { CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
 import { strings, type Locale } from '../i18n/strings';
 import { catKey } from '../content/config';
 
@@ -11,11 +12,25 @@ const withLocale = (p: string) => (locale === 'zh' ? `/zh${p}` : p);
 
 const { title, description, date, category, tags } = article.data;
 const { Content } = await article.render();
+
+const counterpartSlug = article.data.lang === 'zh'
+  ? article.slug + '-en'
+  : article.slug.replace(/-en$/, '');
+const allArticles = await getCollection('articles', ({ data }) => data.is_published);
+const counterpart = allArticles.find(a => a.slug === counterpartSlug);
+const counterpartUrl = counterpart
+  ? (counterpart.data.lang === 'zh' ? `/zh/thoughts/${counterpart.slug}` : `/thoughts/${counterpart.slug}`)
+  : null;
 ---
 
 <Base title={title} description={description} activeNav="thoughts" locale={locale}>
 <div class="detail">
-  <a class="back" href={withLocale('/thoughts')}>{t.thoughtsPage.backAllThoughts}</a>
+  <div class="detail-topbar">
+    <a class="back" href={withLocale('/thoughts')}>{t.thoughtsPage.backAllThoughts}</a>
+    {counterpartUrl && (
+      <a class="lang-toggle" href={counterpartUrl}>{article.data.lang === 'zh' ? 'Read in English' : '閱讀中文版'}</a>
+    )}
+  </div>
 
   <div class="dmeta article-meta"><span>{article.data.lang === 'zh' ? '中文' : 'EN'}</span><span>·</span><span>{date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</span></div>
 

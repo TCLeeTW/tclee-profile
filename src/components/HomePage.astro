@@ -14,7 +14,7 @@ const latestProjects = (await getCollection('projects'))
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 4);
 
-const articles = (await getCollection('articles', ({ data }) => data.is_published))
+const articles = (await getCollection('articles', ({ data }) => data.is_published && data.lang === locale))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
 ---

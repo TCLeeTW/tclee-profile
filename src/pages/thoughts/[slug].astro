@@ -3,7 +3,7 @@ import ThoughtDetailPage from '../../components/ThoughtDetailPage.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
-  const articles = await getCollection('articles', ({ data }) => data.is_published);
+  const articles = await getCollection('articles', ({ data }) => data.is_published && data.lang === 'en');
   return articles.map((article) => ({
     params: { slug: article.slug },
     props: { article },
