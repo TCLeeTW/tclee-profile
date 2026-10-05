@@ -80,6 +80,13 @@ summary{cursor:pointer;font-weight:600;padding:10px 0}
 .tbl th{color:var(--ink-dim);font-weight:600;font-size:12px}
 .tbl tr.want td:first-child::before{content:"★ ";color:var(--brick)}
 .tbl-wrap{overflow-x:auto}
+.cmp{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+.cmp th,.cmp td{text-align:left;padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+.cmp thead th{border-top:none;font-size:13px}
+.cmp td small{display:block;color:var(--ink-dim);font-size:12px}
+.cmp tr.total td{font-weight:700;font-size:16px;border-top:2px solid var(--line)}
+.cmp tr.total td.best{color:var(--good)}
+.notes{margin:12px 0 0;padding-left:18px;color:var(--ink-soft);font-size:14px}
 footer{margin-top:40px;color:var(--ink-dim);font-size:12px}
 @media (max-width:560px){
   header h1{font-size:24px}
@@ -103,6 +110,7 @@ footer{margin-top:40px;color:var(--ink-dim);font-size:12px}
 <nav>
   <a href="#plan">每日行程</a>
   <a href="#todo">要預約</a>
+  <a href="#transport">交通</a>
   <a href="#map">地圖</a>
   <a href="#spots">景點資料</a>
   <a href="#lists">候選清單</a>
@@ -153,9 +161,32 @@ footer{margin-top:40px;color:var(--ink-dim);font-size:12px}
       <li><input type="checkbox"/><span>登出帶茶茶酒席（預約制）</span></li>
       <li><input type="checkbox"/><span>Moonrock（OpenTable 可訂）</span></li>
       <li><input type="checkbox"/><span>阿財辦桌：確認要不要訂位</span></li>
-      <li><input type="checkbox"/><span>去回交通</span></li>
+      <li><input type="checkbox"/><span>決定交通方案（見下方比較）</span></li>
     </ul>
   </div>
+</section>
+
+<section id="transport">
+  <h2>🚗 交通比較（兩人來回）</h2>
+  <div class="panel tbl-wrap"><table class="cmp">
+    <thead><tr><th></th><th>A. 開車</th><th>B. 高鐵早鳥 65 折</th><th>C. 台鐵自強號</th></tr></thead>
+    <tr><td>主要交通</td><td>油錢 3,490<small>640 km ÷ 6 km/L × 32.7</small></td><td>車票 3,500<small>875 × 2 人 × 2 趟</small></td><td>車票 3,564<small>891 × 2 人 × 2 趟</small></td></tr>
+    <tr><td>國道通行費</td><td>約 610</td><td>—</td><td>—</td></tr>
+    <tr><td>捷運到台北車站</td><td>—</td><td>約 120</td><td>約 120</td></tr>
+    <tr><td>車站⇄住宿</td><td>—</td><td>計程車 2 趟約 800<small>高鐵台南站到中西區</small></td><td>計程車 2 趟約 240<small>台南火車站約 2 km</small></td></tr>
+    <tr><td>往返奇美</td><td>油錢約 130<small>停車約 160（週六）</small></td><td>計程車 2 趟約 700</td><td>計程車 2 趟約 700</td></tr>
+    <tr><td>住宿停車</td><td>免費</td><td>—</td><td>—</td></tr>
+    <tr class="total"><td>合計</td><td class="best">約 4,400</td><td>約 5,100</td><td>約 4,600</td></tr>
+    <tr><td>一人</td><td>約 2,200</td><td>約 2,550</td><td>約 2,300</td></tr>
+    <tr><td>單程時間</td><td>4–4.5 小時<small>週日北上常超過 5 小時</small></td><td>約 3 小時<small>捷運＋高鐵 1:45＋計程車 30 分</small></td><td>4.5–5.5 小時<small>捷運＋自強號 3:40–4:30＋計程車</small></td></tr>
+  </table></div>
+  <ul class="notes">
+    <li>高鐵貴約 700，每趟省 1–1.5 小時</li>
+    <li>高鐵早鳥：11/6 的票 10/8 開賣，11/8 的票 10/10 開賣</li>
+    <li>高鐵台南站有免費快捷公車進市區，建興國中（府前路）站離住宿近，可省約 800</li>
+    <li>Moonrock 和茶酒席都有酒，當晚不開車也不騎車</li>
+    <li>從蘆洲出發；台南市區用 GoShare，不計入；油價為 10/5 當週 95 無鉛</li>
+  </ul>
 </section>
 
 <section id="map">
