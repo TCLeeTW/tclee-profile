@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet"/>
+<meta name="referrer" content="no-referrer"/>
+<title>台南小旅行 — Tainan 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  --bg:#1a1410; --panel:#241c16; --panel-2:#2d231b; --line:#3d3026;
+  --ink:#f3ebe2; --ink-soft:#c9b9a8; --ink-dim:#8f7d6b;
+  --brick:#e0764a; --brick-fill:#3a2218;
+  --gold:#e3b04b; --gold-fill:#352a14;
+  --teal:#5bb3a6; --teal-fill:#17302c;
+  --violet:#a98bd6; --violet-fill:#2a2238;
+  --good:#6cc28a;
+  --radius:10px;
+  --shadow:0 8px 28px rgba(0,0,0,.35);
+  --font:'PingFang TC','Noto Sans TC','Microsoft JhengHei',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: light){
+  :root{
+    --bg:#faf6f1; --panel:#ffffff; --panel-2:#f3ece4; --line:#e6dbcf;
+    --ink:#2b2018; --ink-soft:#5e4f42; --ink-dim:#988777;
+    --brick:#b8502a; --brick-fill:#fbe9e0;
+    --gold:#9a6c10; --gold-fill:#fbf0d8;
+    --teal:#237a6e; --teal-fill:#e1f2ef;
+    --violet:#6b4ba3; --violet-fill:#efe8f8;
+    --good:#2e8a50;
+    --shadow:0 6px 20px rgba(60,40,20,.08);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;font-size:15px}
+a{color:var(--brick)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 16px 64px}
+header h1{font-size:30px;margin:0 0 4px;letter-spacing:.02em}
+header .sub{color:var(--ink-soft);margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0}
+.chip{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--ink-soft)}
+.chip b{color:var(--ink)}
+nav{position:sticky;top:0;z-index:500;background:var(--bg);border-bottom:1px solid var(--line);margin:20px -16px 0;padding:8px 16px;display:flex;gap:6px;overflow-x:auto}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink-soft);font-size:14px;padding:4px 10px;border-radius:6px}
+nav a:hover{background:var(--panel-2);color:var(--ink)}
+section{margin-top:32px}
+h2{font-size:20px;margin:0 0 12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px 18px}
+.days{display:grid;gap:14px}
+.day-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.day-hd .d{font-size:18px;font-weight:700}
+.day-hd .tag{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--brick-fill);color:var(--brick)}
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:8px 0;border-top:1px dashed var(--line)}
+.tl li:first-child{border-top:none}
+.tl .t{font-variant-numeric:tabular-nums;color:var(--ink-dim);font-size:13px;padding-top:2px}
+.tl .what b{display:block}
+.tl .what span{display:block;color:var(--ink-soft);font-size:13px}
+.k{display:inline-block;font-size:11px;padding:1px 7px;border-radius:4px;margin-left:6px;vertical-align:2px;font-weight:600}
+.k.art{background:var(--violet-fill);color:var(--violet)}
+.k.food{background:var(--gold-fill);color:var(--gold)}
+.k.bar{background:var(--brick-fill);color:var(--brick)}
+.k.view{background:var(--teal-fill);color:var(--teal)}
+.todo{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.todo li{display:flex;gap:10px;align-items:flex-start}
+.todo input{margin-top:5px;accent-color:var(--good)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.card h3{margin:0 0 6px;font-size:16px}
+.card ul{margin:6px 0 0;padding-left:18px;color:var(--ink-soft);font-size:14px}
+.card .src{font-size:12px;color:var(--ink-dim);margin-top:8px}
+#leafletMap{height:420px;border-radius:var(--radius);border:1px solid var(--line)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--ink-soft);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+details{margin-top:12px}
+summary{cursor:pointer;font-weight:600;padding:10px 0}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th,.tbl td{text-align:left;padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+.tbl th{color:var(--ink-dim);font-weight:600;font-size:12px}
+.tbl tr.want td:first-child::before{content:"★ ";color:var(--brick)}
+.tbl-wrap{overflow-x:auto}
+footer{margin-top:40px;color:var(--ink-dim);font-size:12px}
+@media (max-width:560px){
+  header h1{font-size:24px}
+  .tl li{grid-template-columns:52px 1fr}
+  #leafletMap{height:340px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>台南小旅行</h1>
+  <p class="sub">2026 年 11 月 6 日（五）至 8 日（日）・三天兩夜</p>
+  <div class="chips">
+    <span class="chip">住 <b>Unicehome 台南中西區</b>（建業街 35 號）</span>
+    <span class="chip">主行程 <b>奇美《埃及之王：法老》</b></span>
+  </div>
+</header>
+
+<nav>
+  <a href="#plan">每日行程</a>
+  <a href="#todo">要預約</a>
+  <a href="#map">地圖</a>
+  <a href="#spots">景點資料</a>
+  <a href="#lists">候選清單</a>
+</nav>
+
+<section id="plan">
+  <h2>🗓️ 每日行程</h2>
+  <div class="days">
+
+    <div class="panel">
+      <div class="day-hd"><span class="d">Day 1・11/6（五）</span><span class="tag">下午抵達</span></div>
+      <ul class="tl">
+        <li><span class="t">午後</span><span class="what"><b>抵達，放行李</b><span>Unicehome，建業街 35 號</span></span></li>
+        <li><span class="t">下午</span><span class="what"><b>南美館／臺南國家美術館<i class="k art">展覽</i></b><span>第一屆臺南藝術雙年展（單日票 200 元，含孔廟）</span><span>蔡草如特展 11/8 結束，週五看比較保險</span><span>週五開到 18:00，走路約 15 分鐘</span></span></li>
+        <li><span class="t">晚餐</span><span class="what"><b>阿財辦桌<i class="k food">個人辦桌</i></b><span>信義街 7 號・16:00–22:30・週一、週二休</span></span></li>
+        <li><span class="t">20:00+</span><span class="what"><b>Moonrock<i class="k bar">調酒</i></b><span>北區老宅酒吧・週一至週六 20:00–02:00（週日休，所以排週五）</span></span></li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="day-hd"><span class="d">Day 2・11/7（六）</span><span class="tag">主行程</span></div>
+      <ul class="tl">
+        <li><span class="t">09:30</span><span class="what"><b>奇美博物館《埃及之王：法老》<i class="k art">特展</i></b><span>計程車約 20–25 分鐘・特展約 1.5–2 小時</span><span>先上官網預約「快速入場」時段</span></span></li>
+        <li><span class="t">中午</span><span class="what"><b>回市區午餐</b><span>從候選清單挑</span></span></li>
+        <li><span class="t">下午</span><span class="what"><b>西市場<i class="k food">市場</i></b><span>週六 11:00–21:00・MOXI MOXI 焙茶在場內</span></span></li>
+        <li><span class="t">16:30</span><span class="what"><b>漁光島<i class="k view">夕陽</i></b><span>日落 17:19，17:40 左右全暗</span></span></li>
+        <li><span class="t">晚上</span><span class="what"><b>登出帶茶・茶酒席<i class="k bar">預約制</i></b><span>神農街 76 號・先品酒再品茶</span></span></li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="day-hd"><span class="d">Day 3・11/8（日）</span><span class="tag">回程</span></div>
+      <ul class="tl">
+        <li><span class="t">早上</span><span class="what"><b>牛肉湯早餐<i class="k food">小吃</i></b><span>牛家莊（郡西路 86 號，週日有開，08:00 起）</span><span>或西羅殿（北區，05:00 起，週二休）</span></span></li>
+        <li><span class="t">上午</span><span class="what"><b>機動時間</b><span>從下方候選清單挑</span></span></li>
+        <li><span class="t">—</span><span class="what"><b>回程</b><span>時間待定</span></span></li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<section id="todo">
+  <h2>📌 出發前要預約</h2>
+  <div class="panel">
+    <ul class="todo">
+      <li><input type="checkbox"/><span>奇美「快速入場」時段（官網免費預約，時段只保留 15 分鐘）</span></li>
+      <li><input type="checkbox"/><span>登出帶茶茶酒席（預約制）</span></li>
+      <li><input type="checkbox"/><span>Moonrock（OpenTable 可訂）</span></li>
+      <li><input type="checkbox"/><span>阿財辦桌：確認要不要訂位</span></li>
+      <li><input type="checkbox"/><span>去回交通</span></li>
+    </ul>
+  </div>
+</section>
+
+<section id="map">
+  <h2>🗺️ 地圖</h2>
+  <div id="leafletMap"></div>
+  <div class="legend">
+    <span><i style="background:#e0764a"></i>住宿</span>
+    <span><i style="background:#a98bd6"></i>展覽</span>
+    <span><i style="background:#e3b04b"></i>吃喝</span>
+    <span><i style="background:#5bb3a6"></i>景點</span>
+    <span>位置為約略，導航請用店名</span>
+  </div>
+</section>
+
+<section id="spots">
+  <h2>📍 景點資料</h2>
+  <div class="cards">
+    <div class="panel card">
+      <h3>奇美博物館《埃及之王：法老》</h3>
+      <ul>
+        <li>與大英博物館合作，約 280 件文物</li>
+        <li>展期至 2027-01-10</li>
+        <li>09:30–17:30，特展最後入場 16:30</li>
+        <li>每週三休館</li>
+        <li>全票 580 元，優待票 480 元</li>
+        <li>特展票不含常設展（常設展另購 200 元）</li>
+        <li>在 Klook、KKday、ibon 買票的，要另外上官網預約</li>
+      </ul>
+      <div class="src"><a href="https://www.chimeimuseum.org/news/6979c778ee209/detail">官網展覽頁</a>・<a href="https://www.chimeimuseum.org/visit">參觀資訊</a></div>
+    </div>
+    <div class="panel card">
+      <h3>西市場（大菜市）</h3>
+      <ul>
+        <li>2025 年 8 月整修後重新開幕</li>
+        <li>平日 11:00–20:00</li>
+        <li>週末 11:00–21:00</li>
+        <li>週三公休</li>
+        <li>百珍麵包（巨無霸泡芙）</li>
+        <li>弄餅家（千層餅）</li>
+        <li>森杉水果室（蘋果糖、糖葫蘆）</li>
+        <li>誠江號麵線</li>
+      </ul>
+      <div class="src"><a href="https://www.twtainan.net/zh-tw/attractions/detail/746/">台南旅遊網</a></div>
+    </div>
+    <div class="panel card">
+      <h3>南美館＋臺南國家美術館</h3>
+      <ul>
+        <li>原 2 館今年起改名臺南國家美術館籌備處</li>
+        <li>第一屆臺南藝術雙年展（10/31 開展）</li>
+        <li>蔡草如特展（國家美術館 3F，11/8 結束）</li>
+        <li>《搜查記：警察異能館》（1館）</li>
+        <li>週二至週日 10:00–18:00，週六到 21:00</li>
+        <li>一般票 160 元，同日可看兩館</li>
+        <li>雙年展單日票 200 元（含孔廟）</li>
+      </ul>
+      <div class="src"><a href="https://www.tnam.museum/exhibition/detail/726">雙年展</a>・<a href="https://www.momatainan.gov.tw/News2.aspx?n=9532&amp;sms=16214">國家美術館</a></div>
+    </div>
+    <div class="panel card">
+      <h3>漁光島</h3>
+      <ul>
+        <li>24 小時開放，免費，禁止戲水</li>
+        <li>月牙灣沙灘</li>
+        <li>木麻黃步道</li>
+        <li>鯨魚尾巴裝置藝術</li>
+        <li>11/7 日落 17:19</li>
+        <li>開車去的話，停車場在日落前常客滿</li>
+        <li>計程車約 15–20 分鐘</li>
+      </ul>
+      <div class="src"><a href="https://www.twtainan.net/zh-tw/attractions/detail/5520/">台南旅遊網</a></div>
+    </div>
+  </div>
+</section>
+
+<section id="lists">
+  <h2>📝 候選清單</h2>
+  <p style="color:var(--ink-soft);margin:0">★ = 已確定想去。營業時間來自貼文或使用者投稿，出發前再確認。</p>
+
+  <details open>
+    <summary>IG 收藏・中西區（住宿附近）</summary>
+    <div class="panel tbl-wrap"><table class="tbl">
+      <tr><th>店名</th><th>類型</th><th>地址</th><th>時間</th></tr>
+      <tr class="want"><td>阿財辦桌</td><td>個人辦桌</td><td>信義街7號</td><td>16:00–22:30<br>週一、週二休</td></tr>
+      <tr class="want"><td>登出帶茶</td><td>茶酒席</td><td>神農街76號</td><td>預約制</td></tr>
+      <tr><td>Dano's Brewer Beer Wine</td><td>餐酒館</td><td>信義街108巷3號</td><td>17:00–23:00<br>週一、週二休</td></tr>
+      <tr><td>MOXI MOXI 焙茶</td><td>茶飲</td><td>西市場 B38</td><td>10:30–19:00<br>假日至 21:00</td></tr>
+      <tr><td>火星</td><td>創意料理</td><td>永和街69號</td><td>—</td></tr>
+      <tr><td>稼の小料理</td><td>無菜單</td><td>民生路一段205巷10號</td><td>17:30–23:00<br>週五、六至 03:00</td></tr>
+      <tr><td>麻花東北鐵鍋燉</td><td>鐵鍋燉</td><td>大德街66號</td><td>18:00–21:30</td></tr>
+      <tr><td>牛家莊牛肉湯</td><td>牛肉湯</td><td>郡西路86號</td><td>08:00–13:00<br>17:00–20:00<br>週二、三休</td></tr>
+      <tr><td>古流拉麵・府城</td><td>拉麵</td><td>民權路三段166號</td><td>—</td></tr>
+      <tr><td>Bula 咖椰吐司</td><td>點心</td><td>新美街18號</td><td>12:30–22:30<br>週一、二休</td></tr>
+      <tr><td>集品蝦仁飯</td><td>蝦仁飯</td><td>海安路一段107號</td><td>09:30–21:00</td></tr>
+      <tr><td>包成羊肉</td><td>羊肉湯</td><td>府前路一段425號</td><td>早上，賣完收</td></tr>
+      <tr><td>杏花村</td><td>挑戰餐</td><td>正德街13巷4號</td><td>—</td></tr>
+      <tr><td>島入冰店</td><td>刨冰</td><td>赤崁樓附近</td><td>—</td></tr>
+      <tr><td>府城騷烤家</td><td>海鮮燒烤</td><td>中西區</td><td>—</td></tr>
+    </table></div>
+  </details>
+
+  <details>
+    <summary>IG 收藏・安平、北區、東區、永康</summary>
+    <div class="panel tbl-wrap"><table class="tbl">
+      <tr><th>店名</th><th>類型</th><th>地址</th><th>時間</th></tr>
+      <tr class="want"><td>Moonrock</td><td>調酒吧</td><td>北區成功路22巷42弄13號</td><td>週一至週六 20:00–02:00</td></tr>
+      <tr><td>La Belle Maison Cafe</td><td>法式甜點</td><td>安平區中興街6巷1號</td><td>預約制</td></tr>
+      <tr><td>𤦔鹹酥雞</td><td>鹹酥雞</td><td>安平路530號</td><td>17:00–23:00</td></tr>
+      <tr><td>西羅殿牛肉湯</td><td>牛肉湯</td><td>北區公園南路98號</td><td>05:00–13:00<br>週二休</td></tr>
+      <tr><td>MOGU KABI 豆塔</td><td>甜點</td><td>東區長榮路三段60號</td><td>10:00–20:00</td></tr>
+      <tr><td>精忠三村米糕</td><td>米糕</td><td>東區</td><td>—</td></tr>
+      <tr><td>奇美陸橋無名早點</td><td>粉漿蛋餅</td><td>永康區中華路854號</td><td>05:00–11:00<br>週日休</td></tr>
+      <tr><td>杰作 sushi 丼</td><td>鰻魚玉子丼</td><td>永康區東橋八街27號</td><td>11:00–19:00<br>週日休</td></tr>
+    </table></div>
+  </details>
+
+  <details>
+    <summary>台派店家・住宿步行範圍（team-taiwan.app）</summary>
+    <div class="panel tbl-wrap"><table class="tbl">
+      <tr><th>店名</th><th>類型</th><th>地址</th><th>距離</th></tr>
+      <tr><td>六合境 茶弥 SaBiSKi</td><td>茶藝館</td><td>建業街18號2F</td><td>同條街</td></tr>
+      <tr><td>木目麦酒</td><td>酒吧</td><td>開山路151巷8號</td><td>0.1 km</td></tr>
+      <tr><td>四四拍唱片行</td><td>早午餐</td><td>府前路一段85巷26號</td><td>0.2 km</td></tr>
+      <tr><td>SabiSabi（肉桂捲）</td><td>咖啡</td><td>開山路122巷16號</td><td>0.2 km</td></tr>
+      <tr><td>波屋咖啡</td><td>外帶咖啡</td><td>開山路87號</td><td>0.2 km</td></tr>
+      <tr><td>幻光 TheBarPhantom</td><td>酒吧</td><td>民權路一段77號</td><td>0.3 km</td></tr>
+      <tr><td>狡怪飯丸</td><td>餐廳</td><td>民權路一段78號</td><td>0.4 km</td></tr>
+      <tr><td>小行星浮力社</td><td>書店</td><td>民權路一段90巷22號</td><td>0.4 km</td></tr>
+      <tr><td>早餐俱樂部</td><td>早午餐</td><td>樹林街二段89號</td><td>0.4 km</td></tr>
+      <tr><td>台灣番薯丸</td><td>熟食</td><td>北門路一段7號</td><td>0.4 km</td></tr>
+      <tr><td>小鵬煮麵</td><td>麵店</td><td>南寧街13號</td><td>0.5 km</td></tr>
+      <tr><td>洛屋拉麵</td><td>拉麵</td><td>中山路32號</td><td>0.6 km</td></tr>
+      <tr><td>共酗會</td><td>酒吧</td><td>民權路一段279號</td><td>0.6 km</td></tr>
+      <tr><td>成功書局</td><td>二手書店</td><td>北門路一段104號</td><td>0.6 km</td></tr>
+      <tr><td>滿室（全素冰淇淋）</td><td>冰淇淋</td><td>衛民街96巷10號</td><td>0.6 km</td></tr>
+      <tr><td>唐恩 Down House</td><td>書店</td><td>衛民街70巷28號</td><td>0.6 km</td></tr>
+      <tr><td>豆弄 とろ</td><td>餐廳</td><td>五妃街76號</td><td>0.6 km</td></tr>
+      <tr><td>森 魚丸湯、肉燥飯</td><td>小吃</td><td>民權路二段2號</td><td>0.6 km</td></tr>
+      <tr><td>軌咖啡</td><td>咖啡</td><td>中山路79巷22-68號2樓</td><td>0.7 km</td></tr>
+      <tr><td>B.B.Cafe 小黑熊咖啡</td><td>咖啡</td><td>民權路二段48號2樓</td><td>0.7 km</td></tr>
+      <tr><td>阿霞飯店 台南店</td><td>台灣菜</td><td>忠義路二段84巷7號</td><td>0.8 km</td></tr>
+      <tr><td>珈琲地圖</td><td>咖啡</td><td>永福路二段35巷5號</td><td>0.8 km</td></tr>
+      <tr><td>湯德章故居</td><td>景點</td><td>友愛街115巷11號</td><td>0.9 km</td></tr>
+      <tr><td>窟仔 kula 咖啡</td><td>咖啡</td><td>忠義路二段158巷13號</td><td>0.9 km</td></tr>
+      <tr><td>銀月書店</td><td>書店</td><td>中正路124號2樓</td><td>0.9 km</td></tr>
+      <tr><td>Midtown Tainan</td><td>酒吧</td><td>中山路153號</td><td>0.9 km</td></tr>
+      <tr><td>杏源珈琲</td><td>咖啡</td><td>府前路一段342巷2號</td><td>1.0 km</td></tr>
+      <tr><td>錦源興（百年布莊）</td><td>紀念品</td><td>中正路209巷3號</td><td>1.1 km</td></tr>
+      <tr><td>太陽的時間</td><td>早午餐</td><td>國華街二段82號</td><td>1.1 km</td></tr>
+      <tr><td>182beer bar</td><td>酒吧</td><td>新美街182號</td><td>1.2 km</td></tr>
+      <tr><td>府城舊冊店</td><td>二手書店</td><td>勝利路115號地下室</td><td>1.3 km</td></tr>
+    </table></div>
+    <p style="color:var(--ink-dim);font-size:12px">距離為到住宿的直線距離。完整清單：<a href="https://team-taiwan.app/">team-taiwan.app</a></p>
+  </details>
+</section>
+
+<footer>最後更新 2026-10-05</footer>
+</div>
+
+<script>
+(function(){
+  var C={home:'#e0764a',art:'#a98bd6',food:'#e3b04b',view:'#5bb3a6'};
+  var pts=[
+    ['Unicehome（住宿）',22.9887,120.2066,'home'],
+    ['奇美博物館',22.9346,120.2260,'art'],
+    ['南美館 1 館',22.9888,120.2027,'art'],
+    ['臺南國家美術館',22.9906,120.2003,'art'],
+    ['西市場',22.9925,120.1975,'food'],
+    ['阿財辦桌',22.9986,120.1965,'food'],
+    ['登出帶茶',22.9974,120.1972,'food'],
+    ['Moonrock',23.0008,120.2078,'food'],
+    ['牛家莊牛肉湯',22.9878,120.1988,'food'],
+    ['漁光島',22.9770,120.1530,'view']
+  ];
+  try{
+    var map=L.map('leafletMap',{scrollWheelZoom:false}).setView([22.985,120.19],12);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+    var b=[];
+    pts.forEach(function(p){
+      L.circleMarker([p[1],p[2]],{radius:p[3]==='home'?9:7,color:'#fff',weight:2,fillColor:C[p[3]],fillOpacity:1})
+        .addTo(map).bindTooltip(p[0]);
+      b.push([p[1],p[2]]);
+    });
+    map.fitBounds(b,{padding:[24,24]});
+  }catch(e){document.getElementById('leafletMap').textContent='地圖載入失敗';}
+})();
+</script>
+</body>
+</html>
