@@ -330,7 +330,13 @@ footer{margin-top:40px;color:var(--ink-dim);font-size:12px}
   ];
   try{
     var map=L.map('leafletMap',{scrollWheelZoom:false}).setView([22.985,120.19],12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+    var osm=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap',referrerPolicy:'strict-origin-when-cross-origin'});
+    var swapped=false;
+    osm.on('tileerror',function(){
+      if(swapped) return; swapped=true; map.removeLayer(osm);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd',attribution:'&copy; OpenStreetMap &copy; CARTO'}).addTo(map);
+    });
+    osm.addTo(map);
     var b=[];
     pts.forEach(function(p){
       L.circleMarker([p[1],p[2]],{radius:p[3]==='home'?9:7,color:'#fff',weight:2,fillColor:C[p[3]],fillOpacity:1})

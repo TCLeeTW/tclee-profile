@@ -1524,7 +1524,8 @@ function initMap(){
     mapInstance = map;
     var tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 17,
-      attribution: '&copy; OpenStreetMap contributors'
+      attribution: '&copy; OpenStreetMap contributors',
+      referrerPolicy: 'strict-origin-when-cross-origin'
     });
     var tileFailed = false;
     tileLayer.on('tileerror', function(){
