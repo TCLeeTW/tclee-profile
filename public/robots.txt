@@ -1,5 +1,6 @@
-# Everything on tclee.dev is crawlable except /p/, which holds unlisted
-# share-by-link pages (trip plans, drafts shared with a specific group).
-# Those pages also carry <meta name="robots" content="noindex">.
+# Everything on tclee.dev is crawlable except /p/ and /cv/, which hold unlisted
+# share-by-link pages (trip plans, drafts, and the personal CV shared with a
+# specific group). Those pages also carry <meta name="robots" content="noindex">.
 User-agent: *
 Disallow: /p/
+Disallow: /cv/
