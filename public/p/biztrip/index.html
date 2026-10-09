@@ -335,9 +335,10 @@ tr.ourhall td:first-child{border-left:3px solid #4ade80}
 
 /* ── Responsive ─────────────────────────────────────── */
 @media(max-width:768px){
-  body{flex-direction:column;height:100dvh}
-  #sidebar{width:100%;max-height:40vh;flex-shrink:0}
-  #sidebar.collapsed{max-height:0}
+  body{flex-direction:column;height:auto;overflow:auto}
+  #sidebar{width:100%;max-height:none;flex-shrink:0}
+  #sidebar.collapsed{display:none}
+  #main{min-height:0}
   #dochead{padding:10px 12px 8px}
   .dh-title{font-size:14px}
   .dh-stats{gap:5px}
@@ -350,7 +351,7 @@ tr.ourhall td:first-child{border-left:3px solid #4ade80}
   #activeViewLabel{display:block}
   #navDrop{display:none;position:absolute;top:100%;left:0;right:0;background:#141926;border-bottom:1px solid var(--line);padding:8px 12px;flex-wrap:wrap;gap:6px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.5)}
   #navDrop.open{display:flex}
-  #topbar{position:relative;padding:6px 10px;gap:6px}
+  #topbar{position:sticky;top:0;z-index:50;padding:6px 10px;gap:6px}
   #topbar .tb-note{display:none}
   .view-btn{padding:5px 10px;font-size:11px}
 
@@ -358,6 +359,10 @@ tr.ourhall td:first-child{border-left:3px solid #4ade80}
   .wk-grid{grid-template-columns:1fr;min-width:0;gap:4px;padding:4px}
   .dow{display:none}
   .cell{min-height:0}
+
+  /* Content views: natural flow, not flex-trapped */
+  #calendar,#transport,#hotels,#budget,#sfcodes,#itmatrix,#itschedule,#floorplan{flex:none;overflow:visible;padding:10px}
+  #map{min-height:70vh}
 
   /* Flight table → card layout */
   table.dt.t-flights thead{display:none}
@@ -370,9 +375,6 @@ tr.ourhall td:first-child{border-left:3px solid #4ade80}
 
   /* Detail drawer full-width */
   #detail{width:100vw}
-
-  /* Content views padding */
-  #calendar,#transport,#hotels,#budget,#sfcodes,#itmatrix,#itschedule,#floorplan{padding:10px}
 }
 
 /* Landscape phones */
@@ -612,7 +614,7 @@ var BY={};DETAIL.forEach(function(d){BY[d.company]=d});
    red = not yet invited · yellow = invited, pending reply ·
    lgreen = confirmed to meet, time/details adjusting · dgreen = date+time+location all locked */
 var MSTATUS={
-  'Milestone Systems':'yellow','Novicom':'green','DANBIT':'dgreen',
+  'Milestone Systems':'yellow','Novicom':'dgreen','DANBIT':'dgreen',
   'Suomen Addon':'dgreen','Savox':'dgreen','Alpha Point':'dgreen','Kuori':'yellow',
   'StrongPoint ASA':'red','Autic':'dgreen','Kongsberg Discovery':'red',
   'Recab Hamar':'red','Alfa Laval (via Recab)':'red',
@@ -748,7 +750,6 @@ HOTELS.forEach(function(h){
 /* Sightseeing POIs — personal/weekend activities */
 [{n:'🏛 Civil Defence Museum',ll:[60.175,24.96],t:'<b>Helsinki Civil Defence Museum</b><br>Siltavuorenranta 14 · Sat 10–14 · €5<br>Real WWII bomb shelter'},
  {n:'⚓ Suomenlinna',ll:[60.145,24.988],t:'<b>Suomenlinna Fortress</b><br>UNESCO · ferry 15 min · Vesikko submarine<br>Sat 19 Sep'},
- {n:'🧖 Löyly',ll:[60.153,24.928],t:'<b>Löyly Sauna</b><br>Hernesaarenranta 4 · €29/2h<br>⚠️ Book online'},
  {n:'🏚 Berliner Unterwelten',ll:[52.549,13.382],t:'<b>Berliner Unterwelten</b><br>Cold War nuclear bunker tour<br>U Pankstraße · Sun 20 Sep ~16:00'},
  {n:'🧱 Berlin Wall Memorial',ll:[52.535,13.390],t:'<b>Berlin Wall Memorial</b><br>Bernauer Straße · free'},
  {n:'🎨 Munch Museum',ll:[59.906,10.756],t:'<b>MUNCH</b><br>Bjørvika · Sat 10–21<br>⚠️ Buy timed ticket online'},
@@ -858,9 +859,8 @@ var weeks=[
    leg:'Helsinki → Tampere by train, ~1h25–1h40 each way — day trip, back to Helsinki same evening',legMode:'road',stay:'Helsinki'},
   {d:'Sat 19 Sep',flag:'🇫🇮',body:noteSlot('10:00–12:00','🏛 Civil Defence Museum','Siltavuorenranta 14 — real WWII bomb shelter, €5')
    +noteSlot('12:30–16:00','⚓ Suomenlinna','Ferry from Market Square · Vesikko submarine + fortress · €10')
-   +noteSlot('16:30','⛪ Rock Church','Temppeliaukion kirkko')
-   +noteSlot('evening','🧖 Löyly Sauna','Hernesaarenranta 4 · €29/2h · ⚠️ BOOK ONLINE','social'),
-   leg:'Personal day — civil defence museum + Suomenlinna + sauna',legMode:'none',stay:'Helsinki'},
+   +noteSlot('16:30','⛪ Rock Church','Temppeliaukion kirkko'),
+   leg:'Personal day — civil defence museum + Suomenlinna',legMode:'none',stay:'Helsinki'},
   {d:'Sun 20 Sep',mode:'air',flag:'✈️',body:moveSlot('12:05','✈️ HEL → BER','AY1433 Finnair · 12:05 → 13:05','air')
    +noteSlot('~16:00','🏚 Berliner Unterwelten','Tour M — Cold War nuclear bunker · U Pankstraße · ⚠️ BOOK ONLINE')
    +noteSlot('after','🧱 Berlin Wall Memorial','Bernauer Straße — walk from Pankstraße'),
@@ -879,10 +879,11 @@ var weeks=[
    +noteSlot('14:00','Axentia ✅','Johan · locked','innotrans mtg-conf')
    +noteSlot('16:00','DA-Group ✅','Timo · moved from 10:00','innotrans mtg-conf')
    +noteSlot('between','Hall 4.1 walk-ups','ACTIA · Teldat · ACKSYS · RideOnTrack','booth-walk'),
-   leg:'Event 2 at 11.2 (10:30, Lars invited) → back to booth · Axentia 14:00 · DA-Group 16:00 (moved from 10:00)',legMode:'none',stay:'Berlin'},
+   leg:'Event 2 at 11.2 (10:30, Lars invited) → back to booth · Axentia 14:00 · DA-Group 16:00',legMode:'none',stay:'Berlin'},
   {d:'Thu 24 Sep',flag:'🇩🇪',body:noteSlot('11:00','GMV 📨','Daniel + Rail Dir · proposed','innotrans mtg-pend')
+   +noteSlot('13:00','Futurail ✅','1:1 · Hall 7.1a / Booth 140 · AI Mobility Lab','innotrans mtg-conf')
    +noteSlot('PM','Booth Visit','Hall 1.1: Rolen · Vending Automater  |  NW pair: Icomera (22) · Latronix (23)','booth-walk'),
-   leg:'PM: Hall 1.1 stops + NW pair (22 & 23 are neighbours)',legMode:'none',stay:'Berlin'},
+   leg:'11:00 GMV (proposed) → 13:00 Futurail (7.1a) → PM Hall 1.1 + NW pair',legMode:'none',stay:'Berlin'},
   {d:'Fri 25 Sep',flag:'🇩🇪',body:noteSlot('AM','Booth + follow-ups','close the week','innotrans')
    +noteSlot('pocket · if time','Far singles','EKE (hub27, far SW) · PantoInspect (11.2, east)','booth-walk'),
    leg:'Pocket targets are far-flung — visit only if time allows',legMode:'none',stay:'Berlin'},
