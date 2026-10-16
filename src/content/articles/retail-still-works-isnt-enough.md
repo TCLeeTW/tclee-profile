@@ -1,62 +1,62 @@
 ---
-title: '"It still works" is no longer a good enough reason'
-description: "A hacked fridge in France and a grocery group taken offline in the Netherlands say the same thing: in an AI era, whether a device can defend itself is now part of whether it is worth keeping."
+title: "「還能動」已經不夠當作留下它的理由"
+description: "法國超市冷藏櫃被遠端加溫、Ahold Delhaize 整個集團被迫關系統——兩起事件說的是同一件事：AI 時代，一台設備守不守得住，已經是它值不值得留下的條件。"
 date: 2026-10-16
 category: "Hardware"
-lang: en
+lang: zh
 is_published: true
 tags: ["Cyber Resilience Act", "Retail"]
 ---
 
-Walk into any store's back office and you'll find a box in the corner that has been running for years.
-Nobody thinks about it. It still works.
-For a long time that was a good enough reason to leave it alone.
-I'm not sure it is anymore.
+走進任何一家店的後場，角落都有一台跑了好幾年的機器。
+沒人會去想它。它還能動。
+很長一段時間，這就是不去碰它的理由。
+我不太確定現在還是不是。
 
-**The fridges that cooked themselves**
+**那批把自己煮熟的冷藏櫃**
 
-In October, someone reached into the refrigeration controllers of hundreds of European supermarkets and told the fridges to defrost.
-Temperatures climbed. Meat and frozen goods were thrown out.
-France was hit hardest — around 350 stores — but units in Belgium, Spain, Portugal, Poland and Germany were affected too.
-The controllers were made by Danfoss. Several of the models involved were end-of-life: still running in the store, no longer getting security updates.
-No ransom. No group claimed it. The exact way in hasn't been officially confirmed.
-(Researchers had already flagged thousands of these management panels sitting open on the internet.)
+十月，有人進到數百家歐洲超市的冷藏控制器，叫冷藏櫃除霜。
+溫度一路往上。肉品和冷凍食品整批報廢。
+法國最慘，約 350 家門市；比利時、西班牙、葡萄牙、波蘭、德國也中。
+控制器是 Danfoss 做的。幾款中招的機種是 EOL——還在店裡跑，但原廠早就不再給安全更新。
+沒有勒索，沒有人出來認。手法官方還沒證實。
+（研究人員早就點名過，有數千台這種管理面板裸露在公網上。）
 
-**"Still running" and "still safe" are two different things**
+**「還能動」和「還安全」是兩件事**
 
-Here's what the fridge case changed for me.
-When we decide whether to replace a piece of equipment, we ask one question: does it still do its job?
-That question is no longer enough.
-A device can work perfectly and still be the easiest door into your operation.
-In an AI era, "can it defend itself" has become part of whether a device is still worth keeping. Not a nice-to-have, a condition.
+冷藏櫃這件事改變了我一個想法。
+我們決定一台設備要不要換，只問一句：它還能做它的工作嗎？
+這句話已經不夠了。
+一台設備可以運作得好好的，同時是別人進到你營運裡最省力的那道門。
+AI 時代，「它守得住嗎」變成設備還值不值得留下的條件之一。不是加分項，是條件。
 
-**Centralising everything also centralises the risk**
+**把一切集中起來，也把風險集中了**
 
-The same month, a different kind of incident hit Ahold Delhaize.
-One cybersecurity problem, and the group took systems offline across Albert Heijn, Etos, Gall & Gall, Delhaize in Belgium, and its US chains.
-Website and online delivery down. Empty shelves. An estimated €10 million so far.
-(The company calls it an IT incident and has found no evidence data was stolen; Dutch authorities say it isn't linked to the fridge attack.)
-Pulling everything into one place is efficient.
-One compromised node is a threat to the whole system.
-An exposed endpoint is one kind of fragility. Over-centralisation is another.
+同一個月，另一種事件打到 Ahold Delhaize。
+一個資安問題，整個集團把系統關掉——Albert Heijn、Etos、Gall & Gall、比利時 Delhaize，還有美國的連鎖。
+網站和線上到貨停擺。空貨架。目前估損約一千萬歐元。
+（公司稱是 IT 事件、查無資料外洩；荷蘭當局說和冷藏案無關。）
+把東西全部收到一個地方，很有效率。
+一個節點被攻破，就是一個系統的威脅。
+裸露的端點是一種脆弱，過度集中是另一種。
 
-**Attack is getting cheaper. Defence is getting more expensive.**
+**攻擊變便宜，防守變貴**
 
-AI lowers the cost of attacking.
-Finding exposed devices, guessing weak logins, writing the script that drives a controller — all of it is faster and cheaper than it was a year ago.
-Defence moves the other way. More endpoints, more integrations, more things to patch, more people needed to watch them.
-And the weakest link is rarely the data centre.
-It's the POS terminal, the kiosk, the signage player, the camera, the store Wi-Fi — the things nobody was asked to guard.
-Those endpoints deserve the attention we usually keep for the servers.
+AI 壓低了攻擊的成本。
+找出裸露的設備、猜出弱密碼、寫出驅動控制器的那段腳本，都比一年前更快更便宜。
+防守往反方向走。更多端點、更多整合、更多要打的補丁、更多要盯著的人。
+而最弱的一環很少是機房。
+是 POS、kiosk、看板播放器、監視器、店內 Wi-Fi——那些沒人被交代要顧的東西。
+這些末端端點，值得我們平常只留給伺服器的那種重視。
 
-**CRA is annoying. It might also be right.**
+**CRA 很煩，但它可能是對的**
 
-Which brings me to the regulation everyone in this industry loves to complain about.
-The EU Cyber Resilience Act is a pain. More paperwork, more obligations, devices you'll be forced to retire earlier than you wanted.
-But look at what it actually demands: no known vulnerabilities at ship, no guessable default passwords, security updates for years, someone accountable for the whole life of the device — and not just the manufacturer, retailers and importers too.
-That list is a direct answer to the fridge case.
-The forced replacement is a cost, and also an investment in building the security in.
-It's the first time the whole chain is being made to do it on purpose.
-It's still a hassle, but I've started to understand what it's for.
+這就講到這個行業每個人都愛抱怨的那條法規。
+歐盟的 Cyber Resilience Act 很煩。更多文書、更多義務、更多你還沒想換就被迫退役的設備。
+但看它實際要求什麼：出廠不得帶已知漏洞、不准用猜得到的預設密碼、要給好幾年的安全更新、整台設備的生命週期要有人負責——而且不只製造商，零售商和進口商都要。
+這張清單，正好是對冷藏櫃那件事的回答。
+被迫換代是成本，也是一筆把安全做進去的投資。
+這是整條鏈第一次被逼著刻意去做這件事。
+雖然還是很繁瑣，但我開始理解他的目標。
 
-The machine that's run for ten years still works. But over the next few years — are you comfortable relying on it?
+那台跑了十年的機器還能動。但是在接下來的幾年，你放心依賴他嗎？
