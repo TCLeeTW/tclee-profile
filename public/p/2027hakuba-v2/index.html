@@ -509,6 +509,7 @@ table.gsch tr.g-stayrow td.g-hh{
       <button class="sb-toggle" id="sbToggle" title="收合側邊欄" aria-label="收合／展開側邊欄" aria-expanded="true">⟨</button>
       <button class="tab-btn active" data-tab="grid">🗓️ 時間表 Schedule Grid</button>
       <button class="tab-btn" data-tab="timeline">📅 逐日行程 Timeline</button>
+      <button class="tab-btn" data-tab="obuse">🌰 小布施 Obuse</button>
       <button class="tab-btn" data-tab="transport">✈️ 交通 Flights &amp; Transport</button>
       <button class="tab-btn" data-tab="stay">🏨 住宿 Stay</button>
       <button class="tab-btn" data-tab="resorts">🏔️ 雪場 Resorts</button>
@@ -816,6 +817,48 @@ table.gsch tr.g-stayrow td.g-hh{
 
     <!-- ============ SCHEDULE GRID (day × hour) ============ -->
     <div class="view active" id="view-grid"></div>
+
+    <!-- ============ OBUSE 小布施 ============ -->
+    <div class="view" id="view-obuse">
+      <div class="panel-hd"><h2>🌰 小布施 景點分類</h2><span class="cnt">1/29 整天 · 走路串得完</span></div>
+      <div class="callout ski">鎮很小、全程走路串得完，1/29 一整天都在這。以下依你要的四類整理。<br>時間以查到的為準，<b>冬季（1 月）行前再電話確認</b>；季節限定（如小布施堂「朱雀」）我都標了。買酒的細節另見 <a href="../2027hakuba-sake/">🍶 地酒研究</a>。</div>
+
+      <div class="panel-hd"><h2>🏛️ 建築物・町並</h2></div>
+      <div class="opts">
+        <div class="opt"><b>町並</b> 修景地区 散策 <span class="sub">戰後町與居民合力保存的景觀。注意是「修景」整理過的町並、不是大量江戶原建物——土牆配瓦頂，慢走很舒服。</span></div>
+        <div class="opt"><b>旧宅</b> 高井鴻山記念館 <span class="sub">幕末豪農商高井鴻山的旧宅；北斎到小布施時借住於此，留有「北斎用過的房間」。建築本身就是看點。</span></div>
+        <div class="opt"><b>酒蔵</b> 桝一市村酒造場 <span class="sub">1755 年創業的老酒蔵建築（也可試飲，見吃喝）。</span></div>
+        <div class="opt"><b>重文</b> 浄光寺 薬師堂 <span class="sub">傳 1408 室町時代、茅葺屋根、國重要文化財（單一旅遊媒體來源，行前確認）。境内有小林一茶句碑。</span></div>
+        <div class="opt"><b>町家</b> 小布施堂／松葉屋 本店 <span class="sub">栗菓子與地酒老舖的町家建築，本身就好看（詳見吃喝）。</span></div>
+      </div>
+
+      <div class="panel-hd"><h2>🎨 美術館・作品</h2></div>
+      <div class="opts">
+        <div class="opt"><b>★ 美術館</b> 北斎館 <span class="sub">北斎專門館，可近看祭屋台的天井繪。大人 ¥1,000、約 9:00 開（冬季電話確認 026-247-5206）。<b>行程排一早先來。</b></span></div>
+        <div class="opt"><b>作品</b> 岩松院「八方睨み鳳凰図」 <span class="sub">北斎晚年天井畫，本堂內坐著仰望鑑賞。冬季 9:30–15:30、¥500、駅徒步約 12 分、較遠——想看要早點排。</span></div>
+        <div class="opt"><b>記念館</b> 高井鴻山記念館 <span class="sub">鴻山的書畫與北斎相關資料（建築本身也是看點，見上）。</span></div>
+        <div class="opt"><b>美術館</b> おぶせミュージアム・中島千波館 <span class="sub">小布施出身日本畫家中島千波常設，櫻花題材著名。</span></div>
+      </div>
+
+      <div class="panel-hd"><h2>🍽️ 吃喝（咖啡・酒・點心）</h2></div>
+      <div class="opts">
+        <div class="opt"><b>栗菓子</b> 小布施堂 本店 <span class="sub">食事 11:00–15:00／菓子販售 9:00–17:00。名物「朱雀」是<b>秋季限定（9–10 月）、1 月沒有</b>，別期待。</span></div>
+        <div class="opt"><b>栗おこわ</b> 竹風堂 小布施本店 <span class="sub">栗おこわ・栗子餅。販售 8:00–18:00、食事 10:00–18:00（L.O. 閉店前 30 分）、元日休。</span></div>
+        <div class="opt"><b>和食</b> 桜井甘精堂 泉石亭 <span class="sub">舊家「高津屋敷」木造建築＋庭園，吃栗おこわ。10:30–L.O.17:00、火曜休（1/29 週五開）。</span></div>
+        <div class="opt"><b>咖啡</b> えんとつ（小布施堂）<span class="sub">モンブラン等栗甜點名店。11:00–15:00（季節變動）、整理券制、不可預約／外帶——想吃早點去拿號。</span></div>
+        <div class="opt"><b>試飲</b> 桝一市村酒造場 <span class="sub">手盃台 60ml 180 円起、一次喝遍銘柄。10:00–17:00。</span></div>
+        <div class="opt"><b>★ 買酒</b> 松葉屋 本店 <span class="sub">地酒主目標（北信流等）。9:00–18:00 · <a href="../2027hakuba-sake/">🍶 地酒研究</a></span></div>
+      </div>
+
+      <div class="panel-hd"><h2>🚶 適合散步的小徑</h2></div>
+      <div class="opts">
+        <div class="opt"><b>★ 步道</b> 栗の小径 <span class="sub">栗樹間伐材鋪成的步道，連接北斎館與高井鴻山記念館；木頭觸感、土牆瓦頂，小布施最招牌的散步路（傘風楼附近起）。</span></div>
+        <div class="opt"><b>町並</b> 修景地区 小路 <span class="sub">整個中心區都適合慢走、駅徒步可達；點跟點之間用走的串最舒服。</span></div>
+        <div class="opt"><b>庭園</b> オープンガーデン <span class="sub">小布施有開放庭園網絡；不過 1 月冬季植栽蕭瑟、參考度低，當季才美。</span></div>
+      </div>
+
+      <div class="mini" style="margin:12px 2px 0">資料來源：小布施観光協会、各店官網、旅遊媒體綜整（2026-10-25 查）。營業時間各來源有出入，冬季以現場／電話為準。</div>
+    </div>
 
     <!-- ============ TRANSPORT ============ -->
     <div class="view" id="view-transport">
