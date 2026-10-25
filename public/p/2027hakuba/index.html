@@ -435,6 +435,40 @@ table.gsch tr.g-stayrow td.g-hh{
 }
 .g-stayval{font-size:11px; color:var(--ink); line-height:1.5}
 .g-stayval .g-sub{display:block; font-size:9.5px; color:var(--ink-dim); margin-top:2px}
+
+/* ── Mobile overrides (手機版) ──────────────────────
+   放在最後，確保覆蓋前面所有基礎規則。 */
+@media (max-width:760px){
+  /* 1) Header 縮成單排可左右滑的 tab bar，不再換行佔滿螢幕 */
+  #topbar{
+    flex-wrap:nowrap; overflow-x:auto; overflow-y:hidden;
+    gap:4px; padding:8px 12px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  #topbar::-webkit-scrollbar{display:none}
+  #topbar .spacer, .updated{display:none}
+  .sb-toggle{flex-shrink:0; margin-right:4px}
+  .tab-btn{flex-shrink:0; white-space:nowrap; padding:7px 12px; font-size:12px}
+
+  /* 2) 收合側邊欄時在手機版真正收起來（桌機是左移，手機改成隱藏） */
+  body.sb-collapsed #sidebar{display:none; margin-left:0}
+
+  /* 3) 內距收窄，逐日行程不再右邊溢出 */
+  .view{padding:16px; max-width:100%}
+  .rail{padding-left:26px}
+  .rail::before{left:7px}
+  .day-node{left:-26px}
+  .flight-badge{flex-wrap:wrap; gap:4px 8px}
+  .slot-txt, .g-blk, .opt, .day-title, .pick-desc{overflow-wrap:anywhere}
+
+  /* 4) 時間表：用動態視窗高度，header 縮小後把滾動窗放大 */
+  #view-grid{padding:12px}
+  .grid-legend{margin:8px 0 10px}
+  .grid-wrap{
+    max-height:calc(100vh - 64px);
+    max-height:calc(100dvh - 64px);
+  }
+}
 </style>
 </head>
 <body>
@@ -1433,7 +1467,10 @@ document.querySelectorAll('.tab-btn').forEach(function(btn){
     btn.textContent = v ? '☰' : '⟨';
     btn.title = v ? '展開側邊欄' : '收合側邊欄';
   }
-  var init=false; try{ init = localStorage.getItem(K)==='1'; }catch(e){}
+  var stored=null; try{ stored = localStorage.getItem(K); }catch(e){}
+  // 手機版沒存過偏好時預設收合，省出垂直空間給內容
+  var isMobile = window.matchMedia && window.matchMedia('(max-width:760px)').matches;
+  var init = stored==='1' || (stored===null && isMobile);
   apply(init);
   btn.addEventListener('click', function(){
     var v = !document.body.classList.contains('sb-collapsed');
