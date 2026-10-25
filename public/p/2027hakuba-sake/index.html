@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet"/>
+<meta name="referrer" content="no-referrer"/>
+<title>地酒研究 — 長野・白馬 在地酒商</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  --bg:#10161f; --panel:#182130; --panel-2:#1e2a3b; --panel-3:#233046;
+  --line:#2a3a4e; --line-soft:#22303f;
+  --ink:#e9eff6; --ink-soft:#a9bccf; --ink-dim:#728499;
+  --ski:#4fa3e3; --ski-fill:#1c2c3d; --ski-soft:#8ec4ee;
+  --sake:#b06fc9; --sake-fill:#2a1f33; --sake-soft:#d6a9e8;
+  --onsen:#e8a33d; --onsen-fill:#332715; --onsen-soft:#f0c37c;
+  --good:#4fbf82; --good-fill:#173225;
+  --warn:#e8a33d; --warn-fill:#332715;
+  --shadow: 0 10px 34px rgba(4,8,14,.45);
+  --radius:10px;
+  --font-display:'Bahnschrift','SF Compact Rounded','Segoe UI Semibold','Segoe UI',system-ui,sans-serif;
+  --font-body:'Segoe UI',ui-sans-serif,system-ui,-apple-system,sans-serif;
+  --font-mono:'Cascadia Code','SF Mono',ui-monospace,'Consolas',monospace;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f2f6fa; --panel:#ffffff; --panel-2:#eaf0f7; --panel-3:#dfe9f2;
+    --line:#d3e0eb; --line-soft:#e3ecf3;
+    --ink:#16202c; --ink-soft:#4e6072; --ink-dim:#8598aa;
+    --ski:#1f6fa8; --ski-fill:#e4f0fa; --ski-soft:#0f4d78;
+    --sake:#8e44ad; --sake-fill:#f3e8fa; --sake-soft:#6c2f86;
+    --onsen:#b9701c; --onsen-fill:#fbeed8; --onsen-soft:#8a5314;
+    --good:#1f8f57; --good-fill:#e3f6ec;
+    --warn:#b9701c; --warn-fill:#fbeed8;
+    --shadow: 0 8px 24px rgba(30,50,70,.10);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161f; --panel:#182130; --panel-2:#1e2a3b; --panel-3:#233046;
+  --line:#2a3a4e; --line-soft:#22303f;
+  --ink:#e9eff6; --ink-soft:#a9bccf; --ink-dim:#728499;
+  --sake:#b06fc9; --sake-fill:#2a1f33; --sake-soft:#d6a9e8;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--font-body);
+  font-size:14px; line-height:1.6; overflow-x:clip;
+}
+.wrap{max-width:860px; margin:0 auto; padding:26px 22px 60px}
+
+/* ── Head ── */
+.eyebrow{font-family:var(--font-mono); font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--sake); font-weight:600}
+h1{font-family:var(--font-display); font-size:30px; font-weight:700; letter-spacing:-.01em; margin:4px 0 6px; line-height:1.15}
+.lede{color:var(--ink-soft); font-size:13.5px; margin:0 0 4px}
+.updated{font-family:var(--font-mono); font-size:10.5px; color:var(--ink-dim); margin-top:8px}
+.backlink{font-size:12px; color:var(--ski); text-decoration:none}
+.backlink:hover{text-decoration:underline}
+
+/* ── Callouts ── */
+.callout{border-radius:var(--radius); padding:13px 15px; margin:16px 0; font-size:13px; line-height:1.65; border:1px solid var(--line)}
+.callout.sake{background:var(--sake-fill); border-color:color-mix(in srgb, var(--sake) 40%, transparent)}
+.callout.warn{background:var(--warn-fill); border-color:color-mix(in srgb, var(--warn) 40%, transparent); color:var(--warn)}
+.callout.good{background:var(--good-fill); border-color:color-mix(in srgb, var(--good) 40%, transparent)}
+.callout b{color:var(--ink)}
+.callout.warn b{color:var(--warn)}
+
+/* ── Section ── */
+.sec-h{display:flex; align-items:baseline; gap:10px; margin:34px 0 4px; padding-bottom:8px; border-bottom:2px solid var(--line)}
+.sec-h h2{font-family:var(--font-display); font-size:21px; font-weight:700; margin:0}
+.sec-h .cnt{font-size:11px; color:var(--ink-dim); font-family:var(--font-mono); margin-left:auto}
+.sec-note{font-size:12.5px; color:var(--ink-soft); margin:10px 0 14px}
+
+/* ── Shop cards ── */
+.shops{display:grid; gap:12px; margin-top:14px}
+.shop{background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--sake); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px 16px}
+.shop.pick{border-left-color:var(--good); background:color-mix(in srgb, var(--good-fill) 55%, var(--panel))}
+.shop.tourist{border-left-color:var(--onsen)}
+.shop-top{display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.shop-name{font-family:var(--font-display); font-size:16.5px; font-weight:700; line-height:1.2}
+.shop-en{font-size:11.5px; color:var(--ink-dim)}
+.tag{font-family:var(--font-mono); font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:2px 8px; border-radius:20px; white-space:nowrap}
+.tag.pick{background:var(--good); color:#06281a}
+.tag.local{background:var(--sake); color:#241033}
+.tag.tourist{background:var(--onsen); color:#2c1a06}
+.tag.add{background:var(--panel-3); color:var(--ink-soft)}
+.shop dl{display:grid; grid-template-columns:auto 1fr; gap:4px 12px; margin:10px 0 0; font-size:12.5px}
+.shop dt{color:var(--ink-dim); font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:.05em; padding-top:2px; white-space:nowrap}
+.shop dd{margin:0; color:var(--ink); line-height:1.55; overflow-wrap:anywhere}
+.shop dd b{color:var(--sake-soft)}
+.shop dd .why{color:var(--ink-soft)}
+.shop .src{font-size:10.5px; color:var(--ink-dim); margin-top:8px; overflow-wrap:anywhere}
+.shop .src a{color:var(--ski); text-decoration:none}
+.shop .src a:hover{text-decoration:underline}
+.flag{font-size:11.5px; color:var(--warn); margin-top:7px; line-height:1.5}
+
+/* ── Table ── */
+.tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); box-shadow:var(--shadow); margin-top:14px}
+table.dt{border-collapse:collapse; width:100%; font-size:12.5px; min-width:420px}
+table.dt th{background:var(--panel-2); text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); font-weight:700; white-space:nowrap}
+table.dt td{padding:9px 12px; border-bottom:1px solid var(--line-soft); vertical-align:top; line-height:1.5}
+table.dt tr:last-child td{border-bottom:none}
+table.dt .r{color:var(--ink-soft); font-size:11.5px}
+
+/* ── Map ── */
+.map-wrap{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; margin-top:14px}
+#sakeMap{width:100%; height:460px; background:var(--panel-2)}
+.map-fallback{padding:30px 20px; text-align:center; color:var(--ink-soft); font-size:12.5px; line-height:1.7; display:none}
+.map-fallback.show{display:block}
+.map-legend{display:flex; flex-wrap:wrap; gap:10px 16px; margin-top:12px; font-size:11.5px; color:var(--ink-soft)}
+.map-legend .li{display:flex; align-items:center; gap:7px}
+.map-legend .sw{width:13px; height:13px; border-radius:50%; flex-shrink:0; box-shadow:0 0 0 2px rgba(255,255,255,.5)}
+.leaflet-popup-content-wrapper{background:var(--panel); color:var(--ink); border-radius:8px}
+.leaflet-popup-tip{background:var(--panel)}
+.leaflet-popup-content{font-family:var(--font-body); font-size:12.5px; line-height:1.55; margin:10px 13px}
+.leaflet-popup-content b{font-family:var(--font-display); font-size:13.5px}
+.pin-emoji{width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; line-height:1; box-shadow:0 0 0 2px rgba(255,255,255,.7), 0 2px 6px rgba(0,0,0,.35)}
+
+.foot{margin-top:40px; padding-top:16px; border-top:1px solid var(--line); font-size:11.5px; color:var(--ink-dim); line-height:1.7}
+.foot a{color:var(--ski); text-decoration:none; overflow-wrap:anywhere}
+.foot a:hover{text-decoration:underline}
+
+@media (max-width:560px){
+  .wrap{padding:18px 16px 50px}
+  h1{font-size:25px}
+  .shop dl{grid-template-columns:1fr}
+  .shop dt{padding-top:6px}
+  #sakeMap{height:380px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">🍶 Sake Research · 地酒研究</div>
+  <h1>長野・白馬 在地酒商</h1>
+  <p class="lede">為 2027/1 白馬滑雪之旅做的在地酒屋調查——找「當地人才去、幾乎沒英文、價格品質會讓人意外」的地酒通路，避開觀光賣店，各地喝不同產地的酒。</p>
+  <div class="updated">調查日 2026-10-25 · 資料來源：web search ＋ 店家／觀光協會官網 · 座標來自國土地理院（GSI）</div>
+  <div style="margin-top:10px"><a class="backlink" href="../2027hakuba-v2/">← 回行程 v2（逐日行程・時間表・地圖）</a></div>
+
+  <div class="callout warn">
+    <b>行前務必再確認。</b>下面的營業時間多半是舊資料，冬季（2027/1–2）沒有查到特別公告；出發前請打電話確認當天是否營業。
+    座標為概略（部分只到町丁目中心），地圖圖釘僅供抓方位。
+    「價格會讓人意外」這點查不到可靠零售比價，無法保證。
+  </div>
+
+  <!-- ====== 長野：替換建議 ====== -->
+  <div class="sec-h"><h2>① 長野</h2><span class="cnt">重點：替換信州くらうど</span></div>
+  <p class="sec-note">你目前在長野是預設「信州くらうど（MIDORI 2F 站內）」買酒，想找在地的替換掉。調查結論：<b>有一家更對味——Hato-Labo</b>，但要看時間。</p>
+
+  <div class="callout good">
+    <b>建議替換成 Hato-Labo（ハトラボ・長野駅前）。</b>它是在地老店「ハトヤ酒店」的站前分店，走路 2 分、常備 100＋種、有吧台可小酌，選品邏輯跟觀光賣店不同。
+    <br><b>⚠️ 但它 12:00 才開</b>：你 <b>1/28 傍晚</b>到長野（放大行李＋晚餐）正好開著，<b>這時買最順</b>，買完跟大行李一起寄 locker。
+    <br><b>1/30 早上</b>要取行李取車時 Hato-Labo 還沒開——那天若還要補酒，改去 <b>ハトヤ本店</b>（9:00 開、高田、取車後開車順路）或就讓 <b>信州くらうど 打底</b>（站內 9:00）。
+  </div>
+
+  <div class="shops">
+    <div class="shop pick">
+      <div class="shop-top"><span class="shop-name">Hato-Labo（ハトラボ 長野駅前店）</span><span class="tag pick">長野替換首選</span></div>
+      <dl>
+        <dt>地址</dt><dd>長野市末広町1356 Nacs末広 1F<span class="why">（長野駅善光寺口徒步約 2 分）</span></dd>
+        <dt>時間</dt><dd><b>12:00–20:00 · 火曜休</b><span class="why">（開幕於 2026/2/21；另有來源寫「火・日・祝不定休」，需確認）</span></dd>
+        <dt>為什麼</dt><dd class="why">在地老店ハトヤ酒店的 antenna shop，常備 100＋種（信州＋縣外限定），吧台付費小酌約 550–600 円起；母店選品「重視看得到釀造者想法的酒」，非觀光選物。</dd>
+        <dt>🍶 值得試</dt><dd>報導出現 <b>大信州</b>、<b>豊香</b>（岡谷）；自家濁酒「BULL ROCK」</dd>
+      </dl>
+      <div class="flag">⚠️ 座標與電話未完全確認（有來源寫 026-217-6833，官方稿寫非公開）；1/30 早上去不了（12:00 開）。</div>
+      <div class="src">來源：<a href="https://www.web-komachi.com/?p=268686">web-komachi</a> · <a href="https://www.hahahaishya.com/hato-labo-first/">hahahaishya</a></div>
+    </div>
+
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">ハトヤ酒店 本店</span><span class="shop-en">Hatoya Sake-ten</span><span class="tag local">在地・加碼</span></div>
+      <dl>
+        <dt>地址</dt><dd>長野市高田643-2 · 026-226-3632<span class="why">（長野站東北，取車後開車可達）</span></dd>
+        <dt>時間</dt><dd><b>9:00–20:00 · 週日休</b><span class="why">（有來源加「第 1・3 月曜祝日」，矛盾）</span></dd>
+        <dt>為什麼</dt><dd class="why">1952 年創業、三代，店主夫妻都是利き酒師；約 30 蔵特約直進，在地餐飲店老闆也來買。<b>1/30 早上 9:00 就開</b>，是取車後補酒的在地選擇。</dd>
+        <dt>🍶 值得試</dt><dd>以全國銘酒為主（鍋島・墨廼江・紀土・久保田）；信州有 <b>十六代九郎右衛門</b>（木曽）。<span class="why">注意：信州酒只是其中一部分，且不賣「真澄」。</span></dd>
+      </dl>
+      <div class="src">來源：<a href="https://www.reallocal.jp/37697">reallocal</a> · <a href="https://www.oishii-shinshu.net/shop/nagano/nagano-city/12750.html">おいしい信州</a></div>
+    </div>
+
+    <div class="shop tourist">
+      <div class="shop-top"><span class="shop-name">信州くらうど（信州蔵人）</span><span class="tag tourist">打底／對照</span></div>
+      <dl>
+        <dt>地址</dt><dd>長野駅直結 MIDORI長野 2F · 026-219-6139</dd>
+        <dt>時間</dt><dd>約 9:00–20:00（與設施同休）</dd>
+        <dt>定位</dt><dd class="why">站內最方便，選品涵蓋整個信州、有立呑 bar——但位置性質決定客群偏旅客與伴手禮。找不到更好或趕時間時當打底。</dd>
+      </dl>
+    </div>
+  </div>
+  <p class="sec-note" style="margin-top:10px">權堂／市中心：查不到零售型在地地酒屋，只有居酒屋（酒音、ちどり、しずや）可喝不可買。<b>未確認</b>。</p>
+
+  <!-- ====== 上田 ====== -->
+  <div class="sec-h"><h2>② 上田</h2><span class="cnt">有朋友開車，距離不是問題</span></div>
+  <p class="sec-note">你 1/28 在上田有朋友開車，郊區也能到。真正「在地人通路」的在地酒屋在這區最密集——岡崎（柳町）買亀齢之外，還有幾家值得繞。<b>酒の原（上塩尻）與 沓掛 郷の蔵（下塩尻）相距約 1.5 km，可一起排。</b></p>
+
+  <div class="shops">
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">地酒屋 宮島</span><span class="shop-en">Jizakeya Miyajima</span><span class="tag local">在地專門店</span></div>
+      <dl>
+        <dt>地址</dt><dd>上田市真田町長5913-1 · 0268-72-4039<span class="why">（真田町，上田市區東北，需開車）</span></dd>
+        <dt>時間</dt><dd>平日 10:00–19:00／週末假日 9:00–19:00 · <b>週二休</b></dd>
+        <dt>為什麼</dt><dd class="why">只賣長野縣產地酒與葡萄酒，「上田所有酒蔵的酒都買得到」，店員依喜好幫選。專門店，非觀光。</dd>
+        <dt>🍶 值得試</dt><dd><b>上田六蔵全系列</b>：亀齢・福無量・互・和田龍・月吉野・真田六文銭</dd>
+      </dl>
+      <div class="src">來源：<a href="https://ueda-kanko.or.jp/spot/miyajima/">上田観光</a> · <a href="https://mssakaya.com/">官網</a></div>
+    </div>
+
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">酒の原商店</span><span class="shop-en">Sake no Hara</span><span class="tag local">在地・味噌蔵元</span></div>
+      <dl>
+        <dt>地址</dt><dd>上田市上塩尻260 · 0268-22-1941</dd>
+        <dt>時間</dt><dd>9:00–19:00 · <b>週三休</b><span class="why">（1/28 週四，開）</span></dd>
+        <dt>為什麼</dt><dd class="why">1905 年創業、四代在地酒屋兼味噌蔵元，店主是利き酒師自己試喝挑選；取扱 18 蔵，偏在地非觀光（也有楽天網店）。</dd>
+        <dt>🍶 值得試</dt><dd>信州亀齢（山田錦 純吟 無濾過生原酒 720ml 約 ¥1,637）、和田龍登水</dd>
+      </dl>
+      <div class="src">來源：<a href="https://hara-igeta.jp/">官網</a> · <a href="https://ueda-kanko.or.jp/spot/harashoten/">上田観光</a></div>
+    </div>
+
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">沓掛酒造 直售店「郷の蔵」</span><span class="shop-en">Kutsukake Shuzo</span><span class="tag local">蔵元直售・有限定</span></div>
+      <dl>
+        <dt>地址</dt><dd>上田市下塩尻36<span class="why">（離酒の原約 1.5 km，可一起排）</span></dd>
+        <dt>時間</dt><dd>10:00–16:00（日・祝到 15:00）· <b>週一休</b><span class="why">（1/28 週四，開）</span></dd>
+        <dt>為什麼</dt><dd class="why">元禄年間（1688–1704）創業的在地定番酒；直售店備蔵元限定酒，部分可付費試飲（蔵不開放參觀）。</dd>
+        <dt>🍶 值得試</dt><dd><b>福無量</b>、<b>互</b>（跟在地酒販共同開發）、蔵元限定酒</dd>
+      </dl>
+      <div class="src">來源：<a href="https://ueda-kanko.or.jp/blog/japanesesake/">上田観光・地酒</a></div>
+    </div>
+
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">岡崎酒造（信州亀齢）</span><span class="shop-en">Okazaki Shuzo · 柳町</span><span class="tag local">蔵元直售</span></div>
+      <dl>
+        <dt>地址</dt><dd>上田市中央4-7-33（柳町）· 0268-22-0149</dd>
+        <dt>時間</dt><dd>店面 9:00–16:00 · 年始外基本有開<span class="why">（冬季保險起見確認）</span></dd>
+        <dt>為什麼</dt><dd class="why">1665 年創業、女性杜氏岡崎美都里的蔵元直售。柳町是北國街道舊宿場町、觀光度中等，但亀齢在地評價高。<b>行程 1/28 下午逛柳町順手買。</b></dd>
+        <dt>🍶 值得試</dt><dd><b>信州亀齢</b>、上田產山恵錦系列、稲倉棚田米系列<span class="why">（庫存每天不同；蔵前禁行車，停合作停車場步行）</span></dd>
+      </dl>
+      <div class="src">來源：<a href="https://yanagimachi-ueda.jp/shop/okazaki">柳町・岡崎酒造</a></div>
+    </div>
+
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">和田龍酒造</span><span class="shop-en">Wadaryu · 補充</span><span class="tag add">在地蔵元</span></div>
+      <dl>
+        <dt>地址</dt><dd>上田市中央西1-14-14<span class="why">（上田城北側，北國街道沿線）</span></dd>
+        <dt>時間</dt><dd>9:00–17:00 · 日曜・祝日休</dd>
+        <dt>🍶 值得試</dt><dd>和田龍、<b>和田龍登水</b></dd>
+      </dl>
+      <div class="src">來源：<a href="https://ueda-kanko.or.jp/blog/japanesesake/">上田観光・地酒</a></div>
+    </div>
+  </div>
+
+  <!-- ====== 小布施 ====== -->
+  <div class="sec-h"><h2>③ 小布施</h2><span class="cnt">1/29 整天在這</span></div>
+  <div class="shops">
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">松葉屋 本店</span><span class="shop-en">Matsubaya Honten · 北信流</span><span class="tag local">蔵元＋直売</span></div>
+      <dl>
+        <dt>地址</dt><dd>小布施町小布施778（中町）· 026-247-2019</dd>
+        <dt>時間</dt><dd>9:00–18:00 · 店面基本無休（元旦休）<span class="why">蔵見学 9:00–17:00 需預約</span></dd>
+        <dt>為什麼</dt><dd class="why">其實是釀酒蔵＋自家直賣（非單純零售專門店），被町公式列為「まちじゅう図書館」、店內有清酒專業書。偏在地蔵元，但在觀光動線上。</dd>
+        <dt>🍶 值得試</dt><dd><b>北信流</b>、本吉乃川</dd>
+      </dl>
+      <div class="src">來源：<a href="https://www.town.obuse.nagano.jp/lib/docs/8926.html">小布施町</a> · <a href="https://www.sakenomy.jp/brewery/K01N020010/">sakenomy</a></div>
+    </div>
+    <div class="shop tourist">
+      <div class="shop-top"><span class="shop-name">桝一市村酒造場</span><span class="tag tourist">觀光試飲型</span></div>
+      <dl>
+        <dt>定位</dt><dd class="why">1755 年創業，付費試飲台可一次喝遍銘柄——方便但偏觀光。整天有空時排得進。<span class="why">細節未深查。</span></dd>
+      </dl>
+    </div>
+  </div>
+
+  <!-- ====== 白馬／小谷 ====== -->
+  <div class="sec-h"><h2>④ 白馬／小谷</h2><span class="cnt">滑雪段有車</span></div>
+  <p class="sec-note">這區最對你「意想不到」的味——有車又有在地限定款。<b>鍛冶倉＝かじくら</b>已確認是同一家。</p>
+  <div class="shops">
+    <div class="shop pick">
+      <div class="shop-top"><span class="shop-name">かじくら酒店（＝鍛冶倉商店）</span><span class="tag pick">在地限定款</span></div>
+      <dl>
+        <dt>地址</dt><dd>白馬村北城3010 · 0261-72-4488</dd>
+        <dt>時間</dt><dd>來源矛盾：9:00–19:00 ／ 10:00–17:00 · 不定休<span class="why"><b>冬季務必電話確認</b></span></dd>
+        <dt>為什麼</dt><dd class="why">賣信州地酒・葡萄酒・地啤・濁酒與自家企劃品，專攻白馬在地限定。你行程 1/31 滑完本來就排了。</dd>
+        <dt>🍶 值得試</dt><dd><b>樹氷のしずく（かじくら限定・已確認）</b>、白馬連峰、白馬八方尾根</dd>
+      </dl>
+      <div class="src">來源：<a href="https://www.kajikura.jp/">官網</a> · <a href="https://www.nagano-wine.jp/store/hakuba-village-kitaazumi-district/kajikura.html">NAGANO WINE</a></div>
+    </div>
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">藤森酒店</span><span class="shop-en">補充 · 白馬北城</span><span class="tag add">在地・另家限定</span></div>
+      <dl>
+        <dt>地址</dt><dd>白馬村北城12867-289 · 0261-72-2018</dd>
+        <dt>時間</dt><dd>9:30–19:00 · 冬季公休未明記</dd>
+        <dt>🍶 值得試</dt><dd>為這家專門釀造的 <b>「岳」</b>（大雪渓酒造）<span class="why">— 此說來自搜尋摘要，未開原文驗證</span></dd>
+      </dl>
+      <div class="src">來源：<a href="https://www.oishii-shinshu.net/shop/daihoku/hakuba/12640.html">おいしい信州</a></div>
+    </div>
+    <div class="shop">
+      <div class="shop-top"><span class="shop-name">石川商店（小谷・網店）</span><span class="tag add">小谷山麓</span></div>
+      <dl>
+        <dt>定位</dt><dd class="why">「白馬山麓・小谷村 石川商店」有網路商店，專攻小谷／白馬山麓地酒；實店舖地址與時間<b>未確認</b>。</dd>
+      </dl>
+      <div class="src">來源：<a href="https://jizakeotari.base.shop/">網店</a></div>
+    </div>
+  </div>
+
+  <!-- ====== 地圖 ====== -->
+  <div class="sec-h"><h2>🗺️ 地圖</h2><span class="cnt">圖釘為概略位置</span></div>
+  <div class="map-wrap">
+    <div id="sakeMap"></div>
+    <div class="map-fallback" id="mapFallback">地圖載入失敗（可能無網路或圖磚被擋）。各店地址見上方卡片，座標為國土地理院概略值。</div>
+  </div>
+  <div class="map-legend">
+    <span class="li"><span class="sw" style="background:#4fbf82"></span>推薦（在地首選／限定款）</span>
+    <span class="li"><span class="sw" style="background:#b06fc9"></span>在地酒屋／蔵元</span>
+    <span class="li"><span class="sw" style="background:#e8a33d"></span>觀光／打底</span>
+  </div>
+
+  <!-- ====== 銘柄 ====== -->
+  <div class="sec-h"><h2>🍶 銘柄速查</h2><span class="cnt">對應上面各店</span></div>
+  <p class="sec-note">上面每家店卡片的「🍶 值得試」就是該店建議下手的酒；這張表只是把各地銘柄集中起來方便對照。</p>
+  <div class="tbl-wrap">
+    <table class="dt">
+      <thead><tr><th>地區</th><th>銘柄</th><th>備註</th></tr></thead>
+      <tbody>
+        <tr><td>上田</td><td>信州亀齢／福無量・互／和田龍・登水／月吉野／真田六文銭</td><td class="r">亀齢＝岡崎（女性杜氏）；福無量・互＝沓掛；六蔵都在地</td></tr>
+        <tr><td>長野市</td><td>大信州／豊香（岡谷）／十六代九郎右衛門（木曽）</td><td class="r">依ハトヤ系選品；本店不賣真澄</td></tr>
+        <tr><td>小布施</td><td>北信流／本吉乃川</td><td class="r">松葉屋本店</td></tr>
+        <tr><td>飯山</td><td>水尾</td><td class="r">Ted 點名、端麗系；販售店列表未查</td></tr>
+        <tr><td>白馬／小谷</td><td>樹氷のしずく／白馬連峰／白馬錦／岳／大雪渓</td><td class="r">樹氷のしずく＝かじくら限定；岳＝藤森限定（待證）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ====== 未確認 ====== -->
+  <div class="sec-h"><h2>⚠️ 未確認清單</h2></div>
+  <div class="callout warn">
+    Hato-Labo 的正確座標／電話／冬季時間（12:00 開已知）
+    <br>權堂是否有零售型在地地酒屋
+    <br>桝一市村酒造場細節
+    <br>沓掛酒造電話與確切座標
+    <br>白馬各店冬季（1–2 月）實際營業時間
+    <br>飯山「水尾」販售店
+    <br>Google Maps 連結全部未取得（座標來自 GSI 地址檢索）
+  </div>
+
+  <div class="foot">
+    主要來源：
+    <br><a href="https://ueda-kanko.or.jp/blog/japanesesake/">上田観光協会・地酒</a>
+    <br><a href="https://hara-igeta.jp/">酒の原商店（信州イゲタ）</a>
+    <br><a href="https://mssakaya.com/">地酒屋宮島</a>
+    <br><a href="https://yanagimachi-ueda.jp/shop/okazaki">柳町・岡崎酒造</a>
+    <br><a href="https://www.web-komachi.com/?p=268686">web-komachi：Hato-Labo</a>
+    <br><a href="https://www.reallocal.jp/37697">reallocal：ハトヤ酒店</a>
+    <br><a href="https://www.town.obuse.nagano.jp/lib/docs/8926.html">小布施町・松葉屋</a>
+    <br><a href="https://www.kajikura.jp/">かじくら酒店</a>
+    <br>座標：<a href="https://msearch.gsi.go.jp/address-search/AddressSearch">国土地理院 住所検索</a>
+    <br><br>草稿 · 2026-10-25 · 行前請逐店電話確認營業時間。
+  </div>
+
+</div>
+
+<script>
+var SAKE = [
+  {name:'Hato-Labo（ハトラボ 長野駅前）', lat:36.6485, lng:138.1948, rank:'pick', area:'長野', note:'★長野替換首選 · 12:00–20:00 火休 · 在地ハトヤ站前店（座標概略）'},
+  {name:'ハトヤ酒店 本店', lat:36.64687, lng:138.21732, rank:'local', area:'長野', note:'9:00–20:00 日休 · 高田 · 1/30 早上取車後可達'},
+  {name:'信州くらうど', lat:36.64391, lng:138.18877, rank:'tourist', area:'長野', note:'MIDORI 2F 站內 · 打底／對照（偏觀光）'},
+  {name:'地酒屋 宮島', lat:36.4920, lng:138.3745, rank:'local', area:'上田', note:'真田町 · 週二休 · 上田六蔵全系列（座標概略）'},
+  {name:'酒の原商店', lat:36.41824, lng:138.21394, rank:'local', area:'上田', note:'上塩尻 · 9:00–19:00 水休 · 利き酒師選酒＋味噌蔵元'},
+  {name:'沓掛酒造 郷の蔵', lat:36.4183, lng:138.2017, rank:'local', area:'上田', note:'下塩尻 · 10:00–16:00 月休 · 福無量／互・限定（座標概略）'},
+  {name:'岡崎酒造（亀齢）', lat:36.40547, lng:138.25308, rank:'local', area:'上田', note:'柳町 · 9:00–16:00 · 1/28 下午順手買'},
+  {name:'和田龍酒造', lat:36.40749, lng:138.24547, rank:'local', area:'上田', note:'上田城北側 · 9:00–17:00 日祝休 · 和田龍登水'},
+  {name:'松葉屋 本店', lat:36.6963, lng:138.3169, rank:'local', area:'小布施', note:'9:00–18:00 · 蔵元＋直売 · 北信流'},
+  {name:'桝一市村酒造場', lat:36.6977, lng:138.3124, rank:'tourist', area:'小布施', note:'1755 創業 · 付費試飲（偏觀光）'},
+  {name:'かじくら酒店（＝鍛冶倉商店）', lat:36.6934, lng:137.8395, rank:'pick', area:'白馬', note:'★北城3010 · 樹氷のしずく かじくら限定 · 冬季時間需確認'},
+  {name:'藤森酒店', lat:36.7062, lng:137.8665, rank:'local', area:'白馬', note:'北城 · 9:30–19:00 · 「岳」限定（待證）'},
+  {name:'藤野屋', lat:36.6582, lng:137.8468, rank:'local', area:'神城', note:'神城 · 內容與時間未確認（座標概略）'}
+];
+var RANK = {
+  pick:{emoji:'★', color:'#4fbf82'},
+  local:{emoji:'🍶', color:'#b06fc9'},
+  tourist:{emoji:'🧳', color:'#e8a33d'}
+};
+(function(){
+  try{
+    if (typeof L === 'undefined') throw new Error('leaflet not loaded');
+    var map = L.map('sakeMap', {scrollWheelZoom:true}).setView([36.6, 138.1], 9);
+    var tl = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom:17, attribution:'&copy; OpenStreetMap contributors', referrerPolicy:'strict-origin-when-cross-origin'
+    });
+    var failed=false;
+    tl.on('tileerror', function(){ if(failed) return; failed=true; document.getElementById('mapFallback').classList.add('show'); });
+    tl.addTo(map);
+    var bounds=[];
+    SAKE.forEach(function(s){
+      var r = RANK[s.rank] || RANK.local;
+      var icon = L.divIcon({ className:'', html:'<div class="pin-emoji" style="background:'+r.color+'">'+r.emoji+'</div>', iconSize:[28,28], iconAnchor:[14,14] });
+      L.marker([s.lat, s.lng], {icon:icon}).addTo(map)
+        .bindPopup('<b>'+s.name+'</b><br><span style="opacity:.7">'+s.area+'</span><br>'+s.note);
+      bounds.push([s.lat, s.lng]);
+    });
+    map.fitBounds(bounds, {padding:[34,34]});
+    setTimeout(function(){ map.invalidateSize(); }, 120);
+  }catch(e){
+    document.getElementById('mapFallback').classList.add('show');
+  }
+})();
+</script>
+</body>
+</html>
