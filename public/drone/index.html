@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="可拖曳的 5 吋 FPV 3D 拆解模型，逐層看每個零件在台灣、非紅、中國的供應商與取得方式。">
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html, body { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<title>FPV 零件產地拆解</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: an assembly-drawing workbench — tabs on top, parts tree on the left, 3D stage and supply sheet on the right. */
+:root {
+  --bg: #eef1f4;
+  --surface: #ffffff;
+  --stage: #e3e8ee;
+  --ink: #141c25;
+  --muted: #586473;
+  --line: #d4dae2;
+  --mark: #d99a1e;
+  --o-tw: #198a64;
+  --o-nr: #2d63cf;
+  --o-cn: #d2453b;
+  --o-gap: #8c939c;
+  --o-unk: #c2c8cf;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1218; --surface: #151c24; --stage: #10171f; --ink: #e5eaf0; --muted: #98a4b1;
+    --line: #27313c; --mark: #e8b13d; --o-tw: #34b88b; --o-nr: #5c8ff2; --o-cn: #ef6b60;
+    --o-gap: #78808a; --o-unk: #47505a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1218; --surface: #151c24; --stage: #10171f; --ink: #e5eaf0; --muted: #98a4b1;
+  --line: #27313c; --mark: #e8b13d; --o-tw: #34b88b; --o-nr: #5c8ff2; --o-cn: #ef6b60;
+  --o-gap: #78808a; --o-unk: #47505a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+}
+.wrap { max-width: 1320px; margin: 0 auto; display: grid; gap: 16px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.25; }
+button { font: inherit; color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+
+/* header */
+.head { display: grid; gap: 4px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.head h1 { font-size: clamp(26px, 4vw, 38px); font-weight: 900; letter-spacing: .02em; }
+.head p { margin: 0; color: var(--muted); max-width: 64ch; }
+
+/* top tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--line); overflow-x: auto; }
+.tabs button {
+  border: 0; background: transparent; padding: 10px 16px 9px; cursor: pointer; font-size: 15px; font-weight: 500; color: var(--muted);
+  border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+}
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--ink); font-weight: 700; }
+
+/* app grid */
+.app { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 900px) { .app { grid-template-columns: minmax(0, 1fr); } }
+
+/* tree nav */
+.tree { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 10px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 40px); overflow: auto; }
+@media (max-width: 900px) { .tree { position: static; max-height: none; } }
+.tree details > summary { list-style: none; cursor: pointer; }
+.tree details > summary::-webkit-details-marker { display: none; }
+.tree .mobsum { display: none; font-weight: 700; padding: 4px 6px; }
+@media (max-width: 900px) { .tree .mobsum { display: block; } }
+@media (min-width: 901px) { .tree details:not([open]) > :not(summary) { display: block; } }
+.tnode { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; text-align: left;
+  border: 0; background: transparent; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+.tnode:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.tnode[aria-current="page"] { background: var(--ink); color: var(--bg); }
+.tnode[aria-current="page"] .tq { color: var(--bg); }
+.tnode.l1 { font-weight: 700; margin-top: 6px; }
+.tnode.l2 { padding-left: 26px; }
+.tq { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+.caret { width: 10px; font-size: 10px; color: var(--muted); }
+.tnode[aria-current="page"] .caret { color: var(--bg); }
+.dot { display: inline-block; width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.dot.gap { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.4) 0 2px, transparent 2px 5px); }
+.tree hr { border: 0; border-top: 1px solid var(--line); margin: 8px 0; }
+.tree .tlab { font-size: 11px; color: var(--muted); letter-spacing: .08em; padding: 2px 8px; }
+
+/* main column */
+.maincol { display: grid; gap: 14px; min-width: 0; }
+.crumb { display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; font-size: 13px; color: var(--muted); }
+.crumb button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; }
+.crumb span.cur { color: var(--ink); font-weight: 700; }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.tgroup { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; }
+.tlabel { font-size: 12px; color: var(--muted); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.seg button { font-size: 13px; border: 0; background: transparent; padding: 7px 12px; cursor: pointer; border-right: 1px solid var(--line); white-space: nowrap; }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 700; }
+.tool { font-size: 13px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); padding: 7px 12px; cursor: pointer; }
+input[type="range"] { width: 120px; accent-color: var(--ink); }
+
+.stage { position: relative; height: clamp(300px, 46vw, 470px); background: var(--stage); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; touch-action: none; }
+.stage canvas { display: block; width: 100%; height: 100%; cursor: grab; }
+.stage canvas.dragging { cursor: grabbing; }
+.stage canvas.hovering { cursor: pointer; }
+.hint { position: absolute; left: 12px; bottom: 10px; font-size: 12px; color: var(--muted); pointer-events: none; }
+.corner { position: absolute; right: 12px; top: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-align: right; line-height: 1.5; pointer-events: none; }
+.tip { position: absolute; pointer-events: none; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 4px 8px; font-size: 13px; white-space: nowrap; transform: translate(-50%, -130%); }
+.fallback { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); }
+
+/* sheets */
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: grid; gap: 16px; min-width: 0; }
+.s-code { font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: .05em; }
+.s-title { font-size: 24px; font-weight: 900; }
+.s-lead { margin: 0; max-width: 70ch; }
+.sec-h { font-size: 15px; font-weight: 700; display: flex; align-items: baseline; gap: 8px; }
+.sec-h small { font-weight: 400; color: var(--muted); font-size: 12px; }
+
+.scorebar { display: grid; gap: 8px; }
+.bar { display: flex; height: 14px; border-radius: 4px; overflow: hidden; background: var(--line); }
+.bar span { display: block; height: 100%; transition: flex-basis .4s ease; }
+.bar span.gap { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.35) 0 2px, transparent 2px 5px); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; align-items: center; }
+.legend b { font-family: var(--font-mono); font-weight: 500; margin-left: 4px; }
+.legend .dot { margin-right: 6px; vertical-align: -1px; }
+.note { font-size: 13px; color: var(--muted); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; text-align: left; background: var(--surface); cursor: pointer; }
+.card:hover { border-color: var(--ink); }
+.card h3 { font-size: 16px; }
+.card p { margin: 0; font-size: 13px; color: var(--muted); }
+.card ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+.card li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.card .pk { font-size: 13px; }
+.card .pk b { display: block; font-size: 14px; }
+
+.pick { border: 1px solid var(--line); border-left-width: 6px; border-radius: 8px; padding: 10px 12px; display: grid; gap: 4px; }
+.pick .lbl { font-size: 12px; color: var(--muted); }
+.pick .name { font-weight: 700; }
+.pick .pn { font-size: 13px; color: var(--muted); }
+.specs { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 14px; font-size: 13px; margin: 0; }
+.specs dt { color: var(--muted); }
+.specs dd { margin: 0; font-family: var(--font-mono); }
+.gapbar { border: 1px dashed var(--o-gap); border-radius: 8px; padding: 10px 12px; font-size: 14px; background: color-mix(in srgb, var(--o-gap) 12%, var(--surface)); }
+.gapbar strong { display: block; }
+
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .cols { grid-template-columns: minmax(0, 1fr); } }
+.col { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.col h3 { font-size: 14px; display: flex; align-items: center; gap: 8px; padding-bottom: 6px; border-bottom: 3px solid; }
+.col.tw h3 { border-color: var(--o-tw); } .col.nr h3 { border-color: var(--o-nr); } .col.cn h3 { border-color: var(--o-cn); }
+.col h3 small { font-family: var(--font-mono); font-weight: 400; color: var(--muted); }
+.ent { display: grid; gap: 2px; font-size: 13px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.ent:last-child { border-bottom: 0; }
+.ent b { font-size: 14px; }
+.ent p { margin: 0; color: var(--muted); }
+.empty { font-size: 13px; color: var(--muted); margin: 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.chip { font-size: 11px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); white-space: nowrap; }
+.chip.s-r { border-color: var(--o-tw); color: var(--o-tw); }
+.chip.s-c { border-style: dashed; color: var(--ink); }
+.chip.s-d { color: var(--mark); border-color: var(--mark); }
+.buy { font-size: 11px; border-radius: 4px; padding: 1px 7px; white-space: nowrap; border: 1px solid var(--line); background: var(--surface); }
+.buy b { font-family: var(--font-mono); font-weight: 500; margin-left: 6px; }
+.buy.b-local { border-color: var(--o-tw); }
+.buy.b-import { border-color: var(--mark); background: color-mix(in srgb, var(--mark) 14%, var(--surface)); }
+.buy.b-deal { border-style: dashed; }
+.buy.b-none { border-color: var(--o-gap); background: color-mix(in srgb, var(--o-gap) 22%, var(--surface)); }
+
+.howto { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.how { border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; }
+.how.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.how h4 { margin: 0; font-size: 14px; display: flex; gap: 8px; align-items: center; }
+.how ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; font-size: 13px; color: var(--muted); }
+.keynote { font-size: 13px; border-top: 1px solid var(--line); padding-top: 10px; color: var(--muted); margin: 0; }
+.keynote b { color: var(--ink); }
+.foot { font-size: 12px; color: var(--muted); }
+.legendbox { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.legendbox section { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.legendbox h3 { font-size: 14px; margin-bottom: 6px; }
+.legendbox ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; font-size: 13px; color: var(--muted); }
+.legendbox li b { color: var(--ink); font-weight: 500; }
+@media (prefers-reduced-motion: reduce) { .bar span { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="eyebrow">參考組裝機 · 5 吋花飛 · 6S · 19 個零件位置</div>
+    <h1>FPV 零件產地拆解</h1>
+    <p>從整台機一路拆到單一零件，看每個零件在台灣、非紅（友盟）、中國各有誰在做，以及在台灣怎麼取得。</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="主要分類" id="tabs"></nav>
+
+  <div class="app">
+    <aside class="tree" id="tree" aria-label="零件階層選單"></aside>
+    <div class="maincol">
+      <div class="crumb" id="crumb"></div>
+      <div class="toolbar" role="toolbar" aria-label="檢視控制">
+        <div class="tgroup"><span class="tlabel">版本</span><div class="seg" id="buildSeg"></div></div>
+        <div class="tgroup"><span class="tlabel">分解</span>
+          <div class="seg" id="explodeSeg">
+            <button type="button" data-t="0">組合</button>
+            <button type="button" data-t="1">大部分解</button>
+            <button type="button" data-t="2">細部分解</button>
+          </div>
+          <input type="range" id="explodeRange" min="0" max="2" step="0.01" value="0" aria-label="分解程度">
+        </div>
+        <div class="tgroup"><span class="tlabel">上色</span>
+          <div class="seg" id="modeSeg">
+            <button type="button" data-m="origin" aria-pressed="true">依產地</button>
+            <button type="button" data-m="real" aria-pressed="false">實物配色</button>
+          </div>
+        </div>
+        <button type="button" class="tool" id="resetView">重設視角</button>
+      </div>
+      <div class="stage" id="stage">
+        <div class="corner">BOM REF-5F-6S<br>REV 2026-10-30</div>
+        <div class="hint">拖曳旋轉　滾輪縮放　點零件進入供應清單</div>
+        <div class="tip" id="tip" hidden></div>
+      </div>
+      <main class="sheet" id="sheet" aria-live="polite"></main>
+    </div>
+  </div>
+
+  <div class="legendbox">
+    <section>
+      <h3>產地顏色</h3>
+      <ul>
+        <li><span class="dot" style="background:var(--o-tw)"></span> <b>台灣</b>：台灣廠（含要客製的能力廠）</li>
+        <li><span class="dot" style="background:var(--o-nr)"></span> <b>非紅</b>：美、加、歐、日、韓等友盟製造</li>
+        <li><span class="dot" style="background:var(--o-cn)"></span> <b>中國</b>：中國製造</li>
+        <li><span class="dot gap" style="background-color:var(--o-gap)"></span> <b>國際缺口</b>：全世界都找不到非紅成品，暫用中國製頂替</li>
+        <li><span class="dot" style="background:var(--o-unk)"></span> <b>未查</b>：本輪沒有研究</li>
+      </ul>
+    </section>
+    <section>
+      <h3>怎麼取得（和產地分開看）</h3>
+      <ul>
+        <li><span class="buy b-local">台灣買得到</span> 台灣店家或代理有賣</li>
+        <li><span class="buy b-import">需海外購買</span> 國際上有，台灣沒有代理</li>
+        <li><span class="buy b-deal">要洽廠商</span> B2B、客製或尚未量產</li>
+        <li><span class="buy b-none">國際上沒有</span> 全世界都還沒有非紅成品</li>
+      </ul>
+    </section>
+    <section>
+      <h3>標記與資料來源</h3>
+      <ul>
+        <li><b>已查</b>：有讀到來源</li>
+        <li><b>自述</b>：廠商自己說的</li>
+        <li><b>未驗證</b>：只有弱來源</li>
+        <li><b>推論</b>：由事實推出的判斷</li>
+        <li>資料來自台灣 FPV 零件盤點、供應商與產地筆記、台灣能力廠盤點，查詢日 2026-10-30</li>
+        <li>品牌名稱只用來辨識產地，不代表任何合作或授權</li>
+      </ul>
+    </section>
+  </div>
+  <p class="foot">內部原型。重量為典型值估算，民航局分級依 2024-08 報導整理，正式條文待查。</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function () {
+"use strict";
+
+/* ---------- data ---------- */
+const TABS = [["airframe", "機體"], ["radio", "遙控器"], ["goggles", "眼鏡"], ["charger", "充電器"]];
+const GROUPS = [
+  ["frame", "機身結構", "機架、保護件與五金，決定強度與炸機後的維修成本。"],
+  ["power", "動力系統", "馬達、螺旋槳與電調，決定推力、反應與飛行時間。"],
+  ["avionics", "飛控與航電", "飛控、GPS 與電子小料，負責穩定姿態與導航。"],
+  ["video", "影像與圖傳", "鏡頭、圖傳與天線，把畫面即時送到眼鏡。"],
+  ["link", "遙控鏈路（機上）", "接收機與天線，接收遙控器的指令。"],
+  ["energy", "電源", "電池與電源線，決定續航與大電流供電。"]
+];
+const STATUS = { r: "零售可買", b: "B2B 洽談", d: "開發中", c: "可客製", k: "上游晶片", n: "本輪未找到" };
+const ORIGIN = { tw: "台灣", nr: "非紅", cn: "中國", gap: "國際缺口", unk: "未查" };
+const BUY = { local: "台灣買得到", import: "需海外購買", deal: "要洽廠商", none: "國際上沒有", unk: "未查" };
+const NR_TW = [["TrueRC", "台灣 FPV 店有售"], ["Futaba", "台灣有代理（均能）"]];
+function nrBuy(e) {
+  const hit = NR_TW.find(([k]) => e[0].startsWith(k));
+  if (hit) return ["local", hit[1]];
+  return e[2] === "b" ? ["deal", "需向海外廠洽談"] : ["import", "台灣未見代理，需海外購買"];
+}
+function twBuy(e) { return e[2] === "r" ? ["local", "台灣買得到"] : ["deal", "要洽廠商"]; }
+function buyOf(p) {
+  if (p[0] === "gap") return "none";
+  if (p[0] === "unk") return "unk";
+  if (p[4]) return p[4];
+  if (p[2] === "c" || p[2] === "b" || p[2] === "d") return "deal";
+  return "local";
+}
+const HOWTO = {
+  local: ["在台灣怎麼買", [
+    "向台灣 FPV 店或品牌代理購買",
+    "主要 FPV 電商：酷飛 COOLFLY",
+    "主要 FPV 電商：Nexowing 納克索翼",
+    "射頻類商品要確認有 NCC 審驗標籤"]],
+  import: ["海外購買要注意", [
+    "向原廠官網或海外經銷購買",
+    "關稅：完稅價格 NT$2,000 以下免稅，半年限 6 次（現行；財政部研議收緊，尚未公告）",
+    "射頻器材（遙控器、接收機、圖傳、眼鏡）在台灣販售須 NCC 型式認證",
+    "個人自用郵寄：每次 2 台、每人每年 10 台",
+    "2026-08-01 起 NCC 沒有委員在任，新的射頻器材核准停發；已有認證的照常通關",
+    "鋰電池空運：電量要在 30% 以下，不能以貨物搭客機"]],
+  deal: ["要洽廠商時", [
+    "直接聯絡廠商，帶規格與數量去談",
+    "媒合管道：TEDIBOA 聯盟與金屬中心",
+    "媒合管道：彰化台灣無人載具聯盟",
+    "媒合管道：台中無人機產業供應鏈聯盟",
+    "媒合管道：台灣無人機協會 TDA",
+    "要求書面生產廠址與產地證明，才能標「台灣製」"]],
+  none: ["國際上沒有時", [
+    "短期只能暫用中國製，並在商品頁誠實標示",
+    "長期找台灣欄裡「可客製」的能力廠開發",
+    "做得出來，就是國際市場也還沒有的非紅產品（推論）"]]
+};
+
+// supplier entry: [名稱, 說明, 狀態代碼, 標記]
+const SLOTS = [
+  { id: "frame", g: "frame", code: "B1", qty: 1, w: 120, name: "碳纖機架", role: "底板、手臂與頂板，整台機的骨架；手臂是炸機最常斷的耗材。",
+    specs: [["尺寸", "5 吋"], ["軸距", "約 225 mm"], ["飛控孔距", "30.5 × 30.5"], ["馬達座孔距", "16 × 16"], ["鏡頭寬度", "19 mm"]], tier: "手臂 T1 高週轉，整架 T3",
+    sup: {
+      tw: [["THINKCHANGE COMPOSITE", "碳纖機架與碳纖槳，T700 與 T800 材料，偏軍規 B2B", "b", "已查"],
+           ["永虹先進", "熱塑碳纖板，自稱台灣唯一航太級熱塑碳纖複材廠，可作機架板材來源", "c", "已查；用途為推論"],
+           ["台中中小 CNC 廠", "碳板切割，可透過台中無人機產業供應鏈聯盟媒合", "c", "已查（管道）"],
+           ["QUADMULA", "機架品牌，委託方稱位於桃園，Siren R5 HD 機架在美國零售", "r", "產地未驗證"]],
+      nr: [["Unusual Machines", "美國，機架產地未驗證", "r", "未驗證"],
+           ["Rotor Riot", "美國，機架產地未驗證", "r", "未驗證"]],
+      nrNote: "Blue UAS 名單上沒有 FPV 專用機架",
+      cn: [["GEPRC", "深圳", "r", "推定"], ["iFlight", "深圳", "r", "推定"], ["Axisflying", "中國", "r", "推定"], ["TJRC 天劍", "中國", "r", "推定"]]
+    } },
+  { id: "tpu", g: "frame", code: "B1", qty: 1, w: 12, name: "TPU 保護件", role: "鏡頭座、天線座與側護，用彈性 TPU 列印，撞擊時保護零件。",
+    specs: [["材料", "TPU 95A"], ["製法", "3D 列印"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["自行列印或台灣列印工作室", "列印地可以標台灣；線材原料多為中國品牌", "c", "業界認知，未驗證"]],
+      nr: [], nrNote: "本輪未查非紅 TPU 件",
+      cn: [["各機架品牌附件", "通常隨機架附贈", "r", "推定"]]
+    } },
+  { id: "hardware", g: "frame", code: "I1", qty: 1, w: 10, name: "螺絲、銅柱與防震球", role: "把機架與飛塔固定在一起的小五金。",
+    specs: [["螺絲", "M3 與 M2"], ["材質", "鋼、鈦、鋁"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["岡山扣件產業", "台灣螺絲業聚落，最容易標 MIT", "c", "推論"],
+           ["鉅明", "精密 CNC，已出貨鋁件與鈦件給美國無人機廠", "b", "已查"]],
+      nr: [], nrNote: "本輪未查",
+      cn: [["機架附贈", "多數機架隨附螺絲包", "r", "推定"]]
+    } },
+  { id: "motor", g: "power", code: "C1", qty: 4, w: 132, name: "無刷馬達", role: "四顆馬達帶動螺旋槳，決定推力與反應。",
+    specs: [["定子", "2207"], ["KV", "1750–1960"], ["電池", "6S"], ["軸徑", "5 mm"], ["底座孔距", "16 × 16"]], tier: "T2 中週轉",
+    key: "磁石與微型軸承：台灣找不到量產廠，工研院稀土示範廠 2028 年底才完工。漆包線可用大亞（台灣）。",
+    sup: {
+      tw: [["雷虎 Thunder Tiger", "Overkill FPV 系列獲 Blue UAS Cleared，台中自產馬達；零售未驗證", "b", "已查"],
+           ["富田電機", "展出含 FPV 在內的無人機馬達，型號未驗證", "b", "未驗證"],
+           ["東元 TECO", "馬達、電調、電池三電，客戶是無人機系統廠", "b", "已查"],
+           ["Sunrise Taiwan", "Stone 3115 等，自稱台灣製", "b", "自述"],
+           ["力山工業", "明確願意客製；另有中國與泰國廠，無人機馬達產地未說明", "c", "已查；產地未驗證"]],
+      nr: [["Unusual Machines", "美國奧蘭多廠，2026-04 月產約 1.5 萬顆；同時有美國製與全球採購兩版，要看 SKU", "r", "已查"],
+           ["Hoverfly Elements", "美國，與韓國 KRM 合製", "b", "已查"]],
+      cn: [["T-Motor", "江西南昌", "r", "已查"], ["GEPRC", "深圳", "r", "推定"], ["iFlight", "深圳", "r", "推定"], ["T-HOBBY", "T-Motor 副品牌", "r", "推定"]]
+    } },
+  { id: "prop", g: "power", code: "C2", qty: 4, w: 18, name: "螺旋槳", gap: "5 吋塑膠槳：台灣與非紅都沒有現成品", role: "最常換的耗材，炸一次就可能要換一組。",
+    specs: [["尺寸", "5 吋"], ["葉數", "三葉"], ["螺距", "4.3–5.1"], ["安裝", "5 mm 軸"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["Intertech（新莊）", "有無人機塑膠件專頁，材料含玻纖尼龍，可當 5 吋槳試模的第一個詢價對象", "c", "已查；試模為推論"],
+           ["動力-KY", "有扇葉射出能力，中和規劃無人機馬達線；扇葉是否在台灣生產未驗證", "c", "未驗證"],
+           ["THINKCHANGE COMPOSITE", "碳纖槳，偏工業", "b", "已查"]],
+      nr: [["Master Airscrew", "美國製，只有 7 吋、8 吋、10 吋，沒有 5 吋", "r", "已查"]],
+      cn: [["Gemfan 乾豐", "寧波（單一來源）", "r", "已查"], ["HQProp", "製造地未查", "r", "未驗證"], ["DAL", "中國", "r", "推定"]]
+    } },
+  { id: "esc", g: "power", code: "C3", qty: 1, w: 14, name: "四合一電調", role: "把電池的電轉成三相電流驅動馬達，一塊板控制四顆。",
+    specs: [["電流", "50–60 A"], ["電池", "3–6S"], ["孔距", "30.5 × 30.5"], ["韌體", "AM32 或 BLHeli_32"]], tier: "T2 中週轉",
+    key: "MOSFET：杰力、富鼎等台灣廠規格對得上電調用途（推論），封測地未驗證。",
+    sup: {
+      tw: [["Sunrise Taiwan ZST-ESC65A", "AM32，自稱全程台灣設計製造", "b", "自述"],
+           ["凱納 HYENA", "Japan Drone 2026 台灣館展出 ESC 與飛控", "b", "已查"],
+           ["東元 TECO", "速度控制器，B2B", "b", "已查"],
+           ["杰力", "MOSFET，可用於電調", "k", "推論"],
+           ["富鼎", "MOSFET，可用於電調", "k", "推論"]],
+      nr: [["Orqa 3030 70A", "克羅埃西亞，US$199.99，GetFPV 產地欄標 Croatia", "r", "已查"],
+           ["Unusual Machines Brave 55A", "Blue UAS Framework（2025-01）", "r", "已查"],
+           ["ARK 4IN1", "美國製", "r", "已查"],
+           ["Elarion 4IN1", "立陶宛，Blue UAS Framework（2025-12）", "b", "已查"],
+           ["Lumenier Siege NDAA 款", "泰國製", "r", "已查"]],
+      cn: [["Hobbywing 好盈", "深圳", "r", "推定"], ["T-Motor", "南昌", "r", "已查"], ["SpeedyBee", "中國", "r", "推定"]]
+    } },
+  { id: "fc", g: "avionics", code: "D1", qty: 1, w: 8, name: "飛控", role: "整台機的大腦，讀陀螺儀、算姿態、下指令給電調。",
+    specs: [["MCU", "F7 或 H7"], ["孔距", "30.5 × 30.5"], ["韌體", "Betaflight"], ["電池", "3–6S"]], tier: "T2 中週轉",
+    key: "陀螺儀 IMU：台灣找不到可供貨的 MEMS 陀螺儀，只能用日本或德國料源（例如 TDK InvenSense、Bosch）。主流 MCU STM32 是意法半導體。",
+    sup: {
+      tw: [["Sunrise Taiwan ZST-F405", "STM32F405，自稱從設計到製造皆台灣", "b", "自述"],
+           ["翔大 MIT H7", "MIT 專區飛控；「官方認證」由誰認證未驗證", "r", "未驗證"],
+           ["智邦 Accton G-FF4", "媒合頁已失效，細節來自搜尋摘要", "d", "未驗證"],
+           ["新唐 Nuvoton", "M452 Drone Kit，玩具級參考設計，沒有 Betaflight 移植", "k", "已查"]],
+      nr: [["Orqa QuadCore H7", "克羅埃西亞，US$332.49", "r", "已查"],
+           ["Unusual Machines Brave F7", "美國製，第一個列入 Blue UAS Framework 的美製 FPV 飛控", "r", "已查"],
+           ["ARK FPV", "美國製，US$169.99", "r", "已查"],
+           ["Elarion F405", "立陶宛，Blue UAS Framework", "b", "已查"]],
+      cn: [["SpeedyBee", "中國", "r", "推定"], ["Foxeer", "中國", "r", "推定"], ["Holybro", "中國品牌，翔大自稱台灣總代理", "r", "已查"]]
+    } },
+  { id: "gps", g: "avionics", code: "D4", qty: 1, w: 8, name: "GPS 模組", role: "定位與失聯返航，長航程或救援用途必備。",
+    specs: [["星系", "GPS、Galileo 等多星系"], ["介面", "UART"]], tier: "T2 中週轉",
+    sup: {
+      tw: [["環天科技", "有無人載具用 GPS 模組；產地與小尺寸待確認", "b", "已查；細節未驗證"],
+           ["Locosys", "多星系 GNSS 與 RTK，FPV 小尺寸模組未驗證", "b", "未驗證"],
+           ["達發", "GNSS 晶片，未見 FPV 採用", "k", "已查"]],
+      nr: [["Septentrio", "比利時，與 Hoverfly 合作模組", "b", "已查"],
+           ["ARK", "Blue UAS Framework 名單，細項未逐一查", "r", "未驗證"],
+           ["ModalAI", "Blue UAS Framework 名單，細項未逐一查", "r", "未驗證"]],
+      cn: [["GEPRC M10", "多用 u-blox（瑞士）晶片，中國組裝", "r", "推定"], ["Flywoo GM10", "同上", "r", "推定"], ["Holybro M10", "同上", "r", "推定"]]
+    } },
+  { id: "elec", g: "avionics", code: "D5", qty: 1, w: 6, name: "電容、蜂鳴器與分電板", role: "濾掉電源雜訊、找機用的蜂鳴器，以及分配電源的小板。",
+    specs: [["電容", "低 ESR 35 V"], ["蜂鳴器", "主動式 5 V"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["翔大 MIT 分電板", "MIT 專區，可外接兩組降壓器", "r", "未驗證"]],
+      twNote: "電容與蜂鳴器的台灣品牌本輪未查",
+      nr: [], nrNote: "本輪未查",
+      cn: [["電調與機架附贈", "多數套件隨附", "r", "推定"]]
+    } },
+  { id: "cam", g: "video", code: "E3", qty: 1, w: 10, name: "FPV 鏡頭", role: "機頭的眼睛，畫面即時傳回眼鏡。",
+    specs: [["寬度", "19 mm"], ["類型", "數位或類比"]], tier: "T2 中週轉",
+    sup: {
+      tw: [["Sunrise ZST-FL721", "鏡頭模組（2026-05）", "b", "自述"],
+           ["晶相光", "安防 CIS 影像感測器，規格接近類比 FPV 需求", "k", "已查；適用性為推論"],
+           ["中光電 CIRC", "雲台相機 ODM，非 FPV 零售", "b", "已查"],
+           ["佳能企業", "已接無人機鏡頭訂單；2026 產能東莞 85%、北越 10%、台灣 5%", "b", "已查"]],
+      nr: [["Fat Shark Aura 鏡頭", "類比，Blue UAS Framework（2025-02）", "r", "已查"],
+           ["Orqa Justice", "克羅埃西亞", "r", "已查"]],
+      cn: [["Caddx", "深圳", "r", "推定"], ["Foxeer", "中國", "r", "推定"], ["RunCam", "深圳", "r", "推定"], ["DJI", "數位鏡頭隨 O4 系統", "r", "已查"]]
+    } },
+  { id: "vtx", g: "video", code: "E1", qty: 1, w: 20, name: "圖傳空中端", gap: "數位高畫質圖傳：台灣與非紅都沒有成熟成品，類比才有非紅選項", role: "把鏡頭畫面壓縮後無線傳到眼鏡，是延遲與畫質的關鍵。",
+    specs: [["頻段", "5.8 GHz"], ["系統", "數位或類比"], ["必須相容", "眼鏡同一系統"]], tier: "T3 低週轉",
+    key: "台灣晶片已在 FPV 裡：幾乎每一顆類比圖傳都用立積 RTC6705，但成品多在中國組裝（推論）。主標寫組裝地，副標寫「關鍵晶片：台灣」。",
+    sup: {
+      tw: [["立積 RichWave RTC6705", "5.8G 類比圖傳通用晶片", "k", "已查（晶片）"],
+           ["松翰 SNIT20", "數位圖傳晶片組，延遲約 40 毫秒，可客製；未見 FPV 採用", "k", "已查"],
+           ["瑞昱 RTL8812AU", "開源數位圖傳 OpenIPC 用的 Wi-Fi 晶片", "k", "已查"],
+           ["LongLink 澤龍智能", "自稱全台灣設計製造的數位圖傳；資本額 NT$108 萬，極早期", "d", "已查"]],
+      nr: [["Fat Shark Aura VTX", "類比，Blue UAS Framework（2025-07）", "r", "已查"],
+           ["Orqa Ghost Hybrid VTX", "類比", "r", "已查"]],
+      cn: [["DJI O4 系列", "深圳", "r", "已查"], ["Walksnail", "深圳", "r", "推定"], ["HDZero", "Divimath 在深圳，GetFPV 標中國製", "r", "已查"]]
+    } },
+  { id: "vant", g: "video", code: "F4", qty: 1, w: 5, name: "圖傳天線", role: "空中端的發射天線，極化方向要和眼鏡端一致。",
+    specs: [["頻段", "5.8 GHz"], ["極化", "RHCP"], ["接頭", "MMCX 或 U.FL"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["耀登 Auden", "RF 天線廠；越南新廠 2026 下半年投產，要指定台灣廠出貨", "c", "已查"],
+           ["佳邦 INPAQ", "GNSS 陶瓷天線強項，另有 Wi-Fi 與 ISM 天線；沒有無人機專用產品", "c", "已查"]],
+      nr: [["TrueRC", "加拿大設計製造，X-AIR、Singularity 系列", "r", "已查"]],
+      cn: [["RushFPV", "中國", "r", "推定"], ["Foxeer", "中國", "r", "推定"]]
+    } },
+  { id: "rx", g: "link", code: "F3", qty: 1, w: 1.5, name: "接收機", role: "接收遙控器的指令，傳給飛控。",
+    specs: [["協定", "ELRS"], ["頻段", "2.4 GHz"], ["介面", "UART"]], tier: "T1 高週轉",
+    key: "多數 ELRS 接收機用 ESP32（中國晶片）加 Semtech SX1280（美國晶片）；就算在別國組裝，關鍵元件仍可能是中國製（推論）。",
+    sup: {
+      tw: [["台灣 ODM 客製", "沒有現成 FPV 接收機；可用 SX1280 搭非中國 MCU 找台灣廠開發", "c", "推論"]],
+      nr: [["Elarion ELRS 2.4G", "立陶宛，Blue UAS Framework", "b", "已查"],
+           ["ModalAI ELRS 915 Gemini", "美國組裝，Framework", "r", "已查"],
+           ["Futaba R3008SB", "日本，Framework，非 ELRS", "r", "已查"]],
+      cn: [["RadioMaster", "深圳設計製造", "r", "已查"], ["BetaFPV", "深圳", "r", "推定"], ["Happymodel", "中國", "r", "推定"]]
+    } },
+  { id: "rxant", g: "link", code: "F4", qty: 2, w: 1, name: "接收機天線", role: "接收機的 T 型天線，通常兩支分開擺放。",
+    specs: [["頻段", "2.4 GHz"], ["接頭", "U.FL"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["耀登 Auden", "可洽客製", "c", "推論"], ["佳邦 INPAQ", "可洽客製", "c", "推論"]],
+      nr: [["TrueRC", "加拿大製，有 2.4G 與 915 MHz 天線", "r", "已查"]],
+      cn: [["RadioMaster", "接收機原廠天線", "r", "推定"]]
+    } },
+  { id: "batt", g: "energy", code: "H1", qty: 1, w: 225, name: "鋰電池", gap: "高 C 數 LiPo 軟包：台灣與非紅都沒有現成品", role: "5 吋花飛用高放電 LiPo；長航程機改用 Li-ion 包。",
+    specs: [["電壓", "6S"], ["容量", "1100–1300 mAh"], ["放電", "120C 以上"], ["接頭", "XT60"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["格斯科技", "中壢軟包電芯廠，標榜台灣全程製造、非中系原料，已供應戰術無人機電池；C 數未公開", "c", "已查"],
+           ["Molicel 能元", "21700 高放電電芯，Li-ion 長航包主流；不適合 5 吋花飛", "b", "已查"],
+           ["有量 Amita", "鋰聚合物電池廠，近年沒有無人機相關報導", "c", "未驗證"],
+           ["加百裕", "2026 年切入無人機電池模組，電芯來源未公開", "b", "已查"]],
+      nr: [["Re:Build", "美國組裝 Li-ion 包，非 FEOC 電芯", "r", "已查"],
+           ["Lumenier NAV NDAA 款", "印度製 21700 包", "r", "已查"]],
+      cn: [["Tattu 與 Gens Ace", "深圳格瑞普", "r", "已查"], ["CNHL", "中國", "r", "推定"], ["GNB 高能", "中國", "r", "推定"]]
+    } },
+  { id: "xt60", g: "energy", code: "I1", qty: 1, w: 8, name: "XT60 電源線", gap: "XT 系列接頭：找不到非紅替代", role: "電池接到電調的大電流接頭與矽膠線。",
+    specs: [["接頭", "XT60"], ["線材", "12 AWG 矽膠線"]], tier: "T1 高週轉",
+    sup: {
+      tw: [["胡連精密", "汽機車連接器龍頭，2025 年把無人機列為潛在應用；擴產在印尼與越南", "c", "已查"],
+           ["信邦", "無人機線束全客製，MOQ 偏高", "c", "已查；MOQ 為推論"],
+           ["大亞", "線材與漆包線；FPV 矽膠線查無台灣量產廠，可代工", "c", "推論"]],
+      nr: [], nrNote: "本輪未找到 XT 系列的非紅替代",
+      cn: [["Amass 艾邁斯", "江蘇常州，XT60 原廠", "r", "已查"]]
+    } },
+  { id: "radio", g: "radio", code: "F1", qty: 1, w: 0, name: "遙控器", role: "飛手手上的發射器，協定要和接收機一致。FPV 主流是 ELRS。",
+    specs: [["協定", "ELRS"], ["韌體", "EdgeTX"], ["必須相容", "接收機同一協定"]], tier: "T3 低週轉",
+    key: "非紅 ELRS 遙控器國際上幾乎沒有零售品；非紅 ELRS 接收機倒是有（Elarion、ModalAI）。要非紅就得等錦明量產，或改用 Futaba 生態。",
+    sup: {
+      tw: [["錦明 Raven", "EdgeTX 加 ELRS，2026-06 發表，尚未量產；台灣唯一候選", "d", "已查"],
+           ["優達 Ubiqconn", "與 AeroVironment 簽 MOU 做地面控制器，非 FPV", "b", "已查"]],
+      nr: [["Futaba", "日本，非 ELRS 生態，要配 Futaba 自家接收機", "r", "已查"],
+           ["Orqa FPV.Ctrl", "US$129.99，缺貨中；Ghost 協定，配不了 ELRS 接收機；NDAA 狀態未確認", "r", "已查"]],
+      cn: [["RadioMaster", "深圳", "r", "已查"], ["Jumper", "中國", "r", "推定"], ["TBS", "新加坡總部、香港工廠，零售商標示的產地互相矛盾", "r", "已查"]]
+    } },
+  { id: "goggles", g: "goggles", code: "G1", qty: 1, w: 0, name: "FPV 眼鏡", gap: "數位眼鏡：沒有非紅選項", role: "接收圖傳畫面，系統必須和空中端一致。",
+    specs: [["系統", "數位或類比"], ["必須相容", "圖傳同一系統"]], tier: "T3 低週轉",
+    key: "數位眼鏡國際上沒有非紅選項；類比眼鏡國際上有（Orqa），但台灣未見代理。台灣沒有量產中的 micro-OLED 顯示器。",
+    sup: {
+      tw: [["LongLink-FPV 套裝", "含眼鏡，細節未驗證", "d", "未驗證"],
+           ["奇景與子公司源奇", "LCoS 近眼顯示，早期", "k", "已查"],
+           ["錼創", "Micro LED 近眼晶片，早期", "k", "已查"]],
+      nr: [["Orqa FPV.One PILOT", "類比、NDAA，US$799.99；同系列一般款 GetFPV 標非 NDAA", "r", "已查"],
+           ["Fat Shark", "美國品牌（Unusual Machines 旗下），現行眼鏡製造地未驗證", "r", "未驗證"]],
+      cn: [["DJI Goggles", "深圳", "r", "已查"], ["Walksnail", "深圳", "r", "推定"], ["HDZero", "GetFPV 標中國製", "r", "已查"], ["Skyzone", "中國", "r", "推定"]]
+    } },
+  { id: "charger", g: "charger", code: "H4", qty: 1, w: 0, name: "充電器", role: "LiPo 平衡充電，決定電池壽命與安全。",
+    specs: [["支援", "1–6S 平衡充"], ["功率", "100 W 以上"]], tier: "T3 低週轉",
+    sup: {
+      tw: [["飛宏 Phihong", "已有無人機充電器，生產廠址未驗證", "b", "未驗證"],
+           ["泰砡電能", "無人機充電與電源管理；FPV 平衡充電器未驗證", "b", "已查"]],
+      nr: [], nrNote: "本輪未查",
+      cn: [["ISDT", "深圳", "r", "推定"], ["HOTA", "中國", "r", "推定"], ["ToolkitRC", "深圳", "r", "推定"]]
+    } }
+];
+
+// pick: [產地, 選用品, 狀態代碼, 說明, 取得方式（選填）]
+const BUILDS = {
+  A: { name: "市場主流版", short: "A 市場主流",
+    desc: "台灣 FPV 店最常見的配置，零件幾乎全是中國製。這是現況。",
+    pick: {
+      frame: ["cn", "GEPRC 5 吋花飛機架", "r"], tpu: ["cn", "機架原廠 TPU 件", "r"], hardware: ["cn", "機架附贈螺絲包", "r"],
+      motor: ["cn", "T-Motor 2207 1950KV ×4", "r"], prop: ["cn", "Gemfan 5 吋三葉槳", "r"], esc: ["cn", "SpeedyBee 55A 四合一", "r"],
+      fc: ["cn", "SpeedyBee F7", "r"], gps: ["cn", "GEPRC M10 GPS", "r"], elec: ["cn", "電調附贈電容", "r"],
+      cam: ["cn", "DJI O4 Pro 相機", "r"], vtx: ["cn", "DJI O4 Pro 空中端", "r"], vant: ["cn", "DJI O4 原廠天線", "r"],
+      rx: ["cn", "RadioMaster RP2 ELRS", "r"], rxant: ["cn", "RadioMaster T 型天線", "r"], batt: ["cn", "Tattu R-Line 6S 1300mAh", "r"],
+      xt60: ["cn", "Amass XT60", "r"], radio: ["cn", "RadioMaster Pocket ELRS", "r"], goggles: ["cn", "DJI Goggles N3", "r"],
+      charger: ["cn", "ISDT 平衡充電器", "r"]
+    } },
+  B: { name: "非紅版", short: "B 非紅",
+    desc: "每個位置都換成非中國製；圖傳與眼鏡改用類比。國際上沒有非紅成品的位置，只能先用中國製頂替。",
+    pick: {
+      frame: ["tw", "台灣碳纖廠代工機架", "c", "非紅零售機架找不到，改找台灣碳纖廠代工"], tpu: ["tw", "台灣自印 TPU 件", "c"],
+      hardware: ["tw", "台灣扣件廠螺絲與銅柱", "c"],
+      motor: ["nr", "Unusual Machines 2207（美國製款）", "r", "要確認選到的 SKU 是美國製版本；台灣未見代理", "import"],
+      prop: ["gap", "暫用 Gemfan 5 吋槳（中國）", "n", "國際上沒有 5 吋非紅塑膠槳；非紅只有 7 吋以上的 Master Airscrew"],
+      esc: ["nr", "Orqa 3030 70A", "r", "台灣未見代理", "import"], fc: ["nr", "Orqa QuadCore H7", "r", "台灣未見代理", "import"],
+      gps: ["nr", "ARK GPS", "r", "Framework 名單細項未逐一查；台灣未見代理", "import"],
+      elec: ["unk", "非紅電容與蜂鳴器本輪未查", "n"],
+      cam: ["nr", "Fat Shark Aura 鏡頭（類比）", "r", "台灣未見代理", "import"],
+      vtx: ["nr", "Fat Shark Aura VTX（類比）", "r", "國際上沒有非紅數位圖傳，所以改用類比；台灣未見代理", "import"],
+      vant: ["nr", "TrueRC X-AIR 5.8", "r", "台灣 FPV 店有售", "local"], rx: ["nr", "Elarion ELRS 2.4G", "b", "要向立陶宛廠洽談"],
+      rxant: ["nr", "TrueRC Singularity 2.4", "r", "台灣 FPV 店有售", "local"],
+      batt: ["gap", "暫用 Tattu 6S LiPo（中國）", "n", "國際上沒有非紅的高 C 數 LiPo 軟包"],
+      xt60: ["gap", "暫用 Amass XT60（中國）", "n", "國際上找不到 XT 系列的非紅替代"],
+      radio: ["tw", "錦明 Raven（ELRS）", "d", "尚未量產。Orqa 遙控器是 Ghost 協定，和 ELRS 接收機不相容"],
+      goggles: ["nr", "Orqa FPV.One PILOT（類比）", "r", "國際上有，但台灣未見代理，需海外購買", "import"],
+      charger: ["tw", "飛宏充電器", "b", "生產廠址未驗證"]
+    } },
+  C: { name: "台灣優先版", short: "C 台灣優先",
+    desc: "台灣能補的位置都用台灣廠，其餘用非紅。其中不少是「可客製」，代表要帶規格去找能力廠開發，目前還沒有現成品。",
+    pick: {
+      frame: ["tw", "永虹熱塑碳纖板＋台中 CNC 代工", "c"], tpu: ["tw", "台灣自印 TPU 件", "c"], hardware: ["tw", "岡山扣件廠", "c"],
+      motor: ["tw", "雷虎馬達", "b", "零售取得要談"], prop: ["tw", "Intertech 試模 5 吋玻纖尼龍槳", "c", "目前沒有產品，要開模"],
+      esc: ["tw", "Sunrise ZST-ESC65A", "b", "台灣製為廠商自述"], fc: ["tw", "Sunrise ZST-F405", "b", "陀螺儀仍需日本或德國料源"],
+      gps: ["tw", "環天 GPS 模組", "b", "產地與小尺寸待確認"], elec: ["tw", "翔大 MIT 分電板", "r"],
+      cam: ["tw", "Sunrise ZST-FL721 鏡頭模組", "b"],
+      vtx: ["nr", "Fat Shark Aura VTX（類比）", "r", "台灣只有晶片（立積），沒有台灣組裝的成品；Fat Shark 台灣未見代理", "import"],
+      vant: ["tw", "耀登客製 5.8G 天線", "c", "要指定台灣廠"], rx: ["nr", "Elarion ELRS 2.4G", "b", "台灣沒有現成接收機"],
+      rxant: ["tw", "佳邦客製 2.4G 天線", "c"], batt: ["tw", "格斯科技軟包電芯客製", "c", "C 數未公開，要先問高倍率可行性"],
+      xt60: ["tw", "胡連客製大電流接頭", "c", "推論：要問台灣廠能否開模"], radio: ["tw", "錦明 Raven", "d", "尚未量產"],
+      goggles: ["nr", "Orqa FPV.One PILOT（類比）", "r", "國際上沒有非紅數位眼鏡；這款類比眼鏡台灣未見代理", "import"],
+      charger: ["tw", "飛宏充電器", "b", "生產廠址未驗證"]
+    } }
+};
+
+const SLOT = Object.fromEntries(SLOTS.map(s => [s.id, s]));
+const GROUP = Object.fromEntries(GROUPS.map(g => [g[0], g]));
+const AIR = SLOTS.filter(s => GROUP[s.g]);
+const state = { build: "A", tab: "airframe", group: null, slot: null, mode: "origin", t: 0, target: 0, zoomTo: null, camTo: null };
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pickOf = id => BUILDS[state.build].pick[id];
+const dotHTML = o => `<span class="dot ${o}" style="background-color:var(--o-${o})" title="${ORIGIN[o]}"></span>`;
+const buyHTML = (k, label) => `<span class="buy b-${k}">${esc(label || BUY[k])}</span>`;
+
+/* ---------- routing: #airframe, #g-power, #p-motor, #radio ... ---------- */
+function tokenOf() {
+  if (state.slot) return state.tab === "airframe" ? "p-" + state.slot : state.tab;
+  if (state.group) return "g-" + state.group;
+  return state.tab;
+}
+function go(token, push) {
+  let tab = "airframe", group = null, slot = null;
+  if (token && token.startsWith("p-") && SLOT[token.slice(2)] && GROUP[SLOT[token.slice(2)].g]) { slot = token.slice(2); group = SLOT[slot].g; }
+  else if (token && token.startsWith("g-") && GROUP[token.slice(2)]) group = token.slice(2);
+  else if (token && ["radio", "goggles", "charger"].includes(token)) { tab = token; slot = token; }
+  state.tab = tab; state.group = group; state.slot = slot;
+  if (push !== false) { try { history.replaceState(null, "", "#" + tokenOf()); } catch (e) { /* ignore */ } }
+  setExplode(tab !== "airframe" ? state.target : slot ? 2 : group ? 1 : 0);
+  render();
+  aimCamera();
+}
+window.addEventListener("hashchange", () => go(location.hash.slice(1), false));
+
+/* ---------- controls ---------- */
+TABS.forEach(([id, label]) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.setAttribute("role", "tab"); b.dataset.tab = id; b.textContent = label;
+  b.addEventListener("click", () => go(id));
+  $("#tabs").appendChild(b);
+});
+Object.entries(BUILDS).forEach(([k, b]) => {
+  const btn = document.createElement("button");
+  btn.type = "button"; btn.dataset.b = k; btn.textContent = b.short;
+  btn.addEventListener("click", () => { state.build = k; render(); });
+  $("#buildSeg").appendChild(btn);
+});
+function setExplode(t) {
+  state.target = t;
+  if (reduceMotion) state.t = t;
+  if (state.tab === "airframe") state.zoomTo = 44 + t * 12;
+  $("#explodeRange").value = t;
+  document.querySelectorAll("#explodeSeg button").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.t) === t)));
+}
+document.querySelectorAll("#explodeSeg button").forEach(b => b.addEventListener("click", () => setExplode(Number(b.dataset.t))));
+$("#explodeRange").addEventListener("input", e => {
+  const t = Number(e.target.value); state.target = t; state.t = t;
+  document.querySelectorAll("#explodeSeg button").forEach(b => b.setAttribute("aria-pressed", String(Math.abs(Number(b.dataset.t) - t) < 0.02)));
+});
+document.querySelectorAll("#modeSeg button").forEach(b => b.addEventListener("click", () => {
+  state.mode = b.dataset.m;
+  document.querySelectorAll("#modeSeg button").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  paint();
+}));
+
+/* ---------- render ---------- */
+function render() {
+  document.querySelectorAll("#tabs button").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === state.tab)));
+  document.querySelectorAll("#buildSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.b === state.build)));
+  renderTree(); renderCrumb();
+  if (state.slot) renderPart(SLOT[state.slot]);
+  else if (state.group) renderGroup(GROUP[state.group]);
+  else renderOverview();
+  paint();
+}
+
+function renderTree() {
+  const cur = tokenOf();
+  const node = (tok, cls, inner, q) => `<button type="button" class="tnode ${cls}" data-go="${tok}" ${tok === cur ? 'aria-current="page"' : ""}>${inner}<span class="tq">${q || ""}</span></button>`;
+  const narrow = window.matchMedia("(max-width: 900px)").matches;
+  const prev = $("#tree details");
+  const open = !narrow || (prev ? prev.open : false);
+  let html = `<details ${open ? "open" : ""}><summary class="mobsum">零件選單</summary>`;
+  html += `<div class="tlab">機體</div>` + node("airframe", "", `<span class="caret">◆</span><span>整機總覽</span>`, AIR.length + " 項");
+  GROUPS.forEach(([g, label]) => {
+    const kids = AIR.filter(s => s.g === g);
+    const open = state.group === g;
+    html += node("g-" + g, "l1", `<span class="caret">${open ? "▾" : "▸"}</span><span>${esc(label)}</span>`, kids.length);
+    if (open) kids.forEach(s => {
+      html += node("p-" + s.id, "l2", dotHTML(pickOf(s.id)[0]), "") .replace(`<span class="tq"></span>`, `<span>${esc(s.name)}</span><span class="tq">${s.qty > 1 ? "×" + s.qty : ""}</span>`);
+    });
+  });
+  html += `<hr><div class="tlab">地面裝備</div>`;
+  ["radio", "goggles", "charger"].forEach(id => {
+    html += node(id, "", dotHTML(pickOf(id)[0]), "").replace(`<span class="tq"></span>`, `<span>${esc(SLOT[id].name)}</span><span class="tq"></span>`);
+  });
+  html += `</details>`;
+  $("#tree").innerHTML = html;
+  $("#tree").querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
+}
+
+function renderCrumb() {
+  const parts = [];
+  if (state.tab === "airframe") {
+    parts.push(["airframe", "機體"]);
+    if (state.group) parts.push(["g-" + state.group, GROUP[state.group][1]]);
+    if (state.slot) parts.push(["p-" + state.slot, SLOT[state.slot].name]);
+  } else {
+    parts.push([state.tab, SLOT[state.tab].name]);
+  }
+  parts.push([null, "供應清單與取得辦法"]);
+  if (!state.slot) parts.pop();
+  $("#crumb").innerHTML = parts.map(([tok, label], i) => i === parts.length - 1
+    ? `<span class="cur">${esc(label)}</span>` : `<button type="button" data-go="${tok}">${esc(label)}</button><span>›</span>`).join("");
+  $("#crumb").querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
+}
+
+function scoreHTML(list) {
+  const counts = { tw: 0, nr: 0, cn: 0, gap: 0, unk: 0 }, buys = { local: 0, import: 0, deal: 0, none: 0, unk: 0 };
+  list.forEach(s => { const p = pickOf(s.id); counts[p[0]]++; buys[buyOf(p)]++; });
+  const n = list.length;
+  const segs = Object.keys(counts).filter(k => counts[k]).map(k =>
+    `<span class="${k}" style="flex-basis:${(counts[k] / n * 100).toFixed(2)}%;background-color:var(--o-${k})" title="${ORIGIN[k]} ${counts[k]}"></span>`).join("");
+  return `<div class="scorebar">
+    <div class="bar" role="img" aria-label="台灣 ${counts.tw}、非紅 ${counts.nr}、中國 ${counts.cn}、國際缺口 ${counts.gap}、未查 ${counts.unk}">${segs}</div>
+    <div class="legend"><span class="tlabel">產地</span>${Object.keys(counts).filter(k => counts[k]).map(k => `<span>${dotHTML(k)}${ORIGIN[k]}<b>${counts[k]}</b></span>`).join("")}</div>
+    <div class="legend"><span class="tlabel">取得</span>${Object.keys(buys).filter(k => buys[k]).map(k => `<span class="buy b-${k}">${BUY[k]}<b>${buys[k]}</b></span>`).join("")}</div>
+  </div>`;
+}
+
+function slotLine(s) {
+  const p = pickOf(s.id);
+  return `<li>${dotHTML(p[0])}<span>${esc(s.name)}${s.qty > 1 ? ` <span class="tq">×${s.qty}</span>` : ""}</span>${buyHTML(buyOf(p))}</li>`;
+}
+
+function renderOverview() {
+  const b = BUILDS[state.build];
+  const all = SLOTS;
+  const wt = AIR.reduce((a, s) => a + s.w, 0);
+  const gaps = all.filter(s => pickOf(s.id)[0] === "gap");
+  const imports = all.filter(s => buyOf(pickOf(s.id)) === "import");
+  $("#sheet").innerHTML = `
+    <div><div class="s-code">機體 · 版本 ${state.build}</div><h2 class="s-title">${esc(b.name)}</h2></div>
+    <p class="s-lead">${esc(b.desc)}</p>
+    <div class="sec-h">整套產地分數<small>機體 16 項加地面裝備 3 項</small></div>
+    ${scoreHTML(all)}
+    <p class="note">起飛重量約 ${Math.round(wt)} g（典型值估算）。屬 500 g 以上、未滿 2 kg：須註冊，並由標準檢驗局做商品檢驗。</p>
+    ${gaps.length ? `<div class="gapbar"><strong>國際上沒有非紅成品，只能暫用中國製</strong>${gaps.map(s => esc(s.name)).join("<br>")}</div>` : ""}
+    ${imports.length ? `<div class="sec-h">國際上有，但台灣買不到<small>要海外購買</small></div><div class="cards">${imports.map(s => `<button type="button" class="card" data-go="${GROUP[s.g] ? "p-" + s.id : s.id}"><div class="pk"><b>${esc(s.name)}</b>${esc(pickOf(s.id)[1])}</div></button>`).join("")}</div>` : ""}
+    <div class="sec-h">大部拆解<small>點進去看各零件</small></div>
+    <div class="cards">${GROUPS.map(([g, label, desc]) => `<button type="button" class="card" data-go="g-${g}">
+      <h3>${esc(label)}</h3><p>${esc(desc)}</p><ul>${AIR.filter(s => s.g === g).map(slotLine).join("")}</ul></button>`).join("")}</div>
+    <div class="sec-h">地面裝備</div>
+    <div class="cards">${["radio", "goggles", "charger"].map(id => `<button type="button" class="card" data-go="${id}"><ul>${slotLine(SLOT[id])}</ul><p>${esc(pickOf(id)[1])}</p></button>`).join("")}</div>`;
+  bindGo();
+}
+
+function renderGroup(g) {
+  const kids = AIR.filter(s => s.g === g[0]);
+  $("#sheet").innerHTML = `
+    <div><div class="s-code">大部拆解 · ${kids.length} 項</div><h2 class="s-title">${esc(g[1])}</h2></div>
+    <p class="s-lead">${esc(g[2])}</p>
+    ${scoreHTML(kids)}
+    <div class="sec-h">細部零件<small>點進去看供應清單與取得辦法</small></div>
+    <div class="cards">${kids.map(s => { const p = pickOf(s.id); return `<button type="button" class="card" data-go="p-${s.id}">
+      <h3>${dotHTML(p[0])} ${esc(s.name)}${s.qty > 1 ? ` <span class="tq">×${s.qty}</span>` : ""}</h3>
+      <p>${esc(s.role)}</p>
+      <div class="pk"><b>${esc(p[1])}</b></div>
+      <div class="chips">${buyHTML(buyOf(p))}${s.gap ? `<span class="buy b-none">國際缺口</span>` : ""}</div></button>`; }).join("")}</div>`;
+  bindGo();
+}
+
+function entHTML(e, key) {
+  const nb = key === "nr" ? nrBuy(e) : key === "tw" ? twBuy(e) : null;
+  return `<div class="ent"><b>${esc(e[0])}</b><p>${esc(e[1])}</p>
+    <div class="chips"><span class="chip s-${e[2]}">${STATUS[e[2]]}</span><span class="chip">${esc(e[3])}</span>${nb ? buyHTML(nb[0], nb[1]) : ""}</div></div>`;
+}
+function colHTML(key, label, list, note) {
+  const body = list.map(e => entHTML(e, key)).join("");
+  const n = note ? `<p class="empty">${esc(note)}</p>` : (list.length ? "" : `<p class="empty">本輪未找到</p>`);
+  const extra = key === "cn" ? `<p class="empty">中國品牌多數在台灣 FPV 店買得到。</p>` : "";
+  return `<div class="col ${key}"><h3>${dotHTML(key)}${label}<small>${list.length}</small></h3>${body}${n}${extra}</div>`;
+}
+
+function renderPart(s) {
+  const p = pickOf(s.id), buy = buyOf(p);
+  const where = GROUP[s.g] ? GROUP[s.g][1] : "地面裝備";
+  const howKeys = ["local", "import", "deal", "none"];
+  $("#sheet").innerHTML = `
+    <div><div class="s-code">${s.code} · ${esc(where)}${s.qty > 1 ? " · ×" + s.qty : ""}</div><h2 class="s-title">${esc(s.name)}</h2></div>
+    <p class="s-lead">${esc(s.role)}</p>
+    <dl class="specs">${s.specs.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}<dt>週轉</dt><dd>${esc(s.tier)}</dd></dl>
+    <div class="pick" style="border-left-color:var(--o-${p[0]})">
+      <span class="lbl">${esc(BUILDS[state.build].name)}選用</span>
+      <span class="name">${esc(p[1])}</span>
+      <div class="chips"><span class="chip">${ORIGIN[p[0]]}</span><span class="chip s-${p[2]}">${STATUS[p[2]]}</span>${buyHTML(buy)}</div>
+      ${p[3] ? `<span class="pn">${esc(p[3])}</span>` : ""}
+    </div>
+    ${s.gap ? `<div class="gapbar"><strong>國際上沒有非紅成品</strong>${esc(s.gap)}。這不是台灣買不到的問題，而是全世界都還沒有人做。</div>` : ""}
+    <div class="sec-h">供應清單<small>台灣、非紅、中國三欄，各附取得方式</small></div>
+    <div class="cols">
+      ${colHTML("tw", "台灣", s.sup.tw, s.sup.twNote)}
+      ${colHTML("nr", "非紅", s.sup.nr, s.sup.nrNote)}
+      ${colHTML("cn", "中國", s.sup.cn)}
+    </div>
+    <div class="sec-h">取得辦法<small>框起來的是本版本選用品的取得方式</small></div>
+    <div class="howto">${howKeys.map(k => `<div class="how ${k === buy ? "on" : ""}"><h4>${buyHTML(k)} ${esc(HOWTO[k][0])}</h4><ul>${HOWTO[k][1].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>
+    ${s.key ? `<p class="keynote"><b>關鍵元件</b>　${esc(s.key)}</p>` : ""}`;
+}
+
+function bindGo() { $("#sheet").querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go))); }
+
+/* ---------- 3D ---------- */
+const stage = $("#stage");
+let scene, camera, renderer, controls, grid, raycaster, pointer;
+const meshes = [];
+let hoverId = null;
+const CAM = {
+  airframe: { pos: [30, 20, 34], target: [0, 1, 0] },
+  radio: { pos: [-1, 3, 25], target: [-7, -4, 13] },
+  goggles: { pos: [15, 4, 26], target: [7, -3.5, 13] },
+  charger: { pos: [24, 2, 14], target: [15, -4.4, 3] }
+};
+function aimCamera() {
+  if (!camera) return;
+  const c = CAM[state.tab];
+  state.camTo = { pos: new THREE.Vector3(...c.pos), target: new THREE.Vector3(...c.target) };
+  state.zoomTo = null;
+  if (state.tab === "airframe") state.camTo.pos.sub(state.camTo.target).setLength(44 + state.target * 12).add(state.camTo.target);
+  controls.minDistance = state.tab === "airframe" ? 18 : 8;
+}
+
+function focusSet() {
+  if (state.slot) return new Set([state.slot]);
+  if (state.group) return new Set(AIR.filter(s => s.g === state.group).map(s => s.id));
+  return null;
+}
+function paint() {
+  if (!scene) return;
+  const f = focusSet();
+  meshes.forEach(m => {
+    const ground = !GROUP[SLOT[m.slot].g];
+    m.mesh.visible = state.tab === "airframe" ? !ground : m.slot === state.tab;
+    const p = pickOf(m.slot);
+    m.mesh.material.color.set(state.mode === "origin" ? cssVar("--o-" + p[0]) : m.real);
+    const on = !f || f.has(m.slot);
+    m.mesh.material.opacity = on ? 1 : 0.16;
+    if (m.mesh.material.transparent !== !on) { m.mesh.material.transparent = !on; m.mesh.material.needsUpdate = true; }
+    m.mesh.material.depthWrite = on;
+    m.mesh.material.emissive.setHex(state.slot === m.slot ? 0x333333 : (m.slot === hoverId ? 0x262626 : 0x000000));
+  });
+}
+
+function initThree() {
+  if (!window.THREE || !THREE.OrbitControls) {
+    stage.insertAdjacentHTML("beforeend", `<div class="fallback">3D 模型載入失敗。<br>仍可用左側選單查看每個零件的供應清單。</div>`);
+    return;
+  }
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(34, 1, 0.1, 400);
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  stage.prepend(renderer.domElement);
+  renderer.domElement.setAttribute("role", "img");
+  renderer.domElement.setAttribute("aria-label", "可拖曳旋轉的 FPV 無人機 3D 模型");
+
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; controls.dampingFactor = 0.08;
+  controls.minDistance = 18; controls.maxDistance = 90;
+  controls.autoRotate = !reduceMotion; controls.autoRotateSpeed = 0.6;
+  camera.position.set(...CAM.airframe.pos); controls.target.set(...CAM.airframe.target); controls.update();
+  $("#resetView").addEventListener("click", aimCamera);
+  controls.addEventListener("start", () => { controls.autoRotate = false; state.zoomTo = null; state.camTo = null; renderer.domElement.classList.add("dragging"); });
+  controls.addEventListener("end", () => renderer.domElement.classList.remove("dragging"));
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x556070, 0.95));
+  const d1 = new THREE.DirectionalLight(0xffffff, 0.75); d1.position.set(12, 24, 14); scene.add(d1);
+  const d2 = new THREE.DirectionalLight(0xffffff, 0.3); d2.position.set(-14, 8, -10); scene.add(d2);
+
+  const rad = (x, z, k) => { const l = Math.hypot(x, z) || 1; return V(x / l * k, 0, z / l * k); };
+  const L1 = {
+    frame: () => V(0, -4, 0), tpu: () => V(0, -4, 0), hardware: () => V(0, -4, 0),
+    motor: p => rad(p.x, p.z, 4).add(V(0, 1, 0)), prop: p => rad(p.x, p.z, 4).add(V(0, 1, 0)),
+    esc: () => V(0, -1.2, 0), fc: () => V(0, 3.2, 0), gps: () => V(0, 3, 2), elec: () => V(0, 3, -1),
+    cam: () => V(0, 1, 6), vtx: () => V(0, 3, -6), vant: () => V(0, 3, -6),
+    rx: () => V(7, 2.5, 0), rxant: () => V(7, 2.5, 0), batt: () => V(0, 8, 0), xt60: () => V(0, 8, -3),
+    radio: () => V(0, 0, 0), goggles: () => V(0, 0, 0), charger: () => V(0, 0, 0)
+  };
+  function add(slot, geo, real, pos, o) {
+    o = o || {};
+    const mat = new THREE.MeshStandardMaterial({ color: real, roughness: 0.55, metalness: 0.15 });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.copy(pos);
+    if (o.rot) mesh.rotation.set(o.rot[0], o.rot[1], o.rot[2]);
+    if (o.quat) mesh.quaternion.copy(o.quat);
+    mesh.userData.slot = slot;
+    scene.add(mesh);
+    meshes.push({ mesh, slot, real, base: pos.clone(), l1: o.l1 || L1[slot](pos), l2: o.l2 || V(0, 0, 0) });
+    return mesh;
+  }
+  const box = (x, y, z) => new THREE.BoxGeometry(x, y, z);
+  const cyl = (r, h, s) => new THREE.CylinderGeometry(r, r, h, s || 24);
+  function rod(slot, real, start, dir, len, r, l2) {
+    dir = dir.clone().normalize();
+    const q = new THREE.Quaternion().setFromUnitVectors(V(0, 1, 0), dir);
+    add(slot, cyl(r, len, 10), real, start.clone().add(dir.clone().multiplyScalar(len / 2)), { quat: q, l2 });
+    return start.clone().add(dir.clone().multiplyScalar(len));
+  }
+
+  // frame
+  add("frame", box(4.2, 0.35, 9), 0x2b2f36, V(0, 0, 0));
+  const dirs = [0, 1, 2, 3].map(k => { const a = Math.PI / 4 + k * Math.PI / 2; return [Math.cos(a), Math.sin(a), a]; });
+  dirs.forEach(([cx, cz, a]) => add("frame", box(11.6, 0.5, 1.5), 0x2b2f36, V(cx * 5.6, 0, cz * 5.6), { rot: [0, -a, 0], l2: V(cx * 2.6, 0, cz * 2.6) }));
+  add("frame", box(3.8, 0.25, 8.8), 0x2b2f36, V(0, 3.1, 0), { l2: V(0, 4, 0) });
+  [[1.6, 3.6], [-1.6, 3.6], [1.6, -3.6], [-1.6, -3.6]].forEach(([x, z]) => {
+    add("hardware", cyl(0.22, 2.8, 12), 0x9aa3ad, V(x, 1.65, z), { l2: V(x * 0.9, 1.6, z * 0.25) });
+    add("hardware", cyl(0.34, 0.25, 12), 0xb8c0c8, V(x, 3.35, z), { l2: V(0, 6.2, 0) });
+    add("hardware", cyl(0.34, 0.25, 12), 0xb8c0c8, V(x, -0.32, z), { l2: V(0, -2.2, 0) });
+  });
+  add("tpu", box(0.35, 2.2, 1.8), 0xe0782d, V(1.2, 1.7, 3.9), { l2: V(2.2, 0, 0) });
+  add("tpu", box(0.35, 2.2, 1.8), 0xe0782d, V(-1.2, 1.7, 3.9), { l2: V(-2.2, 0, 0) });
+  add("tpu", box(1.6, 0.8, 1.0), 0xe0782d, V(0, 0.6, -4.5), { l2: V(0, 0, -2) });
+  // power
+  dirs.forEach(([cx, cz]) => {
+    const mx = cx * 11.17, mz = cz * 11.17;
+    add("motor", cyl(1.35, 0.45, 28), 0x3a3f46, V(mx, 0.48, mz), { l2: V(0, -0.4, 0) });
+    add("motor", cyl(1.38, 1.25, 28), 0x7c2230, V(mx, 1.3, mz), { l2: V(0, 0.9, 0) });
+    add("prop", cyl(0.45, 0.5, 16), 0x55aee3, V(mx, 2.2, mz), { l2: V(0, 4, 0) });
+    for (let k = 0; k < 3; k++) {
+      const g = box(5.8, 0.1, 1.0); g.translate(3.1, 0, 0);
+      add("prop", g, 0x55aee3, V(mx, 2.25, mz), { rot: [0, k * 2 * Math.PI / 3 + (cx * cz > 0 ? 0.3 : -0.3), 0.06], l2: V(0, 4, 0) });
+    }
+  });
+  add("esc", box(3.6, 0.18, 3.6), 0x1d5c45, V(0, 0.75, 0), { l2: V(0, -0.6, 0) });
+  [[-1.3, 0], [1.3, 0], [0, -1.3], [0, 1.3]].forEach(([x, z]) => add("esc", box(z ? 1.2 : 0.4, 0.12, z ? 0.4 : 1.2), 0x15181c, V(x, 0.9, z), { l2: V(0, -0.6, 0) }));
+  // avionics
+  add("fc", box(3.6, 0.16, 3.6), 0x1c3557, V(0, 1.55, 0), { l2: V(0, 1.4, 0) });
+  add("fc", box(1.1, 0.14, 1.1), 0x15181c, V(0, 1.7, 0), { l2: V(0, 1.4, 0) });
+  add("fc", box(0.45, 0.12, 0.45), 0xc9cdd2, V(0.95, 1.69, 0.95), { l2: V(0, 1.4, 0) });
+  add("elec", cyl(0.45, 1.8, 18), 0x2d3e52, V(0, 0.75, -3.1), { rot: [0, 0, Math.PI / 2], l2: V(0, 0, -1.8) });
+  add("elec", cyl(0.45, 0.45, 18), 0x15181c, V(-1.5, 0.45, -3.4), { l2: V(-1.8, 0.6, 0) });
+  add("gps", box(2, 0.5, 2), 0x2b2f36, V(0, 3.48, 4.7), { l2: V(0, 1.8, 1) });
+  add("gps", box(1.3, 0.12, 1.3), 0xc9a64a, V(0, 3.78, 4.7), { l2: V(0, 1.8, 1) });
+  // video
+  add("cam", box(1.9, 1.9, 1.9), 0x16181b, V(0, 1.7, 3.9), { l2: V(0, 0, 1.6) });
+  add("cam", cyl(0.65, 0.9, 24), 0x0d0e10, V(0, 1.7, 5.25), { rot: [Math.PI / 2, 0, 0], l2: V(0, 0, 3) });
+  add("vtx", box(3.0, 0.9, 3.0), 0x8f969e, V(0, 2.35, -0.6), { l2: V(0, 1.6, -1) });
+  const aEnd = rod("vant", 0x333a42, V(0, 1.05, -5.0), V(0, 0.55, -0.83), 3.4, 0.14, V(0, 1, -2.2));
+  add("vant", new THREE.SphereGeometry(0.6, 18, 14), 0x333a42, aEnd, { l2: V(0, 1, -2.2) });
+  // link
+  add("rx", box(1.2, 0.3, 1.0), 0x2a4f7a, V(1.35, 0.35, -3.95), { l2: V(1.4, 0, 0) });
+  rod("rxant", 0x1f2226, V(1.7, 0.45, -4.3), V(0.5, 0.15, -0.85), 3.2, 0.07, V(2.4, 0, -1));
+  rod("rxant", 0x1f2226, V(1.85, 0.45, -4.1), V(0.88, 0.15, -0.45), 3.2, 0.07, V(2.4, 0, -1));
+  // energy
+  add("batt", box(3.6, 3.3, 7.2), 0xe8c34a, V(0, 4.95, 0));
+  add("batt", box(3.8, 3.5, 0.6), 0x1b1d20, V(0, 4.95, 1.6), { l2: V(0, 3.2, 0) });
+  add("batt", box(3.8, 3.5, 0.6), 0x1b1d20, V(0, 4.95, -1.6), { l2: V(0, 3.2, 0) });
+  const xEnd = rod("xt60", 0x16181b, V(0, 4.0, -3.6), V(0, -0.25, -0.97), 1.7, 0.22, V(0, 0, -2));
+  add("xt60", box(1.5, 0.7, 0.9), 0xd9b23a, xEnd.add(V(0, 0, -0.45)), { l2: V(0, 0, -2) });
+
+  // ground gear
+  const G = -5.4;
+  add("radio", box(8.4, 2.4, 5.2), 0x2b2f36, V(-7, G + 1.2, 13), { rot: [0, 0.25, 0] });
+  [-2.2, 2.2].forEach(dx => {
+    const cx = -7 + dx * Math.cos(0.25), cz = 13 - dx * Math.sin(0.25);
+    add("radio", cyl(1.1, 0.4, 20), 0x15181c, V(cx, G + 2.55, cz), { l2: V(0, 1.4, 0) });
+    add("radio", cyl(0.18, 1.6, 10), 0x9aa3ad, V(cx, G + 3.5, cz), { l2: V(0, 2.4, 0) });
+  });
+  add("radio", cyl(0.25, 3.2, 10), 0x15181c, V(-7.6, G + 3.9, 11.2), { rot: [-0.35, 0, 0], l2: V(0, 2, -1) });
+  add("goggles", box(7.2, 3.0, 3.6), 0x2b2f36, V(7, G + 1.6, 13), { rot: [0, -0.3, 0] });
+  add("goggles", box(6.4, 2.4, 0.5), 0x15181c, V(7 + 2.0 * Math.sin(-0.3), G + 1.6, 13 + 2.0 * Math.cos(-0.3)), { rot: [0, -0.3, 0], l2: V(-0.5, 0, 1.6) });
+  [-1.8, 1.8].forEach(dx => add("goggles", cyl(0.2, 2.2, 10), 0x333a42, V(7 + dx * Math.cos(-0.3), G + 4.0, 13 - dx * Math.sin(-0.3)), { l2: V(0, 1.8, 0) }));
+  add("goggles", new THREE.TorusGeometry(3.6, 0.22, 8, 32, Math.PI), 0x1b1d20, V(7 - 1.8 * Math.sin(-0.3), G + 1.6, 13 - 1.8 * Math.cos(-0.3)), { rot: [0, -0.3 + Math.PI, Math.PI / 2], l2: V(0.5, 0, -1.6) });
+  add("charger", box(4.6, 1.8, 3.4), 0x3a3f46, V(15, G + 0.9, 3), { rot: [0, -0.6, 0] });
+  add("charger", box(2.4, 0.08, 1.6), 0x5ea2c9, V(15, G + 1.84, 3), { rot: [0, -0.6, 0], l2: V(0, 1.2, 0) });
+
+  grid = new THREE.GridHelper(80, 40, 0x888888, 0x888888);
+  grid.position.y = -5.4; grid.material.transparent = true; grid.material.opacity = 0.22;
+  scene.add(grid);
+
+  raycaster = new THREE.Raycaster(); pointer = new THREE.Vector2();
+  const tip = $("#tip");
+  let downXY = null;
+  function hit(ev) {
+    const r = renderer.domElement.getBoundingClientRect();
+    pointer.x = ((ev.clientX - r.left) / r.width) * 2 - 1;
+    pointer.y = -((ev.clientY - r.top) / r.height) * 2 + 1;
+    raycaster.setFromCamera(pointer, camera);
+    const f = focusSet();
+    const vis = meshes.filter(m => m.mesh.visible && (!f || f.has(m.slot) || !state.slot)).map(m => m.mesh);
+    const h = raycaster.intersectObjects(vis, false)[0];
+    return h ? h.object.userData.slot : null;
+  }
+  const tokenFor = id => GROUP[SLOT[id].g] ? "p-" + id : id;
+  renderer.domElement.addEventListener("pointerdown", ev => { downXY = [ev.clientX, ev.clientY]; });
+  renderer.domElement.addEventListener("pointerup", ev => {
+    if (!downXY) return;
+    const moved = Math.hypot(ev.clientX - downXY[0], ev.clientY - downXY[1]);
+    downXY = null;
+    if (moved > 6) return;
+    const id = hit(ev);
+    if (id) go(tokenFor(id));
+  });
+  renderer.domElement.addEventListener("pointermove", ev => {
+    if (ev.pointerType !== "mouse") return;
+    const id = hit(ev);
+    if (id !== hoverId) { hoverId = id; paint(); }
+    renderer.domElement.classList.toggle("hovering", !!id);
+    if (id) {
+      const r = stage.getBoundingClientRect(), p = pickOf(id);
+      tip.innerHTML = `${esc(SLOT[id].name)}　<span style="color:var(--o-${p[0]})">${ORIGIN[p[0]]}</span>`;
+      tip.style.left = (ev.clientX - r.left) + "px"; tip.style.top = (ev.clientY - r.top) + "px"; tip.hidden = false;
+    } else tip.hidden = true;
+  });
+  renderer.domElement.addEventListener("pointerleave", () => { tip.hidden = true; if (hoverId) { hoverId = null; paint(); } });
+
+  function theme() { scene.background = new THREE.Color(cssVar("--stage")); grid.material.color.set(cssVar("--muted")); paint(); }
+  theme();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", theme);
+  new MutationObserver(theme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  function resize() { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  new ResizeObserver(resize).observe(stage); resize();
+
+  let last = performance.now();
+  const tmp = new THREE.Vector3(), off = new THREE.Vector3();
+  (function loop(now) {
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    const k = reduceMotion ? 1 : Math.min(1, dt * 4.5);
+    if (Math.abs(state.target - state.t) > 0.001) state.t += (state.target - state.t) * Math.min(1, dt * 5); else state.t = state.target;
+    const a = Math.min(state.t, 1), b = Math.max(0, Math.min(state.t - 1, 1));
+    meshes.forEach(m => { tmp.copy(m.base).addScaledVector(m.l1, a).addScaledVector(m.l2, b); m.mesh.position.copy(tmp); });
+    if (state.camTo) {
+      camera.position.lerp(state.camTo.pos, k); controls.target.lerp(state.camTo.target, k);
+      if (camera.position.distanceTo(state.camTo.pos) < 0.05) state.camTo = null;
+    } else if (state.zoomTo) {
+      off.copy(camera.position).sub(controls.target);
+      const d = off.length(), next = d + (state.zoomTo - d) * k;
+      camera.position.copy(controls.target).add(off.setLength(next));
+      if (Math.abs(next - state.zoomTo) < 0.05) state.zoomTo = null;
+    }
+    controls.autoRotate = controls.autoRotate && state.tab === "airframe";
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  })(last);
+}
+
+initThree();
+go(location.hash.slice(1) || "airframe", false);
+})();
+</script>
+</body>
+</html>
