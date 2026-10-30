@@ -294,7 +294,7 @@ const GROUPS = [
 const STATUS = { r: "零售可買", b: "B2B 洽談", d: "開發中", c: "可客製", k: "上游晶片", n: "本輪未找到" };
 const ORIGIN = { tw: "台灣", nr: "非紅", cn: "中國", gap: "國際缺口", unk: "未查" };
 const BUY = { local: "台灣買得到", import: "需海外購買", deal: "要洽廠商", none: "國際上沒有", unk: "未查" };
-const NR_TW = [["TrueRC", "台灣 FPV 店有售"], ["Futaba", "台灣有代理（均能）"]];
+const NR_TW = [["TrueRC", "台灣 FPV 店有售"], ["Futaba", "台灣有代理（均能）"], ["Orqa FPV.One", "酷飛有售（NT$25,000）；是否為 NDAA 的 PILOT 款待確認"]];
 function nrBuy(e) {
   const hit = NR_TW.find(([k]) => e[0].startsWith(k));
   if (hit) return ["local", hit[1]];
@@ -317,15 +317,15 @@ const HOWTO = {
   import: ["海外購買要注意", [
     "向原廠官網或海外經銷購買",
     "關稅：完稅價格 NT$2,000 以下免稅，半年限 6 次（現行；財政部研議收緊，尚未公告）",
-    "射頻器材（遙控器、接收機、圖傳、眼鏡）在台灣販售須 NCC 型式認證",
-    "個人自用郵寄：每次 2 台、每人每年 10 台",
-    "2026-08-01 起 NCC 沒有委員在任，新的射頻器材核准停發；已有認證的照常通關",
+    "射頻器材（例如圖傳、遙控器、接收機）在台灣販售須經 NCC 審驗合格",
+    "個人自用 3C 郵寄限 2 台、每人每年 10 台（另可隨身攜帶 5 台）",
+    "2026-08-01 起 NCC 沒有委員在任，需要委員會審查的射頻器材核准函停發；已有認證的照常通關",
     "鋰電池空運：電量要在 30% 以下，不能以貨物搭客機"]],
   deal: ["要洽廠商時", [
     "直接聯絡廠商，帶規格與數量去談",
     "媒合管道：TEDIBOA 聯盟與金屬中心",
     "媒合管道：彰化台灣無人載具聯盟",
-    "媒合管道：台中無人機產業供應鏈聯盟",
+    "媒合管道：台中的無人機產業智慧製造聯盟（中港加工區、國科會、中興大學發起）",
     "媒合管道：台灣無人機協會 TDA",
     "要求書面生產廠址與產地證明，才能標「台灣製」"]],
   none: ["國際上沒有時", [
@@ -341,7 +341,7 @@ const SLOTS = [
     sup: {
       tw: [["THINKCHANGE COMPOSITE", "碳纖機架與碳纖槳，T700 與 T800 材料，偏軍規 B2B", "b", "已查"],
            ["永虹先進", "熱塑碳纖板，自稱台灣唯一航太級熱塑碳纖複材廠，可作機架板材來源", "c", "已查；用途為推論"],
-           ["台中中小 CNC 廠", "碳板切割，可透過台中無人機產業供應鏈聯盟媒合", "c", "已查（管道）"],
+           ["台中中小 CNC 廠", "碳板切割，可透過台中的無人機產業智慧製造聯盟媒合", "c", "已查（管道）"],
            ["QUADMULA", "機架品牌，委託方稱位於桃園，Siren R5 HD 機架在美國零售", "r", "產地未驗證"]],
       nr: [["Unusual Machines", "美國，機架產地未驗證", "r", "未驗證"],
            ["Rotor Riot", "美國，機架產地未驗證", "r", "未驗證"]],
@@ -356,10 +356,10 @@ const SLOTS = [
       cn: [["各機架品牌附件", "通常隨機架附贈", "r", "推定"]]
     } },
   { id: "hardware", g: "frame", code: "I1", qty: 1, w: 10, name: "螺絲、銅柱與防震球", role: "把機架與飛塔固定在一起的小五金。",
-    specs: [["螺絲", "M3 與 M2"], ["材質", "鋼、鈦、鋁"]], tier: "T1 高週轉",
+    specs: [["螺絲", "M3\nM2"], ["材質", "鋼\n鈦\n鋁"]], tier: "T1 高週轉",
     sup: {
       tw: [["岡山扣件產業", "台灣螺絲業聚落，最容易標 MIT", "c", "推論"],
-           ["鉅明", "精密 CNC，已出貨鋁件與鈦件給美國無人機廠", "b", "已查"]],
+           ["鉅明", "精密 CNC（鋁、不鏽鋼、鈦），已出貨無人機零配件給美國廠", "b", "已查；品項未驗證"]],
       nr: [], nrNote: "本輪未查",
       cn: [["機架附贈", "多數機架隨附螺絲包", "r", "推定"]]
     } },
@@ -402,12 +402,12 @@ const SLOTS = [
       cn: [["Hobbywing 好盈", "深圳", "r", "推定"], ["T-Motor", "南昌", "r", "已查"], ["SpeedyBee", "中國", "r", "推定"]]
     } },
   { id: "fc", g: "avionics", code: "D1", qty: 1, w: 8, name: "飛控", role: "整台機的大腦，讀陀螺儀、算姿態、下指令給電調。",
-    specs: [["MCU", "F7 或 H7"], ["孔距", "30.5 × 30.5"], ["韌體", "Betaflight"], ["電池", "3–6S"]], tier: "T2 中週轉",
+    specs: [["MCU", "F4 以上\n主流為 F7 或 H7"], ["孔距", "30.5 × 30.5"], ["韌體", "Betaflight"], ["電池", "3–6S"]], tier: "T2 中週轉",
     key: "陀螺儀 IMU：台灣找不到可供貨的 MEMS 陀螺儀，只能用日本或德國料源（例如 TDK InvenSense、Bosch）。主流 MCU STM32 是意法半導體。",
     sup: {
       tw: [["Sunrise Taiwan ZST-F405", "STM32F405，自稱從設計到製造皆台灣", "b", "自述"],
            ["翔大 MIT H7", "MIT 專區飛控；「官方認證」由誰認證未驗證", "r", "未驗證"],
-           ["智邦 Accton G-FF4", "媒合頁已失效，細節來自搜尋摘要", "d", "未驗證"],
+           ["智邦 Accton G-FF4", "在 Taiwan Expo 2026 歐洲場找代理經銷；媒合頁已失效，細節來自搜尋摘要", "b", "未驗證"],
            ["新唐 Nuvoton", "M452 Drone Kit，玩具級參考設計，沒有 Betaflight 移植", "k", "已查"]],
       nr: [["Orqa QuadCore H7", "克羅埃西亞，US$332.49", "r", "已查"],
            ["Unusual Machines Brave F7", "美國製，第一個列入 Blue UAS Framework 的美製 FPV 飛控", "r", "已查"],
@@ -450,11 +450,11 @@ const SLOTS = [
     key: "台灣晶片已在 FPV 裡：幾乎每一顆類比圖傳都用立積 RTC6705，但成品多在中國組裝（推論）。主標寫組裝地，副標寫「關鍵晶片：台灣」。",
     sup: {
       tw: [["立積 RichWave RTC6705", "5.8G 類比圖傳通用晶片", "k", "已查（晶片）"],
-           ["松翰 SNIT20", "數位圖傳晶片組，延遲約 40 毫秒，可客製；未見 FPV 採用", "k", "已查"],
+           ["松翰 SNIT20", "數位圖傳晶片組，延遲約 40 毫秒，提供 SDK；未見 FPV 採用", "k", "已查"],
            ["瑞昱 RTL8812AU", "開源數位圖傳 OpenIPC 用的 Wi-Fi 晶片", "k", "已查"],
            ["LongLink 澤龍智能", "自稱全台灣設計製造的數位圖傳；資本額 NT$108 萬，極早期", "d", "已查"]],
       nr: [["Fat Shark Aura VTX", "類比，Blue UAS Framework（2025-07）", "r", "已查"],
-           ["Orqa Ghost Hybrid VTX", "類比", "r", "已查"]],
+           ["Orqa Ghost Hybrid VTX", "克羅埃西亞；類比為推論", "r", "已查"]],
       cn: [["DJI O4 系列", "深圳", "r", "已查"], ["Walksnail", "深圳", "r", "推定"], ["HDZero", "Divimath 在深圳，GetFPV 標中國製", "r", "已查"]]
     } },
   { id: "vant", g: "video", code: "F4", qty: 1, w: 5, name: "圖傳天線", role: "空中端的發射天線，極化方向要和眼鏡端一致。",
@@ -514,12 +514,12 @@ const SLOTS = [
     } },
   { id: "goggles", g: "goggles", code: "G1", qty: 1, w: 0, name: "FPV 眼鏡", gap: "數位眼鏡：沒有非紅選項", role: "接收圖傳畫面，系統必須和空中端一致。",
     specs: [["系統", "數位或類比"], ["必須相容", "圖傳同一系統"]], tier: "T3 低週轉",
-    key: "數位眼鏡國際上沒有非紅選項；類比眼鏡國際上有（Orqa），但台灣未見代理。台灣沒有量產中的 micro-OLED 顯示器。",
+    key: "數位眼鏡國際上沒有非紅選項。類比眼鏡有非紅選項（Orqa），而且酷飛有售；買之前要確認是 NDAA 的 PILOT 款。台灣沒有量產中的 micro-OLED 顯示器。",
     sup: {
       tw: [["LongLink-FPV 套裝", "含眼鏡，細節未驗證", "d", "未驗證"],
            ["奇景與子公司源奇", "LCoS 近眼顯示，早期", "k", "已查"],
            ["錼創", "Micro LED 近眼晶片，早期", "k", "已查"]],
-      nr: [["Orqa FPV.One PILOT", "類比、NDAA，US$799.99；同系列一般款 GetFPV 標非 NDAA", "r", "已查"],
+      nr: [["Orqa FPV.One PILOT", "類比、NDAA，US$799.99；同系列一般款 GetFPV 標非 NDAA；酷飛有售 FPV.One Pilot（NT$25,000）", "r", "已查"],
            ["Fat Shark", "美國品牌（Unusual Machines 旗下），現行眼鏡製造地未驗證", "r", "未驗證"]],
       cn: [["DJI Goggles", "深圳", "r", "已查"], ["Walksnail", "深圳", "r", "推定"], ["HDZero", "GetFPV 標中國製", "r", "已查"], ["Skyzone", "中國", "r", "推定"]]
     } },
@@ -554,16 +554,16 @@ const BUILDS = {
       motor: ["nr", "Unusual Machines 2207（美國製款）", "r", "要確認選到的 SKU 是美國製版本；台灣未見代理", "import"],
       prop: ["gap", "暫用 Gemfan 5 吋槳（中國）", "n", "國際上沒有 5 吋非紅塑膠槳；非紅只有 7 吋以上的 Master Airscrew"],
       esc: ["nr", "Orqa 3030 70A", "r", "台灣未見代理", "import"], fc: ["nr", "Orqa QuadCore H7", "r", "台灣未見代理", "import"],
-      gps: ["nr", "ARK GPS", "r", "Framework 名單細項未逐一查；台灣未見代理", "import"],
-      elec: ["unk", "非紅電容與蜂鳴器本輪未查", "n"],
+      gps: ["nr", "ARK GPS", "r", "Framework 名單細項未逐一查，型號是否非紅未驗證；台灣未見代理", "import"],
+      elec: ["tw", "翔大 MIT 分電板", "r", "電容與蜂鳴器的非紅品牌本輪未查"],
       cam: ["nr", "Fat Shark Aura 鏡頭（類比）", "r", "台灣未見代理", "import"],
       vtx: ["nr", "Fat Shark Aura VTX（類比）", "r", "國際上沒有非紅數位圖傳，所以改用類比；台灣未見代理", "import"],
-      vant: ["nr", "TrueRC X-AIR 5.8", "r", "台灣 FPV 店有售", "local"], rx: ["nr", "Elarion ELRS 2.4G", "b", "要向立陶宛廠洽談"],
+      vant: ["nr", "TrueRC Singularity 5.8 U.FL", "r", "酷飛有售", "local"], rx: ["nr", "Elarion ELRS 2.4G", "b", "要向立陶宛廠洽談"],
       rxant: ["nr", "TrueRC Singularity 2.4", "r", "台灣 FPV 店有售", "local"],
       batt: ["gap", "暫用 Tattu 6S LiPo（中國）", "n", "國際上沒有非紅的高 C 數 LiPo 軟包"],
       xt60: ["gap", "暫用 Amass XT60（中國）", "n", "國際上找不到 XT 系列的非紅替代"],
       radio: ["tw", "錦明 Raven（ELRS）", "d", "尚未量產。Orqa 遙控器是 Ghost 協定，和 ELRS 接收機不相容"],
-      goggles: ["nr", "Orqa FPV.One PILOT（類比）", "r", "國際上有，但台灣未見代理，需海外購買", "import"],
+      goggles: ["nr", "Orqa FPV.One PILOT（類比）", "r", "酷飛有售（NT$25,000）；是否為 NDAA 的 PILOT 款待確認", "local"],
       charger: ["tw", "飛宏充電器", "b", "生產廠址未驗證"]
     } },
   C: { name: "台灣優先版", short: "C 台灣優先",
@@ -573,12 +573,12 @@ const BUILDS = {
       motor: ["tw", "雷虎馬達", "b", "零售取得要談"], prop: ["tw", "Intertech 試模 5 吋玻纖尼龍槳", "c", "目前沒有產品，要開模"],
       esc: ["tw", "Sunrise ZST-ESC65A", "b", "台灣製為廠商自述"], fc: ["tw", "Sunrise ZST-F405", "b", "陀螺儀仍需日本或德國料源"],
       gps: ["tw", "環天 GPS 模組", "b", "產地與小尺寸待確認"], elec: ["tw", "翔大 MIT 分電板", "r"],
-      cam: ["tw", "Sunrise ZST-FL721 鏡頭模組", "b"],
+      cam: ["tw", "Sunrise ZST-FL721 鏡頭模組", "b", "與類比 VTX 的相容性未驗證"],
       vtx: ["nr", "Fat Shark Aura VTX（類比）", "r", "台灣只有晶片（立積），沒有台灣組裝的成品；Fat Shark 台灣未見代理", "import"],
       vant: ["tw", "耀登客製 5.8G 天線", "c", "要指定台灣廠"], rx: ["nr", "Elarion ELRS 2.4G", "b", "台灣沒有現成接收機"],
       rxant: ["tw", "佳邦客製 2.4G 天線", "c"], batt: ["tw", "格斯科技軟包電芯客製", "c", "C 數未公開，要先問高倍率可行性"],
       xt60: ["tw", "胡連客製大電流接頭", "c", "推論：要問台灣廠能否開模"], radio: ["tw", "錦明 Raven", "d", "尚未量產"],
-      goggles: ["nr", "Orqa FPV.One PILOT（類比）", "r", "國際上沒有非紅數位眼鏡；這款類比眼鏡台灣未見代理", "import"],
+      goggles: ["nr", "Orqa FPV.One PILOT（類比）", "r", "國際上沒有非紅數位眼鏡；這款類比眼鏡酷飛有售，是否為 PILOT 款待確認", "local"],
       charger: ["tw", "飛宏充電器", "b", "生產廠址未驗證"]
     } }
 };
@@ -771,7 +771,7 @@ function renderPart(s) {
   $("#sheet").innerHTML = `
     <div><div class="s-code">${s.code} · ${esc(where)}${s.qty > 1 ? " · ×" + s.qty : ""}</div><h2 class="s-title">${esc(s.name)}</h2></div>
     <p class="s-lead">${esc(s.role)}</p>
-    <dl class="specs">${s.specs.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}<dt>週轉</dt><dd>${esc(s.tier)}</dd></dl>
+    <dl class="specs">${s.specs.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v).replace(/\n/g, "<br>")}</dd>`).join("")}<dt>週轉</dt><dd>${esc(s.tier)}</dd></dl>
     <div class="pick" style="border-left-color:var(--o-${p[0]})">
       <span class="lbl">${esc(BUILDS[state.build].name)}選用</span>
       <span class="name">${esc(p[1])}</span>
